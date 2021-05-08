@@ -46,6 +46,19 @@ chrome.action.onClicked.addListener(async (tab) => {
     }
     // Normal action handler logic.
 });
+chrome.notifications.onClicked.addListener(alertId => {
+    chrome.tabs.create({ active: true, url: `${storageCache.AlertaServerUrl}/alert/${alertId}` });
+});
+
+chrome.notifications.onButtonClicked.addListener((id, index) => {
+    var body = {
+        status: "ack",
+        text: "I'll take a look ...",
+        timeout: "7200"
+    }
+    fetch(`${storageCache.AlertaServerUrl}/api/alert/${id}/status`, { method: "PUT", body: JSON.stringify(body), headers: { "Content-type": "application/json" } })
+        .then(resp => console.log("Alert Ack !"));
+});
 
 function getAllStorageSyncData() {
     return new Promise((resolve, reject) => {
@@ -58,25 +71,20 @@ function getAllStorageSyncData() {
     });
 }
 
-// Les derniéres alertes, sur la production, qui n'ont pas de duplicate
-
-//http://localhost:9999/api/alerts?q=duplicateCount:<=0 AND (severity:normal critical warning) AND environment:Production
-
 function startPolling() {
     const cache = storageCache;
     chrome.alarms.onAlarm.addListener(function () {
         console.log(cache);
-        fetch(`${cache.AlertaServerUrl}/alerts?q=duplicateCount:<=0 AND (severity:critical warning) AND environment:Production`)
+        // Fetch All alerts with severity high and on a Production env.
+        fetch(`${cache.AlertaServerUrl}/api/alerts?q=severity:((critical OR major) OR warning) AND environment:Production`)
             .then(response => response.json())
             .then(resp => {
                 const currentTotal = resp.alerts.length;
                 chrome.action.setBadgeText({ text: currentTotal.toString() });
+                chrome.action.setBadgeBackgroundColor({ color: "red" });
 
-                chrome.action.setBadgeBackgroundColor({color: "red"});
-                chrome.action.setTitle({title: "outch"});
-                
                 // Get the previous value of total from cache
-                chrome.storage.sync.get(['numberOfAlerts'], (items) => {
+                chrome.storage.sync.get(['numberOfAlerts', 'AlertaServerUrl'], (items) => {
 
                     chrome.storage.sync.set({
                         numberOfAlerts: currentTotal
@@ -84,18 +92,41 @@ function startPolling() {
 
                     // If no data in store, then we do not (yet) push notification and we will wait for new alerts
                     // TODO ; If there is a delay between the count and now, perhaps we should not triggers alert, and just update the cache ?
-                    if(items.numberOfAlerts == undefined){
+                    if (items.numberOfAlerts == undefined) {
                         console.log("First time we   fetch data from Alerta ... we will wait for new state to push notification !");
                     }
+                    // We have new alerts !
                     else if (items.numberOfAlerts < currentTotal) {
-                        var opt = {
-                            type: 'basic',
-                            title: 'New alert detected',
-                            message: 'Primary message to display',
-                            iconUrl: "icon48.png",
-                            buttons: [{ title: 'Ack' }, { title: 'Go to alerta' }]
-                        };
-                        chrome.notifications.create('id', opt, function (id) { console.log("Alerte OK") });
+
+                        var newAlertsCount = currentTotal - items.numberOfAlerts;
+
+                        // Only one new alert since the last polling result, we send a basic notification
+                        if (newAlertsCount == 1) {
+                            var newAlert = resp.alerts[0];
+
+                            var alertId = newAlert.id;
+                            var notification: chrome.notifications.NotificationOptions = {
+                                type: 'basic',
+                                title: `[${newAlert.group}] ${newAlert.text}`,
+                                message: newAlert.value,
+                                iconUrl: "icon48.png",
+                                isClickable: true,
+                                buttons: [{ title: 'Ack' }, { title: 'View alert defails' }]
+                            };
+                        }
+                        // More than one alert, we send a list notification
+                        else {
+                            var notification: chrome.notifications.NotificationOptions = {
+                                type: 'list',
+                                title: 'New alert detected',
+                                message: 'Primary message to display',
+                                items: [{ title: "Alert one", message: "Outch1" }, { title: "Alert Two", message: "Outch2" }],
+                                iconUrl: "icon48.png",
+                                buttons: [{ title: 'Go to alerta' }]
+                            };
+                        }
+
+                        chrome.notifications.create(alertId, notification);
                     }
                 })
             })
