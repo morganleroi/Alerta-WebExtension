@@ -1,5 +1,6 @@
 export type UserPreferences = {
-    AlertaServerUrl: string;
+    AlertaApiServerUrl: string;
+    AlertaUiUrl: string;
     AlertaApiSecret: string;
     ShowNotifications: boolean;
     PersistentNotifications: boolean;

@@ -5,7 +5,8 @@ import { UserPreferences } from './Model/UserPreferences'
 
 const UserPreferences = () => {
     const [userPref, setUserPref] = React.useState<UserPreferences>({
-        AlertaServerUrl: "",
+        AlertaApiServerUrl: "",
+        AlertaUiUrl: "",
         PersistentNotifications: false,
         ShowNotifications: true,
         AlertaApiSecret: ""
@@ -44,7 +45,12 @@ const UserPreferences = () => {
                 <FormGroup className="mb-3">
                     <label htmlFor="alertaUrl" className="form-label">Alerta API Url</label>
                     <input type="text" className="form-control" id="alertaUrl"
-                        placeholder="http://hostname:port/" value={userPref?.AlertaServerUrl} onChange={(val) => setUserPref({ ...userPref, AlertaServerUrl: val.target.value })} />
+                        placeholder="http://hostname:port" value={userPref?.AlertaApiServerUrl} onChange={(val) => setUserPref({ ...userPref, AlertaApiServerUrl: val.target.value })} />
+                </FormGroup>
+                <FormGroup className="mb-3">
+                    <label htmlFor="alertaUiUrl" className="form-label">Alerta UI Url</label>
+                    <input type="text" className="form-control" id="alertaUiUrl"
+                        placeholder="http://hostname:port" value={userPref?.AlertaUiUrl} onChange={(val) => setUserPref({ ...userPref, AlertaUiUrl: val.target.value })} />
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <label htmlFor="alertaSecretKey" className="form-label">Alerta API Url</label>

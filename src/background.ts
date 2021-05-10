@@ -4,7 +4,8 @@ import { AlertaExtStore } from './Model/AlertaExtStore';
 var storageCache: AlertaExtStore = {
     pollingState: {},
     userPreferences: {
-        AlertaServerUrl: "http://localhost:9999",
+        AlertaApiServerUrl: "http://localhost:9999",
+        AlertaUiUrl: "http://localhost:9999",
         PersistentNotifications: false,
         ShowNotifications: true,
         AlertaApiSecret: "XXXX"
@@ -52,7 +53,7 @@ chrome.action.onClicked.addListener(async (tab) => {
     // Normal action handler logic.
 });
 chrome.notifications.onClicked.addListener(alertId => {
-    chrome.tabs.create({ active: true, url: `${storageCache.userPreferences.AlertaServerUrl}/alert/${alertId}` });
+    chrome.tabs.create({ active: true, url: `${storageCache.userPreferences.AlertaUiUrl}/alert/${alertId}` });
 });
 
 chrome.notifications.onButtonClicked.addListener((id, index) => {
@@ -61,7 +62,7 @@ chrome.notifications.onButtonClicked.addListener((id, index) => {
         text: "I'll take a look ...",
         timeout: "7200"
     }
-    fetch(`${storageCache.userPreferences.AlertaServerUrl}/api/alert/${id}/status`, { method: "PUT", body: JSON.stringify(body), headers: { "Content-type": "application/json" } })
+    fetch(`${storageCache.userPreferences.AlertaApiServerUrl}/alert/${id}/status`, { method: "PUT", body: JSON.stringify(body), headers: { "Content-type": "application/json" } })
         .then(resp => console.log("Alert Ack !"));
 });
 
@@ -81,7 +82,7 @@ function startPolling() {
     chrome.alarms.onAlarm.addListener(function () {
         console.log(cache);
         // Fetch All alerts with severity high and on a Production env.
-        fetch(`${cache.userPreferences.AlertaServerUrl}/api/alerts?q=severity:((critical OR major) OR warning) AND environment:Production`)
+        fetch(`${cache.userPreferences.AlertaApiServerUrl}/alerts?q=severity:((critical OR major) OR warning) AND environment:Production`, { headers: {'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}`}})
             .then(response => response.json())
             .then(HandleAlertaResponse);
     });
@@ -100,7 +101,7 @@ function HandleAlertaResponse(resp: any){
         // If no data in store, then we do not (yet) push notification and we will wait for new alerts
         // TODO ; If there is a delay between the count and now, perhaps we should not triggers alert, and just update the cache ?
         if (alertaExtStore.pollingState.alertCount == undefined) {
-            console.log("First time we   fetch data from Alerta ... we will wait for new state to push notification !");
+            console.log("First time we fetch data from Alerta ... we will wait for new state to push notification !");
         }
         // We have new alerts !
         else if (alertaExtStore.pollingState.alertCount < currentTotal) {
@@ -131,7 +132,7 @@ function SendNotification(alertaExtStore: AlertaExtStore, currentTotal: number, 
             type: 'basic',
             title: `[${newAlert.group}] ${newAlert.text}`,
             message: newAlert.value,
-            iconUrl: "icon48.png",
+            iconUrl: "alert.png",
             requireInteraction: alertaExtStore.userPreferences.PersistentNotifications,
             isClickable: true,
             buttons: [{ title: 'Ack' }, { title: 'View alert defails' }],
