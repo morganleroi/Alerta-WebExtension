@@ -1,6 +1,6 @@
 # Chromium Extension for Alerta tool
 
-# End-User documentation
+#  End-User documentation
 
 ## Why an extension ?
 
