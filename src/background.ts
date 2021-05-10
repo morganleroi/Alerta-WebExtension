@@ -1,4 +1,5 @@
 import { AlertaExtStore } from './Model/AlertaExtStore';
+import { SendNotification } from './notifications';
 
 // Where we will expose all the data we retrieve from storage.sync.
 var storageCache: AlertaExtStore = {
@@ -82,13 +83,13 @@ function startPolling() {
     chrome.alarms.onAlarm.addListener(function () {
         console.log(cache);
         // Fetch All alerts with severity high and on a Production env.
-        fetch(`${cache.userPreferences.AlertaApiServerUrl}/alerts?q=severity:((critical OR major) OR warning) AND environment:Production`, { headers: {'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}`}})
+        fetch(`${cache.userPreferences.AlertaApiServerUrl}/alerts?q=severity:((critical OR major) OR warning) AND environment:Production`, { headers: { 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
             .then(response => response.json())
             .then(HandleAlertaResponse);
     });
 }
 
-function HandleAlertaResponse(resp: any){
+function HandleAlertaResponse(resp: any) {
     const currentTotal = resp.alerts.length;
     chrome.action.setBadgeText({ text: currentTotal.toString() });
     chrome.action.setBadgeBackgroundColor({ color: "red" });
@@ -96,21 +97,24 @@ function HandleAlertaResponse(resp: any){
     // Get the state
     chrome.storage.sync.get(null, (items) => {
 
-        var alertaExtStore = items as AlertaExtStore;
+        var currentState = items as AlertaExtStore;
 
-        // If no data in store, then we do not (yet) push notification and we will wait for new alerts
-        // TODO ; If there is a delay between the count and now, perhaps we should not triggers alert, and just update the cache ?
-        if (alertaExtStore.pollingState.alertCount == undefined) {
-            console.log("First time we fetch data from Alerta ... we will wait for new state to push notification !");
+        if (currentState.userPreferences.ShowNotifications) {
+
+            // If no data in store, then we do not (yet) push notification and we will wait for new alerts
+            // TODO ; If there is a delay between the count and now, perhaps we should not triggers alert, and just update the cache ?
+            if (currentState.pollingState.alertCount == undefined) {
+                console.log("First time we fetch data from Alerta ... we will wait for new state to push notification !");
+            }
+            // We have new alerts !
+            else if (currentState.pollingState.alertCount < currentTotal) {
+                SendNotification(currentState, currentTotal, resp);
+            };
         }
-        // We have new alerts !
-        else if (alertaExtStore.pollingState.alertCount < currentTotal) {
-            SendNotification(alertaExtStore, currentTotal, resp)
-        };
 
         // Update the storage with the new value.
         const newState: AlertaExtStore = {
-            ...alertaExtStore,
+            ...currentState,
             pollingState: {
                 alertCount: currentTotal,
                 lastPolling: Date.now()
@@ -118,37 +122,4 @@ function HandleAlertaResponse(resp: any){
         };
         chrome.storage.sync.set(newState);
     });
-}
-
-function SendNotification(alertaExtStore: AlertaExtStore, currentTotal: number, resp: any) {
-    var newAlertsCount = currentTotal - alertaExtStore.pollingState.alertCount!;
-
-    // Only one new alert since the last polling result, we send a basic notification
-    if (newAlertsCount == 1) {
-        var newAlert = resp.alerts[0];
-
-        var alertId = newAlert.id;
-        var notification: chrome.notifications.NotificationOptions = {
-            type: 'basic',
-            title: `[${newAlert.group}] ${newAlert.text}`,
-            message: newAlert.value,
-            iconUrl: "alert.png",
-            requireInteraction: alertaExtStore.userPreferences.PersistentNotifications,
-            isClickable: true,
-            buttons: [{ title: 'Ack' }, { title: 'View alert defails' }],
-        };
-    }
-    // More than one alert, we send a list notification
-    else {
-        var notification: chrome.notifications.NotificationOptions = {
-            type: 'list',
-            title: 'New alert detected',
-            message: 'Primary message to display',
-            items: [{ title: "Alert one", message: "Outch1" }, { title: "Alert Two", message: "Outch2" }],
-            iconUrl: "icon48.png",
-            buttons: [{ title: 'Go to alerta' }]
-        };
-    };
-
-    chrome.notifications.create(alertId, notification);
-}
+};
