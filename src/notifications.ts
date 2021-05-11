@@ -14,7 +14,7 @@ function CreateBasicNotification(resp: any, alertaExtStore: AlertaExtStore): { i
         id: newAlert.id,
         payload: {
             type: 'basic',
-            title: `[${newAlert.group}] ${newAlert.text}`,
+            title: `${newAlert.service[0]} - ${newAlert.event}`,
             message: newAlert.value,
             iconUrl: "alert.png",
             requireInteraction: alertaExtStore.userPreferences.PersistentNotifications,

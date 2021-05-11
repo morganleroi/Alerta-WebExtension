@@ -54,7 +54,14 @@ chrome.action.onClicked.addListener(async (tab) => {
     // Normal action handler logic.
 });
 chrome.notifications.onClicked.addListener(alertId => {
-    chrome.tabs.create({ active: true, url: `${storageCache.userPreferences.AlertaUiUrl}/alert/${alertId}` });
+    const url = `${storageCache.userPreferences.AlertaUiUrl}/alert/${alertId}`;
+    console.log("Opening Alert detail ..." + url);
+    chrome.tabs.create({ active: true, url }, (t) => { 
+        chrome.notifications.clear(alertId); 
+        console.log("Tab pened ? ");
+        console.log(t);
+        chrome.windows.update(t.windowId!, { focused: true});
+    });
 });
 
 chrome.notifications.onButtonClicked.addListener((id, index) => {
@@ -63,8 +70,8 @@ chrome.notifications.onButtonClicked.addListener((id, index) => {
         text: "I'll take a look ...",
         timeout: "7200"
     }
-    fetch(`${storageCache.userPreferences.AlertaApiServerUrl}/alert/${id}/status`, { method: "PUT", body: JSON.stringify(body), headers: { "Content-type": "application/json" } })
-        .then(resp => console.log("Alert Ack !"));
+    fetch(`${storageCache.userPreferences.AlertaApiServerUrl}/alert/${id}/status`, { method: "PUT", body: JSON.stringify(body), headers: { "Content-type": "application/json", 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
+        .then(resp => chrome.notifications.clear(id))
 });
 
 function getAllStorageSyncData() {
