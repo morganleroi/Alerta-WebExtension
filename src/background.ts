@@ -5,13 +5,16 @@ import { SendNotification } from './notifications';
 var storageCache: AlertaExtStore = {
     pollingState: {},
     userPreferences: {
-        AlertaApiServerUrl: "http://localhost:9999",
+        AlertaApiServerUrl: "http://localhost:9999/api",
         AlertaUiUrl: "http://localhost:9999",
         PersistentNotifications: false,
         ShowNotifications: true,
-        AlertaApiSecret: "XXXX"
+        AlertaApiSecret: "XXX",
+        username: "John Doe"
     }
 }
+
+chrome.action.onClicked.addListener(() => openAlerta());
 
 chrome.runtime.onInstalled.addListener(() => {
     console.log("Extensions is installed!=");
@@ -53,26 +56,59 @@ chrome.action.onClicked.addListener(async (tab) => {
     }
     // Normal action handler logic.
 });
-chrome.notifications.onClicked.addListener(alertId => {
-    const url = `${storageCache.userPreferences.AlertaUiUrl}/alert/${alertId}`;
-    console.log("Opening Alert detail ..." + url);
-    chrome.tabs.create({ active: true, url }, (t) => { 
-        chrome.notifications.clear(alertId); 
-        console.log("Tab pened ? ");
-        console.log(t);
-        chrome.windows.update(t.windowId!, { focused: true});
-    });
+chrome.notifications.onClicked.addListener(alertId => openAlert(alertId));
+
+chrome.notifications.onButtonClicked.addListener((notificationId, index) => {
+
+    if(notificationId == "GoToAlertaHome"){
+        openAlerta(notificationId);
+    }
+    else if(notificationId.startsWith("GoToAlert_")){
+        openAlert(notificationId, notificationId.split('_').pop());
+    }
+    else if(notificationId.startsWith("AckAlert_")){
+        ackAlert(notificationId, notificationId.split('_').pop());
+    }
 });
 
-chrome.notifications.onButtonClicked.addListener((id, index) => {
+function ackAlert(notificationId: string, alertId?: string) {
+    if(!alertId){
+        return;
+    }
+
     var body = {
         status: "ack",
-        text: "I'll take a look ...",
-        timeout: "7200"
+        text: storageCache.userPreferences.username ? `${storageCache.userPreferences.username} : I'll take a look ...` : ""
+    };
+
+    fetch(`${storageCache.userPreferences.AlertaApiServerUrl}/alert/${alertId}/status`, { method: "PUT", body: JSON.stringify(body), headers: { "Content-type": "application/json", 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
+        .then(_ => chrome.notifications.clear(notificationId));
+}
+
+function openAlerta(notificationId?: string) {
+    const url = `${storageCache.userPreferences.AlertaUiUrl}`;
+    chrome.tabs.create({ active: true, url }, (t) => {
+        if(notificationId){
+            chrome.notifications.clear(notificationId);
+        } 
+        chrome.windows.update(t.windowId!, { focused: true });
+    });
+}
+
+function openAlert(notificationId: string, alertId?: string) {
+    if(!alertId){
+        openAlerta(notificationId);
     }
-    fetch(`${storageCache.userPreferences.AlertaApiServerUrl}/alert/${id}/status`, { method: "PUT", body: JSON.stringify(body), headers: { "Content-type": "application/json", 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
-        .then(resp => chrome.notifications.clear(id))
-});
+
+    const url = `${storageCache.userPreferences.AlertaUiUrl}/alert/${alertId}`;
+    console.log("Opening Alert detail ..." + url);
+    chrome.tabs.create({ active: true, url }, (t) => {
+        chrome.notifications.clear(notificationId);
+        console.log("Tab pened ? ");
+        console.log(t);
+        chrome.windows.update(t.windowId!, { focused: true });
+    });
+}
 
 function getAllStorageSyncData() {
     return new Promise((resolve, reject) => {
@@ -97,9 +133,10 @@ function startPolling() {
 }
 
 function HandleAlertaResponse(resp: any) {
-    const currentTotal = resp.alerts.length;
+    const currentTotal: number = resp.alerts.length;
+    console.log(currentTotal);
     chrome.action.setBadgeText({ text: currentTotal.toString() });
-    chrome.action.setBadgeBackgroundColor({ color: "red" });
+    chrome.action.setBadgeBackgroundColor({ color: currentTotal > 0 ? "red" : "green" });
 
     // Get the state
     chrome.storage.sync.get(null, (items) => {
@@ -114,6 +151,9 @@ function HandleAlertaResponse(resp: any) {
                 console.log("First time we fetch data from Alerta ... we will wait for new state to push notification !");
             }
             // We have new alerts !
+            // We only trigger alert if :
+            // - The alert count if defined (Not the first time we poll Alerta)
+            // - The alert count is lower than the alerta count result from the polling request
             else if (currentState.pollingState.alertCount < currentTotal) {
                 SendNotification(currentState, currentTotal, resp);
             };

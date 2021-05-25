@@ -26,13 +26,13 @@ function CreateBasicNotification(resp: any, alertaExtStore: AlertaExtStore): { i
 
 function CreateListNotification(newAlertsCount: number, resp: any, alertaExtStore: AlertaExtStore): { id: string, payload: chrome.notifications.NotificationOptions } {
     return {
-        id: "GoToAlerta",
+        id: "GoToAlertaHome",
         payload: {
             type: 'list',
             title: `${newAlertsCount} new alerts detected !`,
-            message: 'Primary message to display',
-            items: [{ title: "Alert one", message: "Outch1" }, { title: "Alert Two", message: "Outch2" }],
+            message: 'Click to open Alerta',
             iconUrl: "alert.png",
+            isClickable: true,
             buttons: [{ title: 'Go to alerta' }]
         }
     }

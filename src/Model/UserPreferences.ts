@@ -4,4 +4,5 @@ export type UserPreferences = {
     AlertaApiSecret: string;
     ShowNotifications: boolean;
     PersistentNotifications: boolean;
+    username: string;
 }

@@ -9,7 +9,8 @@ const UserPreferences = () => {
         AlertaUiUrl: "",
         PersistentNotifications: false,
         ShowNotifications: true,
-        AlertaApiSecret: ""
+        AlertaApiSecret: "",
+        username: ""
     });
     const [userPrefSaved, setUserPrefSaved] = React.useState(false);
 
@@ -22,7 +23,6 @@ const UserPreferences = () => {
     }, []);
 
     const saveUserPreference = () => {
-
 
         chrome.storage.sync.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
@@ -56,6 +56,11 @@ const UserPreferences = () => {
                     <label htmlFor="alertaSecretKey" className="form-label">Alerta API Url</label>
                     <input type="text" className="form-control" id="alertaSecretKey"
                         placeholder="" value={userPref?.AlertaApiSecret} onChange={(val) => setUserPref({ ...userPref, AlertaApiSecret: val.target.value })} />
+                </FormGroup>
+                <FormGroup className="mb-3">
+                    <label htmlFor="username" className="form-label">Username</label>
+                    <input type="text" className="form-control" id="username"
+                        placeholder="Your mail, or you name." value={userPref?.username} onChange={(val) => setUserPref({ ...userPref, username: val.target.value })} />
                 </FormGroup>
                 <FormGroup check>
                     <Label check>

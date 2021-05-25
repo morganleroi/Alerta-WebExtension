@@ -12,8 +12,7 @@
     "default_icon": {
       "16": "alert.png",
       "48": "alert.png"
-    },
-    "default_popup": "popup.html"
+    }
   },
   "background": {
     "service_worker": "background.js"
