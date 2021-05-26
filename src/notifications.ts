@@ -11,7 +11,7 @@ export function SendNotification(alertaExtStore: AlertaExtStore, currentTotal: n
 function CreateBasicNotification(resp: any, alertaExtStore: AlertaExtStore): { id: string, payload: chrome.notifications.NotificationOptions } {
     var newAlert = resp.alerts[0];
     return {
-        id: newAlert.id,
+        id: `Alert_${newAlert.id}`,
         payload: {
             type: 'basic',
             title: `${newAlert.service[0]} - ${newAlert.event}`,
@@ -31,6 +31,7 @@ function CreateListNotification(newAlertsCount: number, resp: any, alertaExtStor
             type: 'list',
             title: `${newAlertsCount} new alerts detected !`,
             message: 'Click to open Alerta',
+            items: [],
             iconUrl: "alert.png",
             isClickable: true,
             buttons: [{ title: 'Go to alerta' }]

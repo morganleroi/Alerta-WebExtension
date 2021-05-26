@@ -56,18 +56,21 @@ chrome.action.onClicked.addListener(async (tab) => {
     }
     // Normal action handler logic.
 });
-chrome.notifications.onClicked.addListener(alertId => openAlert(alertId));
+chrome.notifications.onClicked.addListener(notificationId => {
+    openAlert(notificationId, notificationId.split('_').pop());
+});
 
 chrome.notifications.onButtonClicked.addListener((notificationId, index) => {
 
+    console.log("Index:", index);
     if(notificationId == "GoToAlertaHome"){
         openAlerta(notificationId);
     }
-    else if(notificationId.startsWith("GoToAlert_")){
-        openAlert(notificationId, notificationId.split('_').pop());
-    }
-    else if(notificationId.startsWith("AckAlert_")){
+    else if(notificationId.startsWith("Alert_") && index == 0){
         ackAlert(notificationId, notificationId.split('_').pop());
+    }
+    else if(notificationId.startsWith("Alert_") && index == 1){
+        openAlert(notificationId, notificationId.split('_').pop());
     }
 });
 
@@ -125,8 +128,9 @@ function startPolling() {
     const cache = storageCache;
     chrome.alarms.onAlarm.addListener(function () {
         console.log(cache);
+
         // Fetch All alerts with severity high and on a Production env.
-        fetch(`${cache.userPreferences.AlertaApiServerUrl}/alerts?q=severity:((critical OR major) OR warning) AND environment:Production`, { headers: { 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
+        fetch(`${cache.userPreferences.AlertaApiServerUrl}/alerts?environment=Production&status=open&status=ack&sort-by=severity&sort-by=lastReceiveTime`, { headers: { 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
             .then(response => response.json())
             .then(HandleAlertaResponse);
     });
