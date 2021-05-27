@@ -130,7 +130,7 @@ function startPolling() {
         console.log(cache);
 
         // Fetch All alerts with severity high and on a Production env.
-        fetch(`${cache.userPreferences.AlertaApiServerUrl}/alerts?environment=Production&status=open&status=ack&sort-by=severity&sort-by=lastReceiveTime`, { headers: { 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
+        fetch(`${cache.userPreferences.AlertaApiServerUrl}/alerts?environment=Production&status=open&status=ack&sort-by=lastReceiveTime`, { headers: { 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
             .then(response => response.json())
             .then(HandleAlertaResponse);
     });
