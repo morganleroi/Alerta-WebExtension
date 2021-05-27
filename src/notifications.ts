@@ -3,7 +3,7 @@ import { AlertaExtStore } from "./Model/AlertaExtStore";
 export function SendNotification(alertaExtStore: AlertaExtStore, currentTotal: number, resp: any) {
     var newAlertsCount = currentTotal - alertaExtStore.pollingState.alertCount!;
 
-    let notification = (newAlertsCount == 1) ? CreateBasicNotification(resp, alertaExtStore) : CreateListNotification(newAlertsCount, resp, alertaExtStore);
+    let notification = (newAlertsCount == 1) ? CreateBasicNotification(resp, alertaExtStore) : CreateListNotification(newAlertsCount);
 
     chrome.notifications.create(notification.id, notification.payload);
 }
@@ -24,7 +24,7 @@ function CreateBasicNotification(resp: any, alertaExtStore: AlertaExtStore): { i
     }
 }
 
-function CreateListNotification(newAlertsCount: number, resp: any, alertaExtStore: AlertaExtStore): { id: string, payload: chrome.notifications.NotificationOptions } {
+function CreateListNotification(newAlertsCount: number): { id: string, payload: chrome.notifications.NotificationOptions } {
     return {
         id: "GoToAlertaHome",
         payload: {

@@ -17,23 +17,17 @@ var storageCache: AlertaExtStore = {
 chrome.action.onClicked.addListener(() => openAlerta());
 
 chrome.runtime.onInstalled.addListener(() => {
-    console.log("Extensions is installed!=");
-
-    chrome.storage.sync.set(storageCache, () => console.log("User Pref initialized"));
+    chrome.storage.sync.set(storageCache);
 
     chrome.alarms.create("PollingAlerta", {
         delayInMinutes: 0.1,
-        periodInMinutes: 0.1,
+        periodInMinutes: 0.2,
     });
-
-    console.log("Starting Alerta polling");
 });
 
 chrome.storage.onChanged.addListener((changes, area) => {
-    console.log("onchange");
     getAllStorageSyncData().then(items => {
         if (area === 'sync') {
-            console.log("Reload configuration");
             // Copy the data retrieved from storage into storageCache.
             Object.assign(storageCache, items);
         }
@@ -61,8 +55,6 @@ chrome.notifications.onClicked.addListener(notificationId => {
 });
 
 chrome.notifications.onButtonClicked.addListener((notificationId, index) => {
-
-    console.log("Index:", index);
     if(notificationId == "GoToAlertaHome"){
         openAlerta(notificationId);
     }
@@ -104,11 +96,8 @@ function openAlert(notificationId: string, alertId?: string) {
     }
 
     const url = `${storageCache.userPreferences.AlertaUiUrl}/alert/${alertId}`;
-    console.log("Opening Alert detail ..." + url);
     chrome.tabs.create({ active: true, url }, (t) => {
         chrome.notifications.clear(notificationId);
-        console.log("Tab pened ? ");
-        console.log(t);
         chrome.windows.update(t.windowId!, { focused: true });
     });
 }
@@ -127,8 +116,6 @@ function getAllStorageSyncData() {
 function startPolling() {
     const cache = storageCache;
     chrome.alarms.onAlarm.addListener(function () {
-        console.log(cache);
-
         // Fetch All alerts with severity high and on a Production env.
         fetch(`${cache.userPreferences.AlertaApiServerUrl}/alerts?environment=Production&status=open&status=ack&sort-by=lastReceiveTime`, { headers: { 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
             .then(response => response.json())
@@ -138,7 +125,6 @@ function startPolling() {
 
 function HandleAlertaResponse(resp: any) {
     const currentTotal: number = resp.alerts.length;
-    console.log(currentTotal);
     chrome.action.setBadgeText({ text: currentTotal.toString() });
     chrome.action.setBadgeBackgroundColor({ color: currentTotal > 0 ? "red" : "green" });
 
@@ -148,17 +134,11 @@ function HandleAlertaResponse(resp: any) {
         var currentState = items as AlertaExtStore;
 
         if (currentState.userPreferences.ShowNotifications) {
-
-            // If no data in store, then we do not (yet) push notification and we will wait for new alerts
-            // TODO ; If there is a delay between the count and now, perhaps we should not triggers alert, and just update the cache ?
-            if (currentState.pollingState.alertCount == undefined) {
-                console.log("First time we fetch data from Alerta ... we will wait for new state to push notification !");
-            }
             // We have new alerts !
             // We only trigger alert if :
             // - The alert count if defined (Not the first time we poll Alerta)
             // - The alert count is lower than the alerta count result from the polling request
-            else if (currentState.pollingState.alertCount < currentTotal) {
+            if (currentState.pollingState.alertCount && currentState.pollingState.alertCount < currentTotal) {
                 SendNotification(currentState, currentTotal, resp);
             };
         }

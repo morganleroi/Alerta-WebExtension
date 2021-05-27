@@ -15,7 +15,6 @@ const UserPreferences = () => {
     const [userPrefSaved, setUserPrefSaved] = React.useState(false);
 
     React.useEffect(() => {
-        console.log("Get Chrome parameters");
         chrome.storage.sync.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             setUserPref(alertaExtStore.userPreferences);
@@ -24,13 +23,32 @@ const UserPreferences = () => {
 
     const saveUserPreference = () => {
 
+        if(userPref.AlertaApiServerUrl.endsWith('/')){
+            userPref.AlertaApiServerUrl = userPref.AlertaApiServerUrl.slice(0, userPref.AlertaApiServerUrl.length - 1).trim();
+        }
+
+        if(userPref.AlertaUiUrl.endsWith('/')){
+            userPref.AlertaUiUrl = userPref.AlertaUiUrl.slice(0, userPref.AlertaUiUrl.length - 1).trim();
+        }
+
+        chrome.permissions.request({
+            origins: [userPref.AlertaUiUrl + "/"]
+          }, function(granted) {
+            // The callback argument will be true if the user granted the permissions.
+            if (granted) {
+              console.log("Granted")
+            } else {
+              console.log("Refused")
+            }
+          });
+
         chrome.storage.sync.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             const newState: AlertaExtStore = {
                 ...alertaExtStore,
                 userPreferences: userPref
             };
-            chrome.storage.sync.set(newState, () => console.log("User Pref saved"));
+            chrome.storage.sync.set(newState);
             setUserPrefSaved(true);
             setTimeout(() => setUserPrefSaved(false), 5000);
         });
