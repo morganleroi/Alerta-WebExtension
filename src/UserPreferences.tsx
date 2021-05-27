@@ -53,7 +53,7 @@ const UserPreferences = () => {
                         placeholder="http://hostname:port" value={userPref?.AlertaUiUrl} onChange={(val) => setUserPref({ ...userPref, AlertaUiUrl: val.target.value })} />
                 </FormGroup>
                 <FormGroup className="mb-3">
-                    <label htmlFor="alertaSecretKey" className="form-label">Alerta API Url</label>
+                    <label htmlFor="alertaSecretKey" className="form-label">Alerta API Secret</label>
                     <input type="text" className="form-control" id="alertaSecretKey"
                         placeholder="" value={userPref?.AlertaApiSecret} onChange={(val) => setUserPref({ ...userPref, AlertaApiSecret: val.target.value })} />
                 </FormGroup>
