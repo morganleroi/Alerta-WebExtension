@@ -18,6 +18,7 @@
     "scripts": ["background.js"]
   },
   "options_page": "options.html",
+  "optional_permissions": ["<all_urls>"],
   "permissions": [
     "storage",
     "alarms",

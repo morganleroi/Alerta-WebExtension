@@ -31,6 +31,17 @@ const UserPreferences = () => {
             userPref.AlertaUiUrl = userPref.AlertaUiUrl.slice(0, userPref.AlertaUiUrl.length - 1).trim();
         }
 
+        chrome.permissions.request({
+            origins: [userPref.AlertaApiServerUrl + "/"]
+          }, function(granted) {
+            // The callback argument will be true if the user granted the permissions.
+            if (granted) {
+              console.log("Granted")
+            } else {
+              console.log("Refused")
+            }
+          });
+
         chrome.storage.sync.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             const newState: AlertaExtStore = {
