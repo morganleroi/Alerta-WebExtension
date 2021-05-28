@@ -1,37 +1,29 @@
 {
   "name": "Alerta Notifier",
   "description": "A simple chrome extension that notifies when new alerts are in Alerta",
-  "manifest_version": 3,
+  "manifest_version": 2,
   "version": "1.0.0",
   "icons": {
     "16": "alert.png",
     "48": "alert.png",
     "128": "alert.png"
   },
-  "action": {
+  "browser_action": {
     "default_icon": {
       "16": "alert.png",
       "48": "alert.png"
     }
   },
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"]
   },
   "options_page": "options.html",
   "permissions": [
     "storage",
     "alarms",
-    "notifications"
+    "notifications",
+    "https://*/",
+    "http://*/"
   ],
-  "host_permissions": ["<all_urls>"],
-  "web_accessible_resources": [
-    {
-        "resources": [
-            "alert.png"
-        ],
-        "matches": [],
-        "extension_ids": [],
-        "use_dynamic_url": false
-    }
-]
+  "web_accessible_resources": ["alert.png"]
 }

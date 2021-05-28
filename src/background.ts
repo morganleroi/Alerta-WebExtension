@@ -14,7 +14,7 @@ var storageCache: AlertaExtStore = {
     }
 }
 
-chrome.action.onClicked.addListener(() => openAlerta());
+chrome.browserAction.onClicked.addListener(() => openAlerta());
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.sync.set(storageCache);
@@ -42,7 +42,7 @@ const initStorageCache = getAllStorageSyncData().then(items => {
     startPolling();
 });
 
-chrome.action.onClicked.addListener(async (tab) => {
+chrome.browserAction.onClicked.addListener(async (tab) => {
     try {
         await initStorageCache;
     } catch (e) {
@@ -125,8 +125,8 @@ function startPolling() {
 
 function HandleAlertaResponse(resp: any) {
     const currentTotal: number = resp.alerts.length;
-    chrome.action.setBadgeText({ text: currentTotal.toString() });
-    chrome.action.setBadgeBackgroundColor({ color: currentTotal > 0 ? "red" : "green" });
+    chrome.browserAction.setBadgeText({ text: currentTotal.toString() });
+    chrome.browserAction.setBadgeBackgroundColor({ color: currentTotal > 0 ? "red" : "green" });
 
     // Get the state
     chrome.storage.sync.get(null, (items) => {
