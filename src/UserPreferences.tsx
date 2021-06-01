@@ -3,6 +3,8 @@ import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { AlertaExtStore } from "./Model/AlertaExtStore";
 import { UserPreferences } from './Model/UserPreferences'
 
+import Select from 'react-select'
+
 const UserPreferences = () => {
     const [userPref, setUserPref] = React.useState<UserPreferences>({
         AlertaApiServerUrl: "",
@@ -13,6 +15,34 @@ const UserPreferences = () => {
         username: ""
     });
     const [userPrefSaved, setUserPrefSaved] = React.useState(false);
+    const [alertaServices, setAlertaServices] = React.useState<{ value: string, label: string }[]>([]);
+    const [alertaGroup, setAlertaGroups] = React.useState<{ value: string, label: string }[]>([]);
+    const [selectedOptionGroup, setSelectedOptionGroup] = React.useState<any>(null);
+    const [selectedOptionService, setSelectedOptionService] = React.useState<any>(null);
+
+    React.useEffect(() =>
+        chrome.storage.sync.get(null, function (items: any) {
+            const alertaExtStore: AlertaExtStore = items;
+            setUserPref(alertaExtStore.userPreferences);
+            fetch(`${alertaExtStore.userPreferences.AlertaApiServerUrl}/services`, { method: "GET", headers: { "Content-type": "application/json", 'Authorization': `Key ${alertaExtStore.userPreferences.AlertaApiSecret}` } })
+                .then(response => response.json())
+                .then(reponse => {
+                    var service: { value: string, label: string }[] = reponse.services.map((x: any) => {
+                        return { label: x.service, value: x.service }
+                    });
+                    setAlertaServices(service);
+                });
+
+            fetch(`${alertaExtStore.userPreferences.AlertaApiServerUrl}/alerts/groups`, { method: "GET", headers: { "Content-type": "application/json", 'Authorization': `Key ${alertaExtStore.userPreferences.AlertaApiSecret}` } })
+                .then(response => response.json())
+                .then(reponse => {
+                    var service: { value: string, label: string }[] = reponse.groups.map((x: any) => {
+                        return { label: x.group, value: x.group }
+                    });
+                    setAlertaGroups(service);
+                });
+        }), []);
+
 
     React.useEffect(() => {
         chrome.storage.sync.get(null, function (items: any) {
@@ -23,24 +53,27 @@ const UserPreferences = () => {
 
     const saveUserPreference = () => {
 
-        if(userPref.AlertaApiServerUrl.endsWith('/')){
+        if (userPref.AlertaApiServerUrl.endsWith('/')) {
             userPref.AlertaApiServerUrl = userPref.AlertaApiServerUrl.slice(0, userPref.AlertaApiServerUrl.length - 1).trim();
         }
 
-        if(userPref.AlertaUiUrl.endsWith('/')){
+        if (userPref.AlertaUiUrl.endsWith('/')) {
             userPref.AlertaUiUrl = userPref.AlertaUiUrl.slice(0, userPref.AlertaUiUrl.length - 1).trim();
         }
 
+        console.log(selectedOptionGroup)
+        console.log(selectedOptionService)
+
         chrome.permissions.request({
             origins: [userPref.AlertaApiServerUrl + "/"]
-          }, function(granted) {
+        }, function (granted) {
             // The callback argument will be true if the user granted the permissions.
             if (granted) {
-              console.log("Granted")
+                console.log("Granted")
             } else {
-              console.log("Refused")
+                console.log("Refused")
             }
-          });
+        });
 
         chrome.storage.sync.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
@@ -92,6 +125,15 @@ const UserPreferences = () => {
                         Persistant notifications
                     </Label>
                 </FormGroup>
+                <FormGroup className="mb-3">
+                    <label htmlFor="alertaServices" className="form-label">Filter Services</label>
+                    <Select isMulti options={alertaServices} onChange={setSelectedOptionService}  />
+                </FormGroup>
+                <FormGroup className="mb-3">
+                    <label htmlFor="alertaGroup" className="form-label">Filter Groups</label>
+                    <Select isMulti options={alertaGroup} onChange={setSelectedOptionGroup} />
+                </FormGroup>
+
                 <Button color="primary" onClick={saveUserPreference}>Save preferences</Button>
             </Form>
         </div>
