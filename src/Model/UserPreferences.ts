@@ -5,4 +5,6 @@ export type UserPreferences = {
     ShowNotifications: boolean;
     PersistentNotifications: boolean;
     username: string;
+    filterServices: string[];
+    filterGroups: string [];
 }

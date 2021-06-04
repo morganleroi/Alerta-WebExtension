@@ -5,6 +5,7 @@ export function SendNotification(alertaExtStore: AlertaExtStore, currentTotal: n
 
     let notification = (newAlertsCount == 1) ? CreateBasicNotification(resp, alertaExtStore) : CreateListNotification(newAlertsCount);
 
+    console.log("Sending notification ...");
     chrome.notifications.create(notification.id, notification.payload);
 }
 

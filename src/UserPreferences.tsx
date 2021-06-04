@@ -1,9 +1,14 @@
 import * as React from "react";
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { AlertaExtStore } from "./Model/AlertaExtStore";
-import { UserPreferences } from './Model/UserPreferences'
+import { UserPreferences } from './Model/UserPreferences';
 
 import Select from 'react-select'
+
+type AlertaFilter = {
+    label: string,
+    value: string
+}
 
 const UserPreferences = () => {
     const [userPref, setUserPref] = React.useState<UserPreferences>({
@@ -12,13 +17,15 @@ const UserPreferences = () => {
         PersistentNotifications: false,
         ShowNotifications: true,
         AlertaApiSecret: "",
-        username: ""
+        username: "",
+        filterGroups: [],
+        filterServices: []
     });
     const [userPrefSaved, setUserPrefSaved] = React.useState(false);
     const [alertaServices, setAlertaServices] = React.useState<{ value: string, label: string }[]>([]);
     const [alertaGroup, setAlertaGroups] = React.useState<{ value: string, label: string }[]>([]);
-    const [selectedOptionGroup, setSelectedOptionGroup] = React.useState<any>(null);
-    const [selectedOptionService, setSelectedOptionService] = React.useState<any>(null);
+    const [selectedOptionGroup, setSelectedOptionGroup] = React.useState<AlertaFilter[]>([]);
+    const [selectedOptionService, setSelectedOptionService] = React.useState<AlertaFilter[]>([]);
 
     React.useEffect(() =>
         chrome.storage.sync.get(null, function (items: any) {
@@ -48,6 +55,11 @@ const UserPreferences = () => {
         chrome.storage.sync.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             setUserPref(alertaExtStore.userPreferences);
+            const services = alertaExtStore.userPreferences.filterServices.map(s => {
+                return { value: s, label: s }
+            });
+            console.log(services);
+            setSelectedOptionService(services)
         });
     }, []);
 
@@ -61,8 +73,8 @@ const UserPreferences = () => {
             userPref.AlertaUiUrl = userPref.AlertaUiUrl.slice(0, userPref.AlertaUiUrl.length - 1).trim();
         }
 
-        console.log(selectedOptionGroup)
-        console.log(selectedOptionService)
+        userPref.filterServices = selectedOptionService.map(option => option.value);
+        userPref.filterGroups = selectedOptionGroup.map(option => option.value);
 
         chrome.permissions.request({
             origins: [userPref.AlertaApiServerUrl + "/"]
@@ -84,6 +96,7 @@ const UserPreferences = () => {
             chrome.storage.sync.set(newState);
             setUserPrefSaved(true);
             setTimeout(() => setUserPrefSaved(false), 5000);
+            console.log(newState);
         });
     }
 
@@ -127,11 +140,11 @@ const UserPreferences = () => {
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <label htmlFor="alertaServices" className="form-label">Filter Services</label>
-                    <Select isMulti options={alertaServices} onChange={setSelectedOptionService}  />
+                    <Select isMulti options={alertaServices} onChange={setSelectedOptionService as any} value={selectedOptionService} defaultValue={selectedOptionService} />
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <label htmlFor="alertaGroup" className="form-label">Filter Groups</label>
-                    <Select isMulti options={alertaGroup} onChange={setSelectedOptionGroup} />
+                    <Select isMulti options={alertaGroup} onChange={setSelectedOptionGroup as any} value={selectedOptionGroup} defaultValue={selectedOptionGroup} />
                 </FormGroup>
 
                 <Button color="primary" onClick={saveUserPreference}>Save preferences</Button>

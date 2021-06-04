@@ -10,7 +10,9 @@ var storageCache: AlertaExtStore = {
         PersistentNotifications: false,
         ShowNotifications: true,
         AlertaApiSecret: "XXX",
-        username: "John Doe"
+        username: "John Doe",
+        filterGroups: [],
+        filterServices: []
     }
 }
 
@@ -55,19 +57,19 @@ chrome.notifications.onClicked.addListener(notificationId => {
 });
 
 chrome.notifications.onButtonClicked.addListener((notificationId, index) => {
-    if(notificationId == "GoToAlertaHome"){
+    if (notificationId == "GoToAlertaHome") {
         openAlerta(notificationId);
     }
-    else if(notificationId.startsWith("Alert_") && index == 0){
+    else if (notificationId.startsWith("Alert_") && index == 0) {
         ackAlert(notificationId, notificationId.split('_').pop());
     }
-    else if(notificationId.startsWith("Alert_") && index == 1){
+    else if (notificationId.startsWith("Alert_") && index == 1) {
         openAlert(notificationId, notificationId.split('_').pop());
     }
 });
 
 function ackAlert(notificationId: string, alertId?: string) {
-    if(!alertId){
+    if (!alertId) {
         return;
     }
 
@@ -83,15 +85,15 @@ function ackAlert(notificationId: string, alertId?: string) {
 function openAlerta(notificationId?: string) {
     const url = `${storageCache.userPreferences.AlertaUiUrl}`;
     chrome.tabs.create({ active: true, url }, (t) => {
-        if(notificationId){
+        if (notificationId) {
             chrome.notifications.clear(notificationId);
-        } 
+        }
         chrome.windows.update(t.windowId!, { focused: true });
     });
 }
 
 function openAlert(notificationId: string, alertId?: string) {
-    if(!alertId){
+    if (!alertId) {
         openAlerta(notificationId);
     }
 
@@ -131,14 +133,19 @@ function HandleAlertaResponse(resp: any) {
     // Get the state
     chrome.storage.sync.get(null, (items) => {
 
+        console.log("plip")
         var currentState = items as AlertaExtStore;
 
+        console.log(currentState.userPreferences.ShowNotifications)
         if (currentState.userPreferences.ShowNotifications) {
             // We have new alerts !
             // We only trigger alert if :
             // - The alert count if defined (Not the first time we poll Alerta)
             // - The alert count is lower than the alerta count result from the polling request
-            if (currentState.pollingState.alertCount && currentState.pollingState.alertCount < currentTotal) {
+            console.log("Alert count  in state: " + currentState.pollingState.alertCount)
+            console.log("current total fetch " + currentTotal)
+            if (currentState.pollingState.alertCount != undefined && (currentState.pollingState.alertCount < currentTotal)) {
+                console.log("Sending ....")
                 SendNotification(currentState, currentTotal, resp);
             };
         }
