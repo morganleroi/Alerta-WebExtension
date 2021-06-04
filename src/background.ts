@@ -1,9 +1,12 @@
+import { Alert } from 'reactstrap';
 import { AlertaExtStore } from './Model/AlertaExtStore';
 import { SendNotification } from './notifications';
 
 // Where we will expose all the data we retrieve from storage.sync.
 var storageCache: AlertaExtStore = {
-    pollingState: {},
+    pollingState: {
+        alertaFetchQuery: ""
+    },
     userPreferences: {
         AlertaApiServerUrl: "http://localhost:9999/api",
         AlertaUiUrl: "http://localhost:9999",
@@ -30,12 +33,14 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.storage.onChanged.addListener((changes, area) => {
     getAllStorageSyncData().then(items => {
         if (area === 'sync') {
+            const newState = items as AlertaExtStore;
+
             // Copy the data retrieved from storage into storageCache.
-            Object.assign(storageCache, items);
+            Object.assign(storageCache, newState);
+
         }
     });
 });
-
 
 // Asynchronously retrieve data from storage.sync, then cache it.
 const initStorageCache = getAllStorageSyncData().then(items => {
@@ -119,7 +124,7 @@ function startPolling() {
     const cache = storageCache;
     chrome.alarms.onAlarm.addListener(function () {
         // Fetch All alerts with severity high and on a Production env.
-        fetch(`${cache.userPreferences.AlertaApiServerUrl}/alerts?environment=Production&status=open&status=ack&sort-by=lastReceiveTime`, { headers: { 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
+        fetch(`${cache.userPreferences.AlertaApiServerUrl}/alerts?${cache.pollingState.alertaFetchQuery}`, { headers: { 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
             .then(response => response.json())
             .then(HandleAlertaResponse);
     });
@@ -133,7 +138,7 @@ function HandleAlertaResponse(resp: any) {
     // Get the state
     chrome.storage.sync.get(null, (items) => {
 
-        console.log("plip")
+        console.log("plip", items)
         var currentState = items as AlertaExtStore;
 
         console.log(currentState.userPreferences.ShowNotifications)
@@ -150,14 +155,16 @@ function HandleAlertaResponse(resp: any) {
             };
         }
 
-        // Update the storage with the new value.
-        const newState: AlertaExtStore = {
-            ...currentState,
-            pollingState: {
-                alertCount: currentTotal,
-                lastPolling: Date.now()
-            }
-        };
-        chrome.storage.sync.set(newState);
+        // Update the storage with the new value. Only if needed
+        if (currentState.pollingState.alertCount == undefined || currentState.pollingState.alertCount != currentTotal) {
+            const newState: AlertaExtStore = {
+                ...currentState,
+                pollingState: {
+                    ...currentState.pollingState,
+                    alertCount: currentTotal
+                }
+            };
+            chrome.storage.sync.set(newState);
+        }
     });
 };

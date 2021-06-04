@@ -2,7 +2,7 @@ import { UserPreferences } from "./UserPreferences"
 
 type PollingState = {
     alertCount?: number;
-    lastPolling?: number;
+    alertaFetchQuery: string;
 }
 
 export type AlertaExtStore = {

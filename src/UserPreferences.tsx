@@ -3,7 +3,7 @@ import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { AlertaExtStore } from "./Model/AlertaExtStore";
 import { UserPreferences } from './Model/UserPreferences';
 
-import Select from 'react-select'
+import CreatableSelect from 'react-select/creatable'
 
 type AlertaFilter = {
     label: string,
@@ -34,19 +34,19 @@ const UserPreferences = () => {
             fetch(`${alertaExtStore.userPreferences.AlertaApiServerUrl}/services`, { method: "GET", headers: { "Content-type": "application/json", 'Authorization': `Key ${alertaExtStore.userPreferences.AlertaApiSecret}` } })
                 .then(response => response.json())
                 .then(reponse => {
-                    var service: { value: string, label: string }[] = reponse.services.map((x: any) => {
+                    var services: { value: string, label: string }[] = reponse.services.map((x: any) => {
                         return { label: x.service, value: x.service }
                     });
-                    setAlertaServices(service);
+                    setAlertaServices(services);
                 });
 
             fetch(`${alertaExtStore.userPreferences.AlertaApiServerUrl}/alerts/groups`, { method: "GET", headers: { "Content-type": "application/json", 'Authorization': `Key ${alertaExtStore.userPreferences.AlertaApiSecret}` } })
                 .then(response => response.json())
                 .then(reponse => {
-                    var service: { value: string, label: string }[] = reponse.groups.map((x: any) => {
+                    var groups: { value: string, label: string }[] = reponse.groups.map((x: any) => {
                         return { label: x.group, value: x.group }
                     });
-                    setAlertaGroups(service);
+                    setAlertaGroups(groups);
                 });
         }), []);
 
@@ -55,11 +55,12 @@ const UserPreferences = () => {
         chrome.storage.sync.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             setUserPref(alertaExtStore.userPreferences);
-            const services = alertaExtStore.userPreferences.filterServices.map(s => {
+            setSelectedOptionService(alertaExtStore.userPreferences.filterServices.map(s => {
                 return { value: s, label: s }
-            });
-            console.log(services);
-            setSelectedOptionService(services)
+            }));
+            setSelectedOptionGroup(alertaExtStore.userPreferences.filterGroups.map(s => {
+                return { value: s, label: s }
+            }));
         });
     }, []);
 
@@ -76,14 +77,20 @@ const UserPreferences = () => {
         userPref.filterServices = selectedOptionService.map(option => option.value);
         userPref.filterGroups = selectedOptionGroup.map(option => option.value);
 
-        chrome.permissions.request({
+        chrome.permissions.contains({
             origins: [userPref.AlertaApiServerUrl + "/"]
-        }, function (granted) {
-            // The callback argument will be true if the user granted the permissions.
-            if (granted) {
-                console.log("Granted")
-            } else {
-                console.log("Refused")
+        }, isAlertaAllowed => {
+            if (!isAlertaAllowed) {
+                chrome.permissions.request({
+                    origins: [userPref.AlertaApiServerUrl + "/"]
+                }, function (granted) {
+                    // The callback argument will be true if the user granted the permissions.
+                    if (granted) {
+                        console.log("Granted")
+                    } else {
+                        console.log("Refused")
+                    }
+                });
             }
         });
 
@@ -91,6 +98,11 @@ const UserPreferences = () => {
             const alertaExtStore: AlertaExtStore = items;
             const newState: AlertaExtStore = {
                 ...alertaExtStore,
+                pollingState: {
+                    ...alertaExtStore.pollingState,
+                    alertCount: undefined,
+                    alertaFetchQuery: "environment=Production&status=open&status=ack&sort-by=lastReceiveTime" + createFetchQuery(userPref.filterServices, userPref.filterGroups)
+                },
                 userPreferences: userPref
             };
             chrome.storage.sync.set(newState);
@@ -98,6 +110,22 @@ const UserPreferences = () => {
             setTimeout(() => setUserPrefSaved(false), 5000);
             console.log(newState);
         });
+    }
+
+    function createFetchQuery(services: string[], groups: string[]) {
+        let groupQuery: string = "";
+        if (groups.length > 0) {
+            const reducer = (accumulator: string, currentValue: string, index: number, arr: string[]) => accumulator + `&group=${currentValue}`;
+            groupQuery = groups.reduce(reducer, groupQuery);
+        }
+    
+        let serviceQuery: string = "";
+        if (services.length > 0) {
+            const reducer = (accumulator: string, currentValue: string, index: number, arr: string[]) => accumulator + `&service=${currentValue}`;
+            serviceQuery = services.reduce(reducer, serviceQuery);
+        }
+    
+        return serviceQuery + groupQuery;
     }
 
     return (
@@ -140,11 +168,11 @@ const UserPreferences = () => {
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <label htmlFor="alertaServices" className="form-label">Filter Services</label>
-                    <Select isMulti options={alertaServices} onChange={setSelectedOptionService as any} value={selectedOptionService} defaultValue={selectedOptionService} />
+                    <CreatableSelect isMulti options={alertaServices} onChange={setSelectedOptionService as any} value={selectedOptionService} defaultValue={selectedOptionService} />
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <label htmlFor="alertaGroup" className="form-label">Filter Groups</label>
-                    <Select isMulti options={alertaGroup} onChange={setSelectedOptionGroup as any} value={selectedOptionGroup} defaultValue={selectedOptionGroup} />
+                    <CreatableSelect isMulti options={alertaGroup} onChange={setSelectedOptionGroup as any} value={selectedOptionGroup} defaultValue={selectedOptionGroup} />
                 </FormGroup>
 
                 <Button color="primary" onClick={saveUserPreference}>Save preferences</Button>
