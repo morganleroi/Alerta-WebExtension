@@ -2,7 +2,6 @@ import * as React from "react";
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { AlertaExtStore } from "./Model/AlertaExtStore";
 import { UserPreferences } from './Model/UserPreferences';
-
 import CreatableSelect from 'react-select/creatable'
 
 type AlertaFilter = {
@@ -19,7 +18,8 @@ const UserPreferences = () => {
         AlertaApiSecret: "",
         username: "",
         filterGroups: [],
-        filterServices: []
+        filterServices: [],
+        playAudio: false,
     });
     const [userPrefSaved, setUserPrefSaved] = React.useState(false);
     const [alertaServices, setAlertaServices] = React.useState<{ value: string, label: string }[]>([]);
@@ -164,6 +164,12 @@ const UserPreferences = () => {
                     <Label check>
                         <Input type="checkbox" checked={userPref?.PersistentNotifications} onChange={(val) => setUserPref({ ...userPref, PersistentNotifications: val.target.checked })} />
                         Persistant notifications
+                    </Label>
+                </FormGroup>
+                <FormGroup check>
+                    <Label check>
+                        <Input type="checkbox" checked={userPref?.playAudio} onChange={(val) => setUserPref({ ...userPref, playAudio: val.target.checked })} />
+                        Play a "Bip" with a new notification
                     </Label>
                 </FormGroup>
                 <FormGroup className="mb-3">

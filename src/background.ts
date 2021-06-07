@@ -15,7 +15,8 @@ var storageCache: AlertaExtStore = {
         AlertaApiSecret: "XXX",
         username: "John Doe",
         filterGroups: [],
-        filterServices: []
+        filterServices: [],
+        playAudio: false
     }
 }
 
@@ -151,6 +152,12 @@ function HandleAlertaResponse(resp: any) {
             console.log("current total fetch " + currentTotal)
             if (currentState.pollingState.alertCount != undefined && (currentState.pollingState.alertCount < currentTotal)) {
                 console.log("Sending ....")
+
+                if(currentState.userPreferences.playAudio){
+                    var myAudio = new Audio(chrome.runtime.getURL("bip.mp3"));
+                    myAudio.play();
+                }
+
                 SendNotification(currentState, currentTotal, resp);
             };
         }
