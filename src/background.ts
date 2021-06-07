@@ -1,4 +1,3 @@
-import { Alert } from 'reactstrap';
 import { AlertaExtStore } from './Model/AlertaExtStore';
 import { SendNotification } from './notifications';
 
@@ -139,25 +138,14 @@ function HandleAlertaResponse(resp: any) {
     // Get the state
     chrome.storage.sync.get(null, (items) => {
 
-        console.log("plip", items)
         var currentState = items as AlertaExtStore;
 
-        console.log(currentState.userPreferences.ShowNotifications)
         if (currentState.userPreferences.ShowNotifications) {
             // We have new alerts !
             // We only trigger alert if :
             // - The alert count if defined (Not the first time we poll Alerta)
             // - The alert count is lower than the alerta count result from the polling request
-            console.log("Alert count  in state: " + currentState.pollingState.alertCount)
-            console.log("current total fetch " + currentTotal)
             if (currentState.pollingState.alertCount != undefined && (currentState.pollingState.alertCount < currentTotal)) {
-                console.log("Sending ....")
-
-                if(currentState.userPreferences.playAudio){
-                    var myAudio = new Audio(chrome.runtime.getURL("bip.mp3"));
-                    myAudio.play();
-                }
-
                 SendNotification(currentState, currentTotal, resp);
             };
         }

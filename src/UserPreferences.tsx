@@ -83,14 +83,7 @@ const UserPreferences = () => {
             if (!isAlertaAllowed) {
                 chrome.permissions.request({
                     origins: [userPref.AlertaApiServerUrl + "/"]
-                }, function (granted) {
-                    // The callback argument will be true if the user granted the permissions.
-                    if (granted) {
-                        console.log("Granted")
-                    } else {
-                        console.log("Refused")
-                    }
-                });
+                }, function () {});
             }
         });
 
@@ -115,13 +108,13 @@ const UserPreferences = () => {
     function createFetchQuery(services: string[], groups: string[]) {
         let groupQuery: string = "";
         if (groups.length > 0) {
-            const reducer = (accumulator: string, currentValue: string, index: number, arr: string[]) => accumulator + `&group=${currentValue}`;
+            const reducer = (accumulator: string, currentValue: string) => accumulator + `&group=${currentValue}`;
             groupQuery = groups.reduce(reducer, groupQuery);
         }
     
         let serviceQuery: string = "";
         if (services.length > 0) {
-            const reducer = (accumulator: string, currentValue: string, index: number, arr: string[]) => accumulator + `&service=${currentValue}`;
+            const reducer = (accumulator: string, currentValue: string) => accumulator + `&service=${currentValue}`;
             serviceQuery = services.reduce(reducer, serviceQuery);
         }
     
