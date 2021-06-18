@@ -140,15 +140,9 @@ function HandleAlertaResponse(resp: any) {
 
         var currentState = items as AlertaExtStore;
 
-        if (currentState.userPreferences.ShowNotifications) {
-            // We have new alerts !
-            // We only trigger alert if :
-            // - The alert count if defined (Not the first time we poll Alerta)
-            // - The alert count is lower than the alerta count result from the polling request
-            if (currentState.pollingState.alertCount != undefined && (currentState.pollingState.alertCount < currentTotal)) {
+
                 SendNotification(currentState, currentTotal, resp);
-            };
-        }
+        
 
         // Update the storage with the new value. Only if needed
         if (currentState.pollingState.alertCount == undefined || currentState.pollingState.alertCount != currentTotal) {

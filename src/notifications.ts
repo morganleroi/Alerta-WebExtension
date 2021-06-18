@@ -1,16 +1,24 @@
 import { AlertaExtStore } from "./Model/AlertaExtStore";
 
 export function SendNotification(alertaExtStore: AlertaExtStore, currentTotal: number, resp: any) {
-    var newAlertsCount = currentTotal - alertaExtStore.pollingState.alertCount!;
+    if (alertaExtStore.userPreferences.ShowNotifications) {
+        // We have new alerts !
+        // We only trigger alert if :
+        // - The alert count if defined (Not the first time we poll Alerta)
+        // - The alert count is lower than the alerta count result from the polling request
+        if (alertaExtStore.pollingState.alertCount != undefined && (alertaExtStore.pollingState.alertCount < currentTotal)) {
+            var newAlertsCount = currentTotal - alertaExtStore.pollingState.alertCount!;
 
-    let notification = (newAlertsCount == 1) ? CreateBasicNotification(resp, alertaExtStore) : CreateListNotification(newAlertsCount);
-
-    if(alertaExtStore.userPreferences.playAudio){
-        var myAudio = new Audio(chrome.runtime.getURL("bip.mp3"));
-        myAudio.play();
-    }
-
-    chrome.notifications.create(notification.id, notification.payload);
+            let notification = (newAlertsCount == 1) ? CreateBasicNotification(resp, alertaExtStore) : CreateListNotification(newAlertsCount);
+        
+            if(alertaExtStore.userPreferences.playAudio){
+                var myAudio = new Audio(chrome.runtime.getURL("bip.mp3"));
+                myAudio.play();
+            }
+        
+            chrome.notifications.create(notification.id, notification.payload);
+        }
+    }  
 }
 
 function CreateBasicNotification(resp: any, alertaExtStore: AlertaExtStore): { id: string, payload: chrome.notifications.NotificationOptions } {
