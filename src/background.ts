@@ -141,7 +141,7 @@ function HandleAlertaResponse(resp: any) {
         var currentState = items as AlertaExtStore;
 
 
-                SendNotification(currentState, currentTotal, resp);
+                SendNotification(currentState, resp);
         
 
         // Update the storage with the new value. Only if needed
