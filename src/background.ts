@@ -1,4 +1,5 @@
 import { AlertaExtStore } from './Model/AlertaExtStore';
+import { openAlert, openAlerta, triggerNotificationAction } from './notificationActions';
 import { SendNotification } from './notifications';
 
 // Where we will expose all the data we retrieve from storage.sync.
@@ -19,11 +20,12 @@ var storageCache: AlertaExtStore = {
     }
 }
 
-chrome.browserAction.onClicked.addListener(() => openAlerta());
-
 chrome.runtime.onInstalled.addListener(() => {
+
+    // Initialize the storage with default values.
     chrome.storage.sync.set(storageCache);
 
+    // Start the Alarms
     chrome.alarms.create("PollingAlerta", {
         delayInMinutes: 0.1,
         periodInMinutes: 0.2,
@@ -37,7 +39,6 @@ chrome.storage.onChanged.addListener((changes, area) => {
 
             // Copy the data retrieved from storage into storageCache.
             Object.assign(storageCache, newState);
-
         }
     });
 });
@@ -57,57 +58,15 @@ chrome.browserAction.onClicked.addListener(async (tab) => {
     }
     // Normal action handler logic.
 });
-chrome.notifications.onClicked.addListener(notificationId => {
-    openAlert(notificationId, notificationId.split('_').pop());
-});
 
-chrome.notifications.onButtonClicked.addListener((notificationId, index) => {
-    if (notificationId == "GoToAlertaHome") {
-        openAlerta(notificationId);
-    }
-    else if (notificationId.startsWith("Alert_") && index == 0) {
-        ackAlert(notificationId, notificationId.split('_').pop());
-    }
-    else if (notificationId.startsWith("Alert_") && index == 1) {
-        openAlert(notificationId, notificationId.split('_').pop());
-    }
-});
+// User clicks on extension Icon
+chrome.browserAction.onClicked.addListener(() => openAlerta(storageCache));
 
-function ackAlert(notificationId: string, alertId?: string) {
-    if (!alertId) {
-        return;
-    }
+// User click on notification
+chrome.notifications.onClicked.addListener(notificationId => openAlert(storageCache, notificationId, notificationId.split('_').pop()));
 
-    var body = {
-        status: "ack",
-        text: storageCache.userPreferences.username ? `${storageCache.userPreferences.username} : I'll take a look ...` : ""
-    };
-
-    fetch(`${storageCache.userPreferences.AlertaApiServerUrl}/alert/${alertId}/status`, { method: "PUT", body: JSON.stringify(body), headers: { "Content-type": "application/json", 'Authorization': `Key ${storageCache.userPreferences.AlertaApiSecret}` } })
-        .then(_ => chrome.notifications.clear(notificationId));
-}
-
-function openAlerta(notificationId?: string) {
-    const url = `${storageCache.userPreferences.AlertaUiUrl}`;
-    chrome.tabs.create({ active: true, url }, (t) => {
-        if (notificationId) {
-            chrome.notifications.clear(notificationId);
-        }
-        chrome.windows.update(t.windowId!, { focused: true });
-    });
-}
-
-function openAlert(notificationId: string, alertId?: string) {
-    if (!alertId) {
-        openAlerta(notificationId);
-    }
-
-    const url = `${storageCache.userPreferences.AlertaUiUrl}/alert/${alertId}`;
-    chrome.tabs.create({ active: true, url }, (t) => {
-        chrome.notifications.clear(notificationId);
-        chrome.windows.update(t.windowId!, { focused: true });
-    });
-}
+// User clicks on notification button
+chrome.notifications.onButtonClicked.addListener((notificationId, index) => triggerNotificationAction(storageCache, notificationId, index));
 
 function getAllStorageSyncData() {
     return new Promise((resolve, reject) => {
@@ -140,9 +99,7 @@ function HandleAlertaResponse(resp: any) {
 
         var currentState = items as AlertaExtStore;
 
-
-                SendNotification(currentState, currentTotal, resp);
-        
+        SendNotification(currentState, resp);
 
         // Update the storage with the new value. Only if needed
         if (currentState.pollingState.alertCount == undefined || currentState.pollingState.alertCount != currentTotal) {

@@ -1,19 +1,20 @@
-import { AlertaExtStore } from "./Model/AlertaExtStore";
+import { AlertaAlertQueryResponse } from "./Model/Alerta";
+import { AlertaExtStore as AlertaExtensionState } from "./Model/AlertaExtStore";
+import { PlaySound } from "./playSound";
 
-export function SendNotification(alertaExtStore: AlertaExtStore, currentTotal: number, resp: any) {
-    if (alertaExtStore.userPreferences.ShowNotifications) {
+export function SendNotification(extensionState: AlertaExtensionState, alertaResponse: AlertaAlertQueryResponse) {
+    if (extensionState.userPreferences.ShowNotifications) {
         // We have new alerts !
         // We only trigger alert if :
         // - The alert count if defined (Not the first time we poll Alerta)
         // - The alert count is lower than the alerta count result from the polling request
-        if (alertaExtStore.pollingState.alertCount != undefined && (alertaExtStore.pollingState.alertCount < currentTotal)) {
-            var newAlertsCount = currentTotal - alertaExtStore.pollingState.alertCount!;
+        if (extensionState.pollingState.alertCount != undefined && (extensionState.pollingState.alertCount < alertaResponse.alerts.length)) {
+            var newAlertsCount = alertaResponse.alerts.length - extensionState.pollingState.alertCount!;
 
-            let notification = (newAlertsCount == 1) ? CreateBasicNotification(resp, alertaExtStore) : CreateListNotification(newAlertsCount);
+            let notification = (newAlertsCount == 1) ? CreateBasicNotification(alertaResponse, extensionState) : CreateListNotification(newAlertsCount);
         
-            if(alertaExtStore.userPreferences.playAudio){
-                var myAudio = new Audio(chrome.runtime.getURL("bip.mp3"));
-                myAudio.play();
+            if(extensionState.userPreferences.playAudio){
+                PlaySound()
             }
         
             chrome.notifications.create(notification.id, notification.payload);
@@ -21,7 +22,7 @@ export function SendNotification(alertaExtStore: AlertaExtStore, currentTotal: n
     }  
 }
 
-function CreateBasicNotification(resp: any, alertaExtStore: AlertaExtStore): { id: string, payload: chrome.notifications.NotificationOptions } {
+function CreateBasicNotification(resp: any, alertaExtStore: AlertaExtensionState): { id: string, payload: chrome.notifications.NotificationOptions } {
     var newAlert = resp.alerts[0];
     return {
         id: `Alert_${newAlert.id}`,
