@@ -100,7 +100,6 @@ function HandleAlertaResponse(resp: any) {
         var currentState = items as AlertaExtStore;
 
         SendNotification(currentState, resp);
-
         // Update the storage with the new value. Only if needed
         if (currentState.pollingState.alertCount == undefined || currentState.pollingState.alertCount != currentTotal) {
             const newState: AlertaExtStore = {

@@ -14,6 +14,7 @@ test('Should not launch notification if notification disabled in user preference
             ShowNotifications: false
         }
     } as AlertaExtStore, {} as AlertaAlertQueryResponse);
+
     expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
 
@@ -26,6 +27,7 @@ test('Should not launch notification when retrieving for the first time alerta s
             alertCount: undefined
         }
     } as AlertaExtStore, {} as AlertaAlertQueryResponse);
+
     expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
 
@@ -145,6 +147,7 @@ test('Should do nothing if no new alert', () => {
             }
         ]
     });
+
     expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
 
