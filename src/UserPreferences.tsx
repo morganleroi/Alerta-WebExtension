@@ -28,7 +28,7 @@ const UserPreferences = () => {
     const [selectedOptionService, setSelectedOptionService] = React.useState<AlertaFilter[]>([]);
 
     React.useEffect(() =>
-        chrome.storage.sync.get(null, function (items: any) {
+        chrome.storage.local.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             setUserPref(alertaExtStore.userPreferences);
             fetch(`${alertaExtStore.userPreferences.AlertaApiServerUrl}/services`, { method: "GET", headers: { "Content-type": "application/json", 'Authorization': `Key ${alertaExtStore.userPreferences.AlertaApiSecret}` } })
@@ -52,7 +52,7 @@ const UserPreferences = () => {
 
 
     React.useEffect(() => {
-        chrome.storage.sync.get(null, function (items: any) {
+        chrome.storage.local.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             setUserPref(alertaExtStore.userPreferences);
             setSelectedOptionService(alertaExtStore.userPreferences.filterServices.map(s => {
@@ -76,7 +76,7 @@ const UserPreferences = () => {
 
         userPref.filterServices = selectedOptionService.map(option => option.value);
         userPref.filterGroups = selectedOptionGroup.map(option => option.value);
-
+        
         chrome.permissions.contains({
             origins: [userPref.AlertaApiServerUrl + "/"]
         }, isAlertaAllowed => {
@@ -87,7 +87,7 @@ const UserPreferences = () => {
             }
         });
 
-        chrome.storage.sync.get(null, function (items: any) {
+        chrome.storage.local.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             const newState: AlertaExtStore = {
                 ...alertaExtStore,
@@ -98,7 +98,7 @@ const UserPreferences = () => {
                 },
                 userPreferences: userPref
             };
-            chrome.storage.sync.set(newState);
+            chrome.storage.local.set(newState);
             setUserPrefSaved(true);
             setTimeout(() => setUserPrefSaved(false), 5000);
             console.log(newState);

@@ -10,7 +10,7 @@ function save_options() {
     var generateNotifications = (document.getElementById('generateNotifications')as any).checked;
     var alertsNeedsAck = (document.getElementById('alertsNeedsAck')as any).checked;
 
-    chrome.storage.sync.set({
+    chrome.storage.local.set({
       alertaUrl: alertaUrl,
       generateNotifications: generateNotifications,
       alertsNeedsAck: alertsNeedsAck
@@ -25,7 +25,7 @@ function save_options() {
   // stored in chrome.storage.
   function restore_options() {
     // Use default value color = 'red' and likesColor = true.
-    chrome.storage.sync.get({
+    chrome.storage.local.get({
     }, function(items) {
       (document.getElementById('alertaUrl')as any).value = items.alertaUrl;
       (document.getElementById('generateNotifications')as any).checked = items.generateNotifications;
