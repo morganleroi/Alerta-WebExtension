@@ -13,7 +13,7 @@ test('Should not launch notification if notification disabled in user preference
         userPreferences: {
             ShowNotifications: false
         }
-    } as AlertaExtStore, {} as AlertaAlertQueryResponse);
+    } as AlertaExtStore, {} as AlertaAlertQueryResponse, []);
 
     expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
@@ -26,7 +26,7 @@ test('Should not launch notification when retrieving for the first time alerta s
         pollingState: {
             alertCount: undefined
         }
-    } as AlertaExtStore, {} as AlertaAlertQueryResponse);
+    } as AlertaExtStore, {} as AlertaAlertQueryResponse, []);
 
     expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
@@ -48,7 +48,7 @@ test('Should launch notification if new alerts', () => {
                 value: "This is a test"
             }
         ]
-    });
+    }, []);
 
     const expectedAlert = {
         type: 'basic',
@@ -80,7 +80,7 @@ test('Should launch persistant notification if enabled in user preference', () =
                 value: "This is a test"
             }
         ]
-    });
+    }, []);
 
     const expectedAlert = {
         type: 'basic',
@@ -115,7 +115,7 @@ test('Should launch a list notifications is more than one new alert', () => {
                 event: "MyEvent3"
             }
         ]
-    });
+    }, []);
 
     const expectedListAlert = {
         type: 'list',
@@ -146,7 +146,7 @@ test('Should do nothing if no new alert', () => {
                 event: "MyEvent2"
             }
         ]
-    });
+    }, []);
 
     expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
@@ -168,6 +168,6 @@ test('Should play a sound if selected in user preferences', () => {
                 event: "MyEvent2"
             }
         ]
-    });
+    }, []);
     expect(PlaySound).toHaveBeenCalled();
 });

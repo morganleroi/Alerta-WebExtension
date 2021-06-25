@@ -101,7 +101,6 @@ const UserPreferences = () => {
             chrome.storage.local.set(newState);
             setUserPrefSaved(true);
             setTimeout(() => setUserPrefSaved(false), 5000);
-            console.log(newState);
         });
     }
 

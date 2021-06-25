@@ -1,7 +1,10 @@
 export type AlertaAlertQueryResponse = {
-    alerts: AlertaAlert[];
+    alerts: Alert[];
 }
 
-export type AlertaAlert = {
-
+export type Alert = {
+    id: string;
+    event: string;
+    value?: string;
+    service: string[]
 }

@@ -1,10 +1,8 @@
 import { fetchAlerts, startPolling } from "./pollingAlerta";
 import fetchMock from "jest-fetch-mock";
 import { AlertaExtStore } from "./Model/AlertaExtStore";
-import { SendNotification } from "./notifications";
-import { saveState } from "./state";
-jest.mock("./notifications");
-jest.mock("./state");
+// import { SendNotification } from "./notifications";
+// jest.mock("./notifications");
 
 fetchMock.enableMocks();
 
@@ -17,8 +15,6 @@ beforeEach(() => {
             addListener: jest.fn()
         }
     } as any;
-
-    jest.clearAllMocks();
 });
 
 test('Should start the alarm when start polling', () => {
@@ -63,4 +59,6 @@ test('Should fetch Alerts when alarms is triggered', () => {
     };
 
     expect(fetchMockAlerta.mock.calls[0][1]).toEqual(expectedPayload);
+    //expect(SendNotification).toHaveBeenCalled();
 });
+

@@ -1,8 +1,9 @@
+import { Alert } from "./Model/Alerta";
 import { AlertaExtStore } from "./Model/AlertaExtStore";
 import { SendNotification } from "./notifications";
 import { getState, saveState } from "./state";
 
-const startPolling = () => {
+export const startPolling = () => {
     chrome.alarms.onAlarm.addListener(() => {
         fetchAlerts(getState())
     });
@@ -14,7 +15,7 @@ const startPolling = () => {
     });
 }
 
-const fetchAlerts = (state: AlertaExtStore) => {
+export const fetchAlerts = (state: AlertaExtStore) => {
     fetch(`${state.userPreferences.AlertaApiServerUrl}/alerts?${state.pollingState.alertaFetchQuery}`,
         { headers: { 'Authorization': `Key ${state.userPreferences.AlertaApiSecret}` } })
         .then(response => response.json())
@@ -22,22 +23,26 @@ const fetchAlerts = (state: AlertaExtStore) => {
 }
 
 function HandleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
-    const currentTotal: number = alertaResponse.alerts.length;
-    chrome.browserAction.setBadgeText({ text: currentTotal.toString() });
-    chrome.browserAction.setBadgeBackgroundColor({ color: currentTotal > 0 ? "red" : "green" });
 
-    SendNotification(state, alertaResponse);
+    var fetchedAlerts = alertaResponse.alerts as Alert[];
 
+    // We collect new alerts in the fetchAlerts.
+    const newAlerts = fetchedAlerts.filter(alert => !state.pollingState.alerts.map(x => x.id).includes(alert.id));
+    const currentNbOfAlerts: number = alertaResponse.alerts.length;
+    chrome.browserAction.setBadgeText({ text: currentNbOfAlerts.toString() });
+    chrome.browserAction.setBadgeBackgroundColor({ color: currentNbOfAlerts > 0 ? "red" : "green" });
+
+    SendNotification(state, alertaResponse, newAlerts);
+    
     // Update the storage with the new value. Only if needed
-    if (state.pollingState.alertCount == undefined || state.pollingState.alertCount != currentTotal) {
+    if (newAlerts.length > 0) {
         saveState({
             ...state,
             pollingState: {
                 ...state.pollingState,
-                alertCount: currentTotal
+                alertCount: currentNbOfAlerts,
+                alerts: fetchedAlerts
             }
         })
     }
 };
-
-export { startPolling, fetchAlerts }

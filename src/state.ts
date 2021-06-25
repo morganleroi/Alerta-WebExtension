@@ -2,7 +2,9 @@ import { AlertaExtStore } from "./Model/AlertaExtStore";
 
 const defaultState: AlertaExtStore = {
     pollingState: {
-        alertaFetchQuery: ""
+        alertaFetchQuery: "",
+        alerts: []
+
     },
     userPreferences: {
         AlertaApiServerUrl: "http://localhost:9999/api",
@@ -25,7 +27,7 @@ const initializeState = (): Promise<void> => {
             if (chrome.runtime.lastError) {
                 return reject(chrome.runtime.lastError);
             }
-            Object.assign(state, defaultState);
+            state = defaultState
             resolve();
         });
     });

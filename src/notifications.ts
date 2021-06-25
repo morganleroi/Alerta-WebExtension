@@ -1,17 +1,18 @@
-import { AlertaAlertQueryResponse } from "./Model/Alerta";
+
+import { Alert, AlertaAlertQueryResponse } from "./Model/Alerta";
 import { AlertaExtStore as AlertaExtensionState } from "./Model/AlertaExtStore";
 import { PlaySound } from "./playSound";
 
-export function SendNotification(extensionState: AlertaExtensionState, alertaResponse: AlertaAlertQueryResponse) {
+export function SendNotification(extensionState: AlertaExtensionState, alertaResponse: AlertaAlertQueryResponse, newAlerts: Alert[]) {
     if (extensionState.userPreferences.ShowNotifications) {
         // We have new alerts !
         // We only trigger alert if :
         // - The alert count if defined (Not the first time we poll Alerta)
         // - The alert count is lower than the alerta count result from the polling request
-        if (extensionState.pollingState.alertCount != undefined && (extensionState.pollingState.alertCount < alertaResponse.alerts.length)) {
+        if (newAlerts.length > 0) {
             var newAlertsCount = alertaResponse.alerts.length - extensionState.pollingState.alertCount!;
 
-            let notification = (newAlertsCount == 1) ? CreateBasicNotification(alertaResponse, extensionState) : CreateListNotification(newAlertsCount);
+            let notification = (newAlerts.length == 1) ? CreateBasicNotification(newAlerts[0], extensionState) : CreateListNotification(newAlertsCount);
         
             if(extensionState.userPreferences.playAudio){
                 PlaySound()
@@ -22,14 +23,13 @@ export function SendNotification(extensionState: AlertaExtensionState, alertaRes
     }  
 }
 
-function CreateBasicNotification(resp: any, alertaExtStore: AlertaExtensionState): { id: string, payload: chrome.notifications.NotificationOptions } {
-    var newAlert = resp.alerts[0];
+function CreateBasicNotification(alert: Alert, alertaExtStore: AlertaExtensionState): { id: string, payload: chrome.notifications.NotificationOptions } {
     return {
-        id: `Alert_${newAlert.id}`,
+        id: `Alert_${alert.id}`,
         payload: {
             type: 'basic',
-            title: `${newAlert.service[0]} - ${newAlert.event}`,
-            message: newAlert.value,
+            title: `${alert.service[0]} - ${alert.event}`,
+            message: alert.value,
             iconUrl: "alert.png",
             requireInteraction: alertaExtStore.userPreferences.PersistentNotifications,
             isClickable: true,
