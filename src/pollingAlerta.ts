@@ -32,7 +32,7 @@ function HandleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
     chrome.browserAction.setBadgeText({ text: currentNbOfAlerts.toString() });
     chrome.browserAction.setBadgeBackgroundColor({ color: currentNbOfAlerts > 0 ? "red" : "green" });
 
-    SendNotification(state, alertaResponse, newAlerts);
+    SendNotification(state.userPreferences, newAlerts);
     
     // Update the storage with the new value. Only if needed
     if (newAlerts.length > 0) {
