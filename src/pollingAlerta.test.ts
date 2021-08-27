@@ -38,8 +38,8 @@ test('Should fetch Alerts when alarms is triggered', () => {
     const state = {
         userPreferences: {
             ...defaultState.userPreferences,
-            AlertaApiServerUrl: "https://myAlertaServer",
-            AlertaApiSecret: "MySecretKey"
+            alertaApiServerUrl: "https://myAlertaServer",
+            alertaApiSecret: "MySecretKey"
         },
         pollingState: {
             alertaFetchQuery: "service=test&group-test2",

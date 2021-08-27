@@ -17,7 +17,7 @@ beforeEach(() => {
 test('Should open Alerta in a new tab', () => {
     openAlerta({
         userPreferences: {
-            AlertaUiUrl: "https://myAlertaServer/ui"
+            alertaUiUrl: "https://myAlertaServer/ui"
         },
     } as AlertaExtStore)
 
@@ -28,7 +28,7 @@ test('Should open Alerta in a new tab', () => {
 test('Should open a specific alert in a new tab', () => {
     openAlert({
         userPreferences: {
-            AlertaUiUrl: "https://myAlertaServer/ui"
+            alertaUiUrl: "https://myAlertaServer/ui"
         },
     } as AlertaExtStore, "myNodifId", "1324657")
 
@@ -40,8 +40,8 @@ test('Should ack the alert in Alerta when clicking on Ack button', () => {
     // Given
     const state = {
         userPreferences: {
-            AlertaApiServerUrl: "https://myAlertaServer/api",
-            AlertaApiSecret: "SecretKey", 
+            alertaApiServerUrl: "https://myAlertaServer/api",
+            alertaApiSecret: "SecretKey", 
             username: "Morgan"
         },
     } as AlertaExtStore
@@ -73,7 +73,7 @@ test('Should ack the alert in Alerta when clicking on Ack button', () => {
 test('Should clear notification when opening new tab', () => {
     openAlerta({
         userPreferences: {
-            AlertaUiUrl: "https://myAlertaServer/ui"
+            alertaUiUrl: "https://myAlertaServer/ui"
         },
     } as AlertaExtStore, "1234")
 

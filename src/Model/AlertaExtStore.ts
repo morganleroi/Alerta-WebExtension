@@ -18,11 +18,11 @@ export const defaultState: AlertaExtStore = {
 
     },
     userPreferences: {
-        AlertaApiServerUrl: "http://localhost:9999/api",
-        AlertaUiUrl: "http://localhost:9999",
-        PersistentNotifications: false,
-        ShowNotifications: true,
-        AlertaApiSecret: "XXX",
+        alertaApiServerUrl: "http://localhost:9999/api",
+        alertaUiUrl: "http://localhost:9999",
+        persistentNotifications: false,
+        showNotifications: true,
+        alertaApiSecret: "XXX",
         username: "John Doe",
         filterGroups: [],
         filterServices: [],

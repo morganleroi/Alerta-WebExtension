@@ -10,7 +10,7 @@ beforeEach(() => {
 test('Should not launch notification if notification disabled in user preference', () => {
     SendNotification({
         ...defaultState.userPreferences,
-        ShowNotifications: false
+        showNotifications: false
     }, [{
         id: "1",
         service: ["MyService"],
@@ -49,7 +49,7 @@ test('Should launch notification if new alerts', () => {
 test('Should launch persistant notification if enabled in user preference', () => {
     SendNotification({
         ...defaultState.userPreferences,
-        PersistentNotifications: true
+        persistentNotifications: true
     }, [{
         id: "1",
         service: ["MyService"],

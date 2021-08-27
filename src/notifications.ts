@@ -4,7 +4,7 @@ import { UserPreferences } from "./Model/UserPreferences";
 import { PlaySound } from "./playSound";
 
 export function SendNotification(userPreferences: UserPreferences, newAlerts: Alert[]) {
-    if (userPreferences.ShowNotifications) {
+    if (userPreferences.showNotifications) {
         // We have new alerts !
         // We only trigger alert if :
         // - The alert count if defined (Not the first time we poll Alerta)
@@ -28,7 +28,7 @@ function CreateBasicNotification(alert: Alert, userPreferences: UserPreferences)
             title: `${alert.service[0]} - ${alert.event}`,
             message: alert.value,
             iconUrl: "alert.png",
-            requireInteraction: userPreferences.PersistentNotifications,
+            requireInteraction: userPreferences.persistentNotifications,
             isClickable: true,
             buttons: [{ title: 'Ack' }, { title: 'View alert details' }],
         }

@@ -1,11 +1,11 @@
 export type UserPreferences = {
-    AlertaApiServerUrl: string;
-    AlertaUiUrl: string;
-    AlertaApiSecret: string;
-    ShowNotifications: boolean;
-    PersistentNotifications: boolean;
+    alertaApiServerUrl: string;
+    alertaUiUrl: string;
+    alertaApiSecret: string;
+    showNotifications: boolean;
+    persistentNotifications: boolean;
     username: string;
     filterServices: string[];
-    filterGroups: string [];
+    filterGroups: string[];
     playAudio: boolean;
 }

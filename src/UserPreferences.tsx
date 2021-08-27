@@ -11,11 +11,11 @@ type AlertaFilter = {
 
 const UserPreferences = () => {
     const [userPref, setUserPref] = React.useState<UserPreferences>({
-        AlertaApiServerUrl: "",
-        AlertaUiUrl: "",
-        PersistentNotifications: false,
-        ShowNotifications: true,
-        AlertaApiSecret: "",
+        alertaApiServerUrl: "",
+        alertaUiUrl: "",
+        persistentNotifications: false,
+        showNotifications: true,
+        alertaApiSecret: "",
         username: "",
         filterGroups: [],
         filterServices: [],
@@ -31,7 +31,7 @@ const UserPreferences = () => {
         chrome.storage.local.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             setUserPref(alertaExtStore.userPreferences);
-            fetch(`${alertaExtStore.userPreferences.AlertaApiServerUrl}/services`, { method: "GET", headers: { "Content-type": "application/json", 'Authorization': `Key ${alertaExtStore.userPreferences.AlertaApiSecret}` } })
+            fetch(`${alertaExtStore.userPreferences.alertaApiServerUrl}/services`, { method: "GET", headers: { "Content-type": "application/json", 'Authorization': `Key ${alertaExtStore.userPreferences.alertaApiSecret}` } })
                 .then(response => response.json())
                 .then(reponse => {
                     var services: { value: string, label: string }[] = reponse.services.map((x: any) => {
@@ -40,7 +40,7 @@ const UserPreferences = () => {
                     setAlertaServices(services);
                 });
 
-            fetch(`${alertaExtStore.userPreferences.AlertaApiServerUrl}/alerts/groups`, { method: "GET", headers: { "Content-type": "application/json", 'Authorization': `Key ${alertaExtStore.userPreferences.AlertaApiSecret}` } })
+            fetch(`${alertaExtStore.userPreferences.alertaApiServerUrl}/alerts/groups`, { method: "GET", headers: { "Content-type": "application/json", 'Authorization': `Key ${alertaExtStore.userPreferences.alertaApiSecret}` } })
                 .then(response => response.json())
                 .then(reponse => {
                     var groups: { value: string, label: string }[] = reponse.groups.map((x: any) => {
@@ -66,23 +66,23 @@ const UserPreferences = () => {
 
     const saveUserPreference = () => {
 
-        if (userPref.AlertaApiServerUrl.endsWith('/')) {
-            userPref.AlertaApiServerUrl = userPref.AlertaApiServerUrl.slice(0, userPref.AlertaApiServerUrl.length - 1).trim();
+        if (userPref.alertaApiServerUrl.endsWith('/')) {
+            userPref.alertaApiServerUrl = userPref.alertaApiServerUrl.slice(0, userPref.alertaApiServerUrl.length - 1).trim();
         }
 
-        if (userPref.AlertaUiUrl.endsWith('/')) {
-            userPref.AlertaUiUrl = userPref.AlertaUiUrl.slice(0, userPref.AlertaUiUrl.length - 1).trim();
+        if (userPref.alertaUiUrl.endsWith('/')) {
+            userPref.alertaUiUrl = userPref.alertaUiUrl.slice(0, userPref.alertaUiUrl.length - 1).trim();
         }
 
         userPref.filterServices = selectedOptionService.map(option => option.value);
         userPref.filterGroups = selectedOptionGroup.map(option => option.value);
         
         chrome.permissions.contains({
-            origins: [userPref.AlertaApiServerUrl + "/"]
+            origins: [userPref.alertaApiServerUrl + "/"]
         }, isAlertaAllowed => {
             if (!isAlertaAllowed) {
                 chrome.permissions.request({
-                    origins: [userPref.AlertaApiServerUrl + "/"]
+                    origins: [userPref.alertaApiServerUrl + "/"]
                 }, function () {});
             }
         });
@@ -128,17 +128,17 @@ const UserPreferences = () => {
                 <FormGroup className="mb-3">
                     <label htmlFor="alertaUrl" className="form-label">Alerta API Url</label>
                     <input type="text" className="form-control" id="alertaUrl"
-                        placeholder="http://hostname:port" value={userPref?.AlertaApiServerUrl} onChange={(val) => setUserPref({ ...userPref, AlertaApiServerUrl: val.target.value })} />
+                        placeholder="http://hostname:port" value={userPref?.alertaApiServerUrl} onChange={(val) => setUserPref({ ...userPref, alertaApiServerUrl: val.target.value })} />
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <label htmlFor="alertaUiUrl" className="form-label">Alerta UI Url</label>
                     <input type="text" className="form-control" id="alertaUiUrl"
-                        placeholder="http://hostname:port" value={userPref?.AlertaUiUrl} onChange={(val) => setUserPref({ ...userPref, AlertaUiUrl: val.target.value })} />
+                        placeholder="http://hostname:port" value={userPref?.alertaUiUrl} onChange={(val) => setUserPref({ ...userPref, alertaUiUrl: val.target.value })} />
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <label htmlFor="alertaSecretKey" className="form-label">Alerta API Secret</label>
                     <input type="text" className="form-control" id="alertaSecretKey"
-                        placeholder="" value={userPref?.AlertaApiSecret} onChange={(val) => setUserPref({ ...userPref, AlertaApiSecret: val.target.value })} />
+                        placeholder="" value={userPref?.alertaApiSecret} onChange={(val) => setUserPref({ ...userPref, alertaApiSecret: val.target.value })} />
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <label htmlFor="username" className="form-label">Username</label>
@@ -147,13 +147,13 @@ const UserPreferences = () => {
                 </FormGroup>
                 <FormGroup check>
                     <Label check>
-                        <Input type="checkbox" checked={userPref?.ShowNotifications} onChange={(val) => setUserPref({ ...userPref, ShowNotifications: val.target.checked })} />
+                        <Input type="checkbox" checked={userPref?.showNotifications} onChange={(val) => setUserPref({ ...userPref, showNotifications: val.target.checked })} />
                         Generates Chrome (or OS) notifications
                     </Label>
                 </FormGroup>
                 <FormGroup check>
                     <Label check>
-                        <Input type="checkbox" checked={userPref?.PersistentNotifications} onChange={(val) => setUserPref({ ...userPref, PersistentNotifications: val.target.checked })} />
+                        <Input type="checkbox" checked={userPref?.persistentNotifications} onChange={(val) => setUserPref({ ...userPref, persistentNotifications: val.target.checked })} />
                         Persistant notifications
                     </Label>
                 </FormGroup>
