@@ -1,8 +1,6 @@
 import { fetchAlerts, startPolling } from "./pollingAlerta";
 import fetchMock from "jest-fetch-mock";
-import { AlertaExtStore } from "./Model/AlertaExtStore";
-// import { SendNotification } from "./notifications";
-// jest.mock("./notifications");
+import { AlertaExtStore, defaultState } from "./Model/AlertaExtStore";
 
 fetchMock.enableMocks();
 
@@ -28,20 +26,25 @@ test('Should start the alarm when start polling', () => {
 
 test('Should fetch Alerts when alarms is triggered', () => {
     // Given
-    const fetchMockAlerta = fetchMock.mockOnce(JSON.stringify({
+    const fetchMockAlerta = fetchMock.mockResponseOnce(JSON.stringify({
         alerts: [{
-
+            id: "1",
+            service: ["MyService"],
+            event: "MyEvent",
+            value: "This is a test"
         }]
     }));
 
     const state = {
         userPreferences: {
+            ...defaultState.userPreferences,
             AlertaApiServerUrl: "https://myAlertaServer",
             AlertaApiSecret: "MySecretKey"
         },
         pollingState: {
             alertCount: 0,
-            alertaFetchQuery: "service=test&group-test2"
+            alertaFetchQuery: "service=test&group-test2",
+            alerts: []
         }
     } as AlertaExtStore;
 
@@ -59,6 +62,8 @@ test('Should fetch Alerts when alarms is triggered', () => {
     };
 
     expect(fetchMockAlerta.mock.calls[0][1]).toEqual(expectedPayload);
-    //expect(SendNotification).toHaveBeenCalled();
+    
+    // TODO : Don't know why it's not working.
+    //expect(chrome.notifications.create).toHaveBeenCalled();
 });
 

@@ -1,5 +1,4 @@
-import { AlertaAlertQueryResponse } from "./Model/Alerta";
-import { AlertaExtStore, defaultState } from "./Model/AlertaExtStore";
+import { defaultState } from "./Model/AlertaExtStore";
 import { SendNotification } from "./notifications";
 import { PlaySound } from "./playSound";
 jest.mock('./playSound');

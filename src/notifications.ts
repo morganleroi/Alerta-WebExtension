@@ -15,7 +15,6 @@ export function SendNotification(userPreferences: UserPreferences, newAlerts: Al
             if(userPreferences.playAudio){
                 PlaySound()
             }
-        
             chrome.notifications.create(notification.id, notification.payload);
         }
     }  
