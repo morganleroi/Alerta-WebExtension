@@ -1,5 +1,5 @@
 import { Alert } from "./Model/Alerta";
-import { AlertaExtStore } from "./Model/AlertaExtStore";
+import { AlertaExtStore } from "./Model/ExtensionState";
 import { SendNotification } from "./notifications";
 import { getState, saveState } from "./state";
 

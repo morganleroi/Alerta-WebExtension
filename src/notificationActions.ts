@@ -1,4 +1,4 @@
-import { AlertaExtStore } from "./Model/AlertaExtStore";
+import { AlertaExtStore } from "./Model/ExtensionState";
 
 export function triggerNotificationAction(state: AlertaExtStore, notificationId: string, index: number) {
     if (notificationId == "GoToAlertaHome") {

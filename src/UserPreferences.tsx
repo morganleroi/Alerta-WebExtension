@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
-import { AlertaExtStore } from "./Model/AlertaExtStore";
+import { AlertaExtStore } from "./Model/ExtensionState";
 import { UserPreferences } from './Model/UserPreferences';
 import CreatableSelect from 'react-select/creatable'
 

@@ -1,4 +1,4 @@
-export type AlertaAlertQueryResponse = {
+export type AlertQueryResponse = {
     alerts: Alert[];
 }
 

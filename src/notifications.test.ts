@@ -1,4 +1,4 @@
-import { defaultState } from "./Model/AlertaExtStore";
+import { defaultState } from "./Model/ExtensionState";
 import { SendNotification } from "./notifications";
 import { PlaySound } from "./playSound";
 jest.mock('./playSound');

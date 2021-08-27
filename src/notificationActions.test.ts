@@ -1,4 +1,4 @@
-import { AlertaExtStore } from "./Model/AlertaExtStore";
+import { AlertaExtStore } from "./Model/ExtensionState";
 import { ackAlert, openAlert, openAlerta } from "./notificationActions";
 import fetchMock from "jest-fetch-mock";
 

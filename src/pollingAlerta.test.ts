@@ -1,6 +1,6 @@
 import { fetchAlerts, startPolling } from "./pollingAlerta";
 import fetchMock from "jest-fetch-mock";
-import { AlertaExtStore, defaultState } from "./Model/AlertaExtStore";
+import { AlertaExtStore, defaultState } from "./Model/ExtensionState";
 
 fetchMock.enableMocks();
 
