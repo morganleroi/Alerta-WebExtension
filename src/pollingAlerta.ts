@@ -40,7 +40,6 @@ function HandleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
             ...state,
             pollingState: {
                 ...state.pollingState,
-                alertCount: currentNbOfAlerts,
                 alerts: fetchedAlerts
             }
         })

@@ -42,7 +42,6 @@ test('Should fetch Alerts when alarms is triggered', () => {
             AlertaApiSecret: "MySecretKey"
         },
         pollingState: {
-            alertCount: 0,
             alertaFetchQuery: "service=test&group-test2",
             alerts: []
         }

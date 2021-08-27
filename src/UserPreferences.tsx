@@ -93,7 +93,6 @@ const UserPreferences = () => {
                 ...alertaExtStore,
                 pollingState: {
                     ...alertaExtStore.pollingState,
-                    alertCount: undefined,
                     alertaFetchQuery: "environment=Production&status=open&status=ack&sort-by=lastReceiveTime" + createFetchQuery(userPref.filterServices, userPref.filterGroups)
                 },
                 userPreferences: userPref
