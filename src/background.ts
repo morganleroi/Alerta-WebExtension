@@ -1,11 +1,14 @@
 import { openAlert, openAlerta, triggerNotificationAction } from './notificationActions';
 import { startPolling } from './pollingAlerta';
-import { getState, initializeState, loadState, saveState, synchronizeState } from './state';
+import { getState, initializeState, loadState, synchronizeState } from './state';
 
+// When the Extension is first installed or when updated.
 chrome.runtime.onInstalled.addListener(() => initializeState().then(startPolling));
 
+// When the Extensions starts (Chrome starts, ...)
 chrome.runtime.onStartup.addListener(() => loadState().then(startPolling));
 
+// Every time we change user preferences, we relead the state
 chrome.storage.onChanged.addListener((_, area) => {
     if (area === 'local') {
         synchronizeState();

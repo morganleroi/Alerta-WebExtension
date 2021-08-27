@@ -1,8 +1,3 @@
-
-
-
-
-
 // Saves options to chrome.storage
 function save_options() {
     if(document == null) return;

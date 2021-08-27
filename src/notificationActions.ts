@@ -39,10 +39,10 @@ export function openAlert(state: AlertaExtStore, notificationId: string, alertId
 }
 
 function createNewTab(url: string, notificationId?: string) {
-    chrome.tabs.create({ active: true, url }, (t) => {
+    chrome.tabs.create({ active: true, url }, (tab) => {
         if (notificationId) {
             chrome.notifications.clear(notificationId);
         }
-        chrome.windows.update(t.windowId!, { focused: true });
+        chrome.windows.update(tab.windowId!, { focused: true });
     });
 }

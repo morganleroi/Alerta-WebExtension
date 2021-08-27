@@ -3,14 +3,14 @@ import { Alert } from "./Model/Alerta";
 import { UserPreferences } from "./Model/UserPreferences";
 import { PlaySound } from "./playSound";
 
-export function SendNotification(userPreferences: UserPreferences, newAlerts: Alert[]) {
+export function sendNotification(userPreferences: UserPreferences, newAlerts: Alert[]) {
     if (userPreferences.showNotifications) {
         // We have new alerts !
         // We only trigger alert if :
         // - The alert count if defined (Not the first time we poll Alerta)
         // - The alert count is lower than the alerta count result from the polling request
         if (newAlerts.length > 0) {
-            let notification = (newAlerts.length == 1) ? CreateBasicNotification(newAlerts[0], userPreferences) : CreateListNotification(newAlerts.length);
+            let notification = (newAlerts.length == 1) ? createBasicNotification(newAlerts[0], userPreferences) : createListNotification(newAlerts.length);
         
             if(userPreferences.playAudio){
                 PlaySound()
@@ -20,7 +20,7 @@ export function SendNotification(userPreferences: UserPreferences, newAlerts: Al
     }  
 }
 
-function CreateBasicNotification(alert: Alert, userPreferences: UserPreferences): { id: string, payload: chrome.notifications.NotificationOptions } {
+function createBasicNotification(alert: Alert, userPreferences: UserPreferences): { id: string, payload: chrome.notifications.NotificationOptions } {
     return {
         id: `Alert_${alert.id}`,
         payload: {
@@ -35,7 +35,7 @@ function CreateBasicNotification(alert: Alert, userPreferences: UserPreferences)
     }
 }
 
-function CreateListNotification(newAlertsCount: number): { id: string, payload: chrome.notifications.NotificationOptions } {
+function createListNotification(newAlertsCount: number): { id: string, payload: chrome.notifications.NotificationOptions } {
     return {
         id: "GoToAlertaHome",
         payload: {
