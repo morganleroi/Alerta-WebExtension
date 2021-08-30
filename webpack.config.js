@@ -4,8 +4,8 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 const config = {
   entry: {
-    options: path.join(__dirname, "src/options.tsx"),
-    background: path.join(__dirname, "src/background.ts"),
+    options: path.join(__dirname, "src/components/options.tsx"),
+    background: path.join(__dirname, "src/chromium/background.ts"),
   },
   output: { path: path.join(__dirname, "dist"), filename: "[name].js" },
   module: {

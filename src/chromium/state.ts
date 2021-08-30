@@ -1,4 +1,4 @@
-import { AlertaExtStore, defaultState } from "./Model/ExtensionState";
+import { AlertaExtStore, defaultState } from "../model/extensionState";
 
 var state: AlertaExtStore;
 

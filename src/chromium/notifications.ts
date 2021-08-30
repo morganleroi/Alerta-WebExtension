@@ -1,7 +1,7 @@
 
-import { Alert } from "./Model/Alerta";
-import { UserPreferences } from "./Model/UserPreferences";
-import { PlaySound } from "./playSound";
+import { Alert } from "../model/alerta";
+import { UserPreferences } from "../model/userPreferences";
+import { PlaySound } from "../services/playSound";
 
 export function sendNotification(userPreferences: UserPreferences, newAlerts: Alert[]) {
     if (userPreferences.showNotifications) {

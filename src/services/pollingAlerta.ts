@@ -1,7 +1,7 @@
-import { Alert } from "./Model/Alerta";
-import { AlertaExtStore } from "./Model/ExtensionState";
-import { SendNotification } from "./notifications";
-import { getState, saveState } from "./state";
+import { Alert } from "../model/alerta";
+import { AlertaExtStore } from "../model/extensionState";
+import { sendNotification } from "../chromium/notifications";
+import { getState, saveState } from "../chromium/state";
 
 export const startPolling = () => {
     chrome.alarms.onAlarm.addListener(() => {
@@ -19,10 +19,10 @@ export const fetchAlerts = (state: AlertaExtStore) => {
     fetch(`${state.userPreferences.alertaApiServerUrl}/alerts?${state.pollingState.alertaFetchQuery}`,
         { headers: { 'Authorization': `Key ${state.userPreferences.alertaApiSecret}` } })
         .then(response => response.json())
-        .then(response => HandleAlertaResponse(response, state));
+        .then(response => handleAlertaResponse(response, state));
 }
 
-function HandleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
+function handleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
 
     var fetchedAlerts = alertaResponse.alerts as Alert[];
 
@@ -32,7 +32,7 @@ function HandleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
     chrome.browserAction.setBadgeText({ text: currentNbOfAlerts.toString() });
     chrome.browserAction.setBadgeBackgroundColor({ color: currentNbOfAlerts > 0 ? "red" : "green" });
 
-    SendNotification(state.userPreferences, newAlerts);
+    sendNotification(state.userPreferences, newAlerts);
     
     // Update the storage with the new value. Only if needed
     if (newAlerts.length > 0) {

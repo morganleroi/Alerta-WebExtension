@@ -1,5 +1,5 @@
 import { openAlert, openAlerta, triggerNotificationAction } from './notificationActions';
-import { startPolling } from './pollingAlerta';
+import { startPolling } from '../services/pollingAlerta';
 import { getState, initializeState, loadState, synchronizeState } from './state';
 
 // When the Extension is first installed or when updated.

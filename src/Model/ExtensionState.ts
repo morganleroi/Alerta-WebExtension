@@ -1,5 +1,5 @@
-import { Alert } from "./Alerta"
-import { UserPreferences } from "./UserPreferences"
+import { Alert } from "./alerta"
+import { UserPreferences } from "./userPreferences"
 
 type PollingState = {
     alerts: Alert[]

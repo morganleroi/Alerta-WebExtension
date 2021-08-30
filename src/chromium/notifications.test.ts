@@ -1,6 +1,6 @@
-import { defaultState } from "./Model/ExtensionState";
-import { SendNotification } from "./notifications";
-import { PlaySound } from "./playSound";
+import { defaultState } from "../model/extensionState";
+import { sendNotification } from "./notifications";
+import { PlaySound } from "../services/playSound";
 jest.mock('./playSound');
 
 beforeEach(() => {
@@ -8,7 +8,7 @@ beforeEach(() => {
 });
 
 test('Should not launch notification if notification disabled in user preference', () => {
-    SendNotification({
+    sendNotification({
         ...defaultState.userPreferences,
         showNotifications: false
     }, [{
@@ -23,7 +23,7 @@ test('Should not launch notification if notification disabled in user preference
 
 test('Should launch notification if new alerts', () => {
 
-    SendNotification({
+    sendNotification({
         ...defaultState.userPreferences,
     }, [{
         id: "1",
@@ -47,7 +47,7 @@ test('Should launch notification if new alerts', () => {
 });
 
 test('Should launch persistant notification if enabled in user preference', () => {
-    SendNotification({
+    sendNotification({
         ...defaultState.userPreferences,
         persistentNotifications: true
     }, [{
@@ -71,7 +71,7 @@ test('Should launch persistant notification if enabled in user preference', () =
 });
 
 test('Should launch a list notifications is more than one new alert', () => {
-    SendNotification({
+    sendNotification({
         ...defaultState.userPreferences,
     }, [{
         id: "1",
@@ -97,7 +97,7 @@ test('Should launch a list notifications is more than one new alert', () => {
 });
 
 test('Should do nothing if no new alert', () => {
-    SendNotification({
+    sendNotification({
         ...defaultState.userPreferences,
     }, []);
 
@@ -105,7 +105,7 @@ test('Should do nothing if no new alert', () => {
 });
 
 test('Should play a sound if selected in user preferences', () => {
-    SendNotification({
+    sendNotification({
         ...defaultState.userPreferences,
         playAudio: true
     }, [{

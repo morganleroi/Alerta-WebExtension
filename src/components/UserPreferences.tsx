@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
-import { AlertaExtStore } from "./Model/ExtensionState";
-import { UserPreferences } from './Model/UserPreferences';
+import { AlertaExtStore } from "../model/extensionState";
+import { UserPreferences } from '../model/userPreferences';
 import CreatableSelect from 'react-select/creatable'
 
 type AlertaFilter = {
@@ -65,15 +65,12 @@ const UserPreferences = () => {
     }, []);
 
     const saveUserPreference = () => {
-
         if (userPref.alertaApiServerUrl.endsWith('/')) {
             userPref.alertaApiServerUrl = userPref.alertaApiServerUrl.slice(0, userPref.alertaApiServerUrl.length - 1).trim();
         }
-
         if (userPref.alertaUiUrl.endsWith('/')) {
             userPref.alertaUiUrl = userPref.alertaUiUrl.slice(0, userPref.alertaUiUrl.length - 1).trim();
         }
-
         userPref.filterServices = selectedOptionService.map(option => option.value);
         userPref.filterGroups = selectedOptionGroup.map(option => option.value);
         
@@ -121,6 +118,7 @@ const UserPreferences = () => {
 
     return (
         <div className="container-fluid">
+            <h1>Alerta Extension Options</h1>
             <Form>
                 <div className="alert alert-success" id="saveSucess" role="alert" style={{ display: userPrefSaved ? 'block' : 'none' }} >
                     Preferences saved !

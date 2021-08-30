@@ -5,7 +5,8 @@
   "scripts": {
     "test": "jest",
     "build": "webpack",
-    "start": "webpack --watch"
+    "start": "webpack --watch",
+    "new-alert": "node scripts/create-new-alert.js"
   },
   "keywords": [],
   "license": "ISC",
@@ -27,6 +28,7 @@
     "jest": "^27.0.4",
     "jest-fetch-mock": "^3.0.3",
     "jest-webextension-mock": "^3.7.14",
+    "node-fetch": "^2.6.1",
     "style-loader": "^2.0.0",
     "ts-jest": "^27.0.3",
     "ts-loader": "^8.2.0",
@@ -34,7 +36,7 @@
     "url-loader": "^4.1.1",
     "webpack": "^5.36.2",
     "webpack-cli": "^4.6.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^4.0.0"
   },
   "dependencies": {
     "bootstrap": "^5.0.1",
