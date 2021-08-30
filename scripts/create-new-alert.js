@@ -1,7 +1,17 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 
-var secrets = JSON.parse(fs.readFileSync("scripts/secrets.json", "utf-8"));
+const secretFilePath = "scripts/secrets.json";
+
+if (!fs.existsSync(secretFilePath)) {
+    fs.writeFileSync(secretFilePath, JSON.stringify({
+        alertaUrl: "http://localhost:9999/api",
+        alertaToken: "XYZ"
+    }));
+}
+
+var secretFile = fs.readFileSync(secretFilePath, "utf-8")
+var secrets = JSON.parse(secretFile);
 
 console.log("lets create a new alert", secrets);
 
