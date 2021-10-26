@@ -13,6 +13,8 @@ beforeEach(() => {
             addListener: jest.fn()
         }
     } as any;
+
+    jest.clearAllMocks();
 });
 
 test('Should start the alarm when start polling', () => {

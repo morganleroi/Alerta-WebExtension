@@ -1,5 +1,12 @@
+
+// node scripts/create-new-alert.js '{ "resource":"BDD", "event":"Bdd is down" }'
+// node scripts/create-new-alert.js '{ "resource":"API", "event":"Slowness detected" }'
+// node scripts/create-new-alert.js '{ "resource":"WebAPI", "event":"Release in progress ...", "severity":"warning" }'
+
+
 const fetch = require('node-fetch');
 const fs = require('fs');
+const path = require('path');
 
 const secretFilePath = "scripts/secrets.json";
 
@@ -12,8 +19,7 @@ if (!fs.existsSync(secretFilePath)) {
 
 var secretFile = fs.readFileSync(secretFilePath, "utf-8")
 var secrets = JSON.parse(secretFile);
-
-console.log("lets create a new alert", secrets);
+const patch = process.argv.slice(2)?.length > 0 ? JSON.parse(process.argv.slice(2)[0]) : {};
 
 const body = {
     resource: "webapi",
@@ -22,8 +28,12 @@ const body = {
     service: ["myservice.com"],
     severity: "major",
     status: "open",
-    text: "Oups, something seems down ..."
+    text: "Outage in progress ...",
+    group:"test",
+    ...patch
 };
+
+console.log(body)
 
 fetch(`${secrets.alertaUrl}/alert`, {
     method: 'post',

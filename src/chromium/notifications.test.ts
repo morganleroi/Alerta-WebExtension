@@ -1,7 +1,7 @@
 import { defaultState } from "../model/extensionState";
 import { sendNotification } from "./notifications";
 import { PlaySound } from "../services/playSound";
-jest.mock('./playSound');
+jest.mock('../services/playSound');
 
 beforeEach(() => {
     jest.clearAllMocks();
@@ -15,7 +15,7 @@ test('Should not launch notification if notification disabled in user preference
         id: "1",
         service: ["MyService"],
         event: "MyEvent",
-        value: "This is a test"
+        text: "This is a test"
     }]);
 
     expect(chrome.notifications.create).not.toHaveBeenCalled();
@@ -29,7 +29,7 @@ test('Should launch notification if new alerts', () => {
         id: "1",
         service: ["MyService"],
         event: "MyEvent",
-        value: "This is a test"
+        text: "This is a test"
     }]
     );
 
@@ -54,7 +54,7 @@ test('Should launch persistant notification if enabled in user preference', () =
         id: "1",
         service: ["MyService"],
         event: "MyEvent",
-        value: "This is a test"
+        text: "This is a test"
     }]);
 
     const expectedAlert = {

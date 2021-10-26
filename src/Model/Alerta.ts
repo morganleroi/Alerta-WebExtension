@@ -5,6 +5,6 @@ export type AlertQueryResponse = {
 export type Alert = {
     id: string;
     event: string;
-    value?: string;
+    text?: string;
     service: string[]
 }
