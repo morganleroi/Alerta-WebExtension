@@ -15,14 +15,12 @@ export function sendNotification(userPreferences: UserPreferences, newAlerts: Al
             if(userPreferences.playAudio){
                 PlaySound()
             }
-            console.log("sending notif", notification)
             chrome.notifications.create(notification.id, notification.payload);
         }
     }  
 }
 
 function createBasicNotification(alert: Alert, userPreferences: UserPreferences): { id: string, payload: chrome.notifications.NotificationOptions } {
-    console.log("Here", alert);
     return {
         id: `Alert_${alert.id}`,
         payload: {

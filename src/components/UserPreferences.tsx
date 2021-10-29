@@ -3,6 +3,8 @@ import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { AlertaExtStore } from "../model/extensionState";
 import { UserPreferences } from '../model/userPreferences';
 import CreatableSelect from 'react-select/creatable'
+import * as alertaApi from "../services/fetchAlertaApi";
+import * as chromium from "../services/chromiumWrapper";
 
 type AlertaFilter = {
     label: string,
@@ -31,25 +33,20 @@ const UserPreferences = () => {
         chrome.storage.local.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             setUserPref(alertaExtStore.userPreferences);
-            fetch(`${alertaExtStore.userPreferences.alertaApiServerUrl}/services`, { method: "GET", headers: { "Content-type": "application/json", 'Authorization': `Key ${alertaExtStore.userPreferences.alertaApiSecret}` } })
-                .then(response => response.json())
-                .then(reponse => {
-                    var services: { value: string, label: string }[] = reponse.services.map((x: any) => {
-                        return { label: x.service, value: x.service }
-                    });
-                    setAlertaServices(services);
+            alertaApi.getServices(alertaExtStore.userPreferences).then(reponse => {
+                var services = reponse.services.map((x: any) => {
+                    return { label: x.service, value: x.service }
                 });
+                setAlertaServices(services);
+            });
 
-            fetch(`${alertaExtStore.userPreferences.alertaApiServerUrl}/alerts/groups`, { method: "GET", headers: { "Content-type": "application/json", 'Authorization': `Key ${alertaExtStore.userPreferences.alertaApiSecret}` } })
-                .then(response => response.json())
-                .then(reponse => {
-                    var groups: { value: string, label: string }[] = reponse.groups.map((x: any) => {
-                        return { label: x.group, value: x.group }
-                    });
-                    setAlertaGroups(groups);
+            alertaApi.getGroups(alertaExtStore.userPreferences).then(reponse => {
+                var groups = reponse.groups.map((x: any) => {
+                    return { label: x.group, value: x.group }
                 });
+                setAlertaGroups(groups);
+            });
         }), []);
-
 
     React.useEffect(() => {
         chrome.storage.local.get(null, function (items: any) {
@@ -64,56 +61,28 @@ const UserPreferences = () => {
         });
     }, []);
 
-    const saveUserPreference = () => {
-        if (userPref.alertaApiServerUrl.endsWith('/')) {
-            userPref.alertaApiServerUrl = userPref.alertaApiServerUrl.slice(0, userPref.alertaApiServerUrl.length - 1).trim();
+    const cleanUrl = (url: string) => {
+        url = url.trim();
+        if (!url.endsWith('/')) {
+            url = url + "/";
         }
-        if (userPref.alertaUiUrl.endsWith('/')) {
-            userPref.alertaUiUrl = userPref.alertaUiUrl.slice(0, userPref.alertaUiUrl.length - 1).trim();
-        }
-        userPref.filterServices = selectedOptionService.map(option => option.value);
-        userPref.filterGroups = selectedOptionGroup.map(option => option.value);
-        
-        chrome.permissions.contains({
-            origins: [userPref.alertaApiServerUrl + "/"]
-        }, isAlertaAllowed => {
-            if (!isAlertaAllowed) {
-                chrome.permissions.request({
-                    origins: [userPref.alertaApiServerUrl + "/"]
-                }, function () {});
-            }
-        });
-
-        chrome.storage.local.get(null, function (items: any) {
-            const alertaExtStore: AlertaExtStore = items;
-            const newState: AlertaExtStore = {
-                ...alertaExtStore,
-                pollingState: {
-                    ...alertaExtStore.pollingState,
-                    alertaFetchQuery: "environment=Production&status=open&status=ack&sort-by=lastReceiveTime" + createFetchQuery(userPref.filterServices, userPref.filterGroups)
-                },
-                userPreferences: userPref
-            };
-            chrome.storage.local.set(newState);
-            setUserPrefSaved(true);
-            setTimeout(() => setUserPrefSaved(false), 5000);
-        });
+        return url;
     }
 
-    function createFetchQuery(services: string[], groups: string[]) {
-        let groupQuery: string = "";
-        if (groups.length > 0) {
-            const reducer = (accumulator: string, currentValue: string) => accumulator + `&group=${currentValue}`;
-            groupQuery = groups.reduce(reducer, groupQuery);
-        }
-    
-        let serviceQuery: string = "";
-        if (services.length > 0) {
-            const reducer = (accumulator: string, currentValue: string) => accumulator + `&service=${currentValue}`;
-            serviceQuery = services.reduce(reducer, serviceQuery);
-        }
-    
-        return serviceQuery + groupQuery;
+    const saveUserPreference = () => {
+        userPref.alertaApiServerUrl = cleanUrl(userPref.alertaApiServerUrl);
+        userPref.alertaUiUrl = cleanUrl(userPref.alertaUiUrl);
+
+        userPref.filterServices = selectedOptionService.map(option => option.value);
+        userPref.filterGroups = selectedOptionGroup.map(option => option.value);
+
+        chromium.askForPermissionIfNeeded(userPref);
+
+        chromium.saveUserPreferences(userPref).then(_ => {
+            setUserPrefSaved(true);
+            setTimeout(() => setUserPrefSaved(false), 5000);
+        }).catch(reason => {
+        });
     }
 
     return (
