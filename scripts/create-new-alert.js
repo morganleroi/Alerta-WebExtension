@@ -2,7 +2,7 @@
 // node scripts/create-new-alert.js '{ "resource":"BDD", "event":"Bdd is down" }'
 // node scripts/create-new-alert.js '{ "resource":"API", "event":"Slowness detected" }'
 // node scripts/create-new-alert.js '{ "resource":"WebAPI", "event":"Release in progress ...", "severity":"warning" }'
-
+// node scripts/create-new-alert.js '{ "environment":"Development" }'
 
 const fetch = require('node-fetch');
 const fs = require('fs');

@@ -22,7 +22,7 @@ export function ackAlert(state: AlertaExtStore, notificationId: string, alertId?
         text: state.userPreferences.username ? `${state.userPreferences.username}: I'll take a look ...` : ""
     };
 
-    fetch(`${state.userPreferences.alertaApiServerUrl}/alert/${alertId}/status`, { method: "PUT", body: JSON.stringify(body), headers: { "Content-type": "application/json", 'Authorization': `Key ${state.userPreferences.alertaApiSecret}` } })
+    fetch(`${state.userPreferences.alertaApiServerUrl}alert/${alertId}/status`, { method: "PUT", body: JSON.stringify(body), headers: { "Content-type": "application/json", 'Authorization': `Key ${state.userPreferences.alertaApiSecret}` } })
         .then(_ => chrome.notifications.clear(notificationId));
 }
 
@@ -35,7 +35,7 @@ export function openAlert(state: AlertaExtStore, notificationId: string, alertId
         openAlerta(state, notificationId);
     }
 
-    createNewTab(`${state.userPreferences.alertaUiUrl}/alert/${alertId}`, notificationId)
+    createNewTab(`${state.userPreferences.alertaUiUrl}alert/${alertId}`, notificationId)
 }
 
 function createNewTab(url: string, notificationId?: string) {

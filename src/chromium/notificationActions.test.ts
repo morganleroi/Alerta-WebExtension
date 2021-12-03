@@ -17,18 +17,18 @@ beforeEach(() => {
 test('Should open Alerta in a new tab', () => {
     openAlerta({
         userPreferences: {
-            alertaUiUrl: "https://myAlertaServer/ui"
+            alertaUiUrl: "https://myAlertaServer/ui/"
         },
     } as AlertaExtStore)
 
-    expect(chrome.tabs.create).toHaveBeenCalledWith({ active: true, url: "https://myAlertaServer/ui" }, expect.anything());
+    expect(chrome.tabs.create).toHaveBeenCalledWith({ active: true, url: "https://myAlertaServer/ui/" }, expect.anything());
     expect(chrome.windows.update).toHaveBeenCalled();
 });
 
 test('Should open a specific alert in a new tab', () => {
     openAlert({
         userPreferences: {
-            alertaUiUrl: "https://myAlertaServer/ui"
+            alertaUiUrl: "https://myAlertaServer/ui/"
         },
     } as AlertaExtStore, "myNodifId", "1324657")
 
@@ -40,7 +40,7 @@ test('Should ack the alert in Alerta when clicking on Ack button', () => {
     // Given
     const state = {
         userPreferences: {
-            alertaApiServerUrl: "https://myAlertaServer/api",
+            alertaApiServerUrl: "https://myAlertaServer/api/",
             alertaApiSecret: "SecretKey", 
             username: "Morgan"
         },
@@ -73,7 +73,7 @@ test('Should ack the alert in Alerta when clicking on Ack button', () => {
 test('Should clear notification when opening new tab', () => {
     openAlerta({
         userPreferences: {
-            alertaUiUrl: "https://myAlertaServer/ui"
+            alertaUiUrl: "https://myAlertaServer/ui/"
         },
     } as AlertaExtStore, "1234")
 

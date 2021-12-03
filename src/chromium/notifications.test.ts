@@ -8,31 +8,45 @@ beforeEach(() => {
 });
 
 test('Should not launch notification if notification disabled in user preference', () => {
-    sendNotification({
-        ...defaultState.userPreferences,
-        showNotifications: false
-    }, [{
+    // Given
+    const state = {
+        userPreferences: { ...defaultState.userPreferences },
+        pollingState: { ...defaultState.pollingState }
+    };
+
+    state.pollingState.alerts = [];
+    state.userPreferences.showNotifications = false;
+
+    // When
+    sendNotification(state, [{
         id: "1",
         service: ["MyService"],
         event: "MyEvent",
         text: "This is a test"
     }]);
 
+    // Then
     expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
 
 test('Should launch notification if new alerts', () => {
+    // Given
+    const state = {
+        userPreferences: { ...defaultState.userPreferences },
+        pollingState: { ...defaultState.pollingState }
+    };
 
-    sendNotification({
-        ...defaultState.userPreferences,
-    }, [{
+    state.pollingState.alerts = [];
+
+    // When
+    sendNotification(state, [{
         id: "1",
         service: ["MyService"],
         event: "MyEvent",
         text: "This is a test"
-    }]
-    );
+    }]);
 
+    // Then
     const expectedAlert = {
         type: 'basic',
         title: `MyService - MyEvent`,
@@ -47,16 +61,24 @@ test('Should launch notification if new alerts', () => {
 });
 
 test('Should launch persistant notification if enabled in user preference', () => {
-    sendNotification({
-        ...defaultState.userPreferences,
-        persistentNotifications: true
-    }, [{
+    // Given
+    const state = {
+        userPreferences: { ...defaultState.userPreferences },
+        pollingState: { ...defaultState.pollingState }
+    };
+
+    state.pollingState.alerts = [];
+    state.userPreferences.persistentNotifications = true;
+
+    // When
+    sendNotification(state, [{
         id: "1",
         service: ["MyService"],
         event: "MyEvent",
         text: "This is a test"
     }]);
 
+    // Then
     const expectedAlert = {
         type: 'basic',
         title: `MyService - MyEvent`,
@@ -71,9 +93,15 @@ test('Should launch persistant notification if enabled in user preference', () =
 });
 
 test('Should launch a list notifications is more than one new alert', () => {
-    sendNotification({
-        ...defaultState.userPreferences,
-    }, [{
+    // Given
+    const state = {
+        userPreferences: { ...defaultState.userPreferences },
+        pollingState: { ...defaultState.pollingState }
+    };
+
+    state.pollingState.alerts = [];
+
+    sendNotification(state, [{
         id: "1",
         service: ["MyService2"],
         event: "MyEvent2"
@@ -87,7 +115,13 @@ test('Should launch a list notifications is more than one new alert', () => {
         type: 'list',
         title: `2 new alerts detected !`,
         message: 'Click to open Alerta',
-        items: [],
+        items: [{
+            message: " ",
+            title: "MyService2 - MyEvent2"
+        }, {
+            message: " ",
+            title: "MyService3 - MyEvent3",
+        }],
         iconUrl: "alert.png",
         isClickable: true,
         buttons: [{ title: 'Go to alerta' }]
@@ -96,22 +130,59 @@ test('Should launch a list notifications is more than one new alert', () => {
     expect(chrome.notifications.create).toHaveBeenCalledWith("GoToAlertaHome", expectedListAlert);
 });
 
-test('Should do nothing if no new alert', () => {
-    sendNotification({
-        ...defaultState.userPreferences,
-    }, []);
+test('Should not launch notification if no new alert', () => {
+    // Given
+    const state = {
+        userPreferences: { ...defaultState.userPreferences },
+        pollingState: { ...defaultState.pollingState }
+    };
 
+    state.pollingState.alerts = [];
+
+    // when
+    sendNotification(state, []);
+
+    // then
     expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
 
-test('Should play a sound if selected in user preferences', () => {
-    sendNotification({
-        ...defaultState.userPreferences,
-        playAudio: true
-    }, [{
+test('Should not launch notification if alerts has not been fetched for the first time', () => {
+    // Given
+    const state = {
+        userPreferences: { ...defaultState.userPreferences },
+        pollingState: { ...defaultState.pollingState }
+    };
+
+    state.pollingState.alerts = undefined;
+
+    // When
+    sendNotification(state, [{
         id: "1",
         service: ["MyService2"],
         event: "MyEvent2"
     }]);
+
+    // Then
+    expect(chrome.notifications.create).not.toHaveBeenCalled();
+});
+
+test('Should play a sound if selected in user preferences', () => {
+    // Given
+    const state = {
+        userPreferences: { ...defaultState.userPreferences },
+        pollingState: { ...defaultState.pollingState }
+    };
+
+    state.pollingState.alerts = [];
+    state.userPreferences.playAudio = true;
+
+    // when
+    sendNotification(state, [{
+        id: "1",
+        service: ["MyService2"],
+        event: "MyEvent2"
+    }]);
+
+    // then
     expect(PlaySound).toHaveBeenCalled();
 });

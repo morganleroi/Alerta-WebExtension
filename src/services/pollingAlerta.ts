@@ -16,7 +16,7 @@ export const startPolling = () => {
 }
 
 export const fetchAlerts = (state: AlertaExtStore) => {
-    fetch(`${state.userPreferences.alertaApiServerUrl}/alerts?${state.pollingState.alertaFetchQuery}`,
+    fetch(`${state.userPreferences.alertaApiServerUrl}alerts?${state.pollingState.alertaFetchQuery}`,
         { headers: { 'Authorization': `Key ${state.userPreferences.alertaApiSecret}` } })
         .then(response => response.json())
         .then(response => handleAlertaResponse(response, state));
@@ -27,12 +27,12 @@ function handleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
     var fetchedAlerts = alertaResponse.alerts as Alert[];
 
     // We collect new alerts in the fetchAlerts.
-    const newAlerts = fetchedAlerts.filter(alert => !state.pollingState.alerts.map(x => x.id).includes(alert.id));
+    const newAlerts = fetchedAlerts.filter(alert => state.pollingState.alerts && !state.pollingState.alerts.map(x => x.id).includes(alert.id));
     const currentNbOfAlerts: number = alertaResponse.alerts.length;
     chrome.browserAction.setBadgeText({ text: currentNbOfAlerts.toString() });
     chrome.browserAction.setBadgeBackgroundColor({ color: currentNbOfAlerts > 0 ? "red" : "green" });
 
-    sendNotification(state.userPreferences, newAlerts);
+    sendNotification(state, newAlerts);
     
     // Update the storage with the new value. Only if needed
     if (newAlerts.length > 0) {

@@ -7,5 +7,6 @@ export type UserPreferences = {
     username: string;
     filterServices: string[];
     filterGroups: string[];
+    filterEnvironments: string[];
     playAudio: boolean;
 }

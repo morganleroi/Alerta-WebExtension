@@ -20,31 +20,40 @@ const UserPreferences = () => {
         alertaApiSecret: "",
         username: "",
         filterGroups: [],
+        filterEnvironments: ["Production"],
         filterServices: [],
         playAudio: false,
     });
     const [userPrefSaved, setUserPrefSaved] = React.useState(false);
     const [alertaServices, setAlertaServices] = React.useState<{ value: string, label: string }[]>([]);
-    const [alertaGroup, setAlertaGroups] = React.useState<{ value: string, label: string }[]>([]);
+    const [alertaGroups, setAlertaGroups] = React.useState<{ value: string, label: string }[]>([]);
+    const [alertaEnvironments, setAlertaEnvironments] = React.useState<{ value: string, label: string }[]>([]);
     const [selectedOptionGroup, setSelectedOptionGroup] = React.useState<AlertaFilter[]>([]);
+    const [selectedOptionEnvironment, setSelectedOptionEnvironment] = React.useState<AlertaFilter[]>([]);
     const [selectedOptionService, setSelectedOptionService] = React.useState<AlertaFilter[]>([]);
+
+
+    const distinctAndPrepareForCombobox = (values: string[]) => {
+        return Array.from(new Set(values)).map((x:any) => {
+            return { label: x, value: x }
+        });
+    }
 
     React.useEffect(() =>
         chrome.storage.local.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             setUserPref(alertaExtStore.userPreferences);
+            
             alertaApi.getServices(alertaExtStore.userPreferences).then(reponse => {
-                var services = reponse.services.map((x: any) => {
-                    return { label: x.service, value: x.service }
-                });
-                setAlertaServices(services);
+                setAlertaServices(distinctAndPrepareForCombobox(reponse.services.map((x: any) => x.service)));
             });
 
-            alertaApi.getGroups(alertaExtStore.userPreferences).then(reponse => {
-                var groups = reponse.groups.map((x: any) => {
-                    return { label: x.group, value: x.group }
-                });
-                setAlertaGroups(groups);
+            alertaApi.getGroups(alertaExtStore.userPreferences).then(response => {
+                setAlertaGroups(distinctAndPrepareForCombobox(response.groups.map((v: any) => v.group)));
+            });
+
+            alertaApi.getEnvironments(alertaExtStore.userPreferences).then(reponse => {
+                setAlertaEnvironments(distinctAndPrepareForCombobox(reponse.environments.map((x: any) => x.environment)));
             });
         }), []);
 
@@ -56,6 +65,9 @@ const UserPreferences = () => {
                 return { value: s, label: s }
             }));
             setSelectedOptionGroup(alertaExtStore.userPreferences.filterGroups.map(s => {
+                return { value: s, label: s }
+            }));
+            setSelectedOptionEnvironment(alertaExtStore.userPreferences.filterEnvironments.map(s => {
                 return { value: s, label: s }
             }));
         });
@@ -75,6 +87,7 @@ const UserPreferences = () => {
 
         userPref.filterServices = selectedOptionService.map(option => option.value);
         userPref.filterGroups = selectedOptionGroup.map(option => option.value);
+        userPref.filterEnvironments = selectedOptionEnvironment.map(option => option.value);
 
         chromium.askForPermissionIfNeeded(userPref);
 
@@ -131,12 +144,16 @@ const UserPreferences = () => {
                     </Label>
                 </FormGroup>
                 <FormGroup className="mb-3">
+                    <label htmlFor="alertaEnvironments" className="form-label">Filter Environments</label>
+                    <CreatableSelect isMulti options={alertaEnvironments} onChange={setSelectedOptionEnvironment as any} value={selectedOptionEnvironment} defaultValue={selectedOptionEnvironment} />
+                </FormGroup>
+                <FormGroup className="mb-3">
                     <label htmlFor="alertaServices" className="form-label">Filter Services</label>
                     <CreatableSelect isMulti options={alertaServices} onChange={setSelectedOptionService as any} value={selectedOptionService} defaultValue={selectedOptionService} />
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <label htmlFor="alertaGroup" className="form-label">Filter Groups</label>
-                    <CreatableSelect isMulti options={alertaGroup} onChange={setSelectedOptionGroup as any} value={selectedOptionGroup} defaultValue={selectedOptionGroup} />
+                    <CreatableSelect isMulti options={alertaGroups} onChange={setSelectedOptionGroup as any} value={selectedOptionGroup} defaultValue={selectedOptionGroup} />
                 </FormGroup>
 
                 <Button color="primary" onClick={saveUserPreference}>Save preferences</Button>
