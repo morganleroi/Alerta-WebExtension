@@ -34,13 +34,14 @@ function handleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
 
     sendNotification(state, newAlerts);
     
-    // Update the storage with the new value. Only if needed
-    if (newAlerts.length > 0) {
+    // Update the storage with the new value. Only if needed or if if's the first time we have a state (or user preferences saved)
+    if (newAlerts.length > 0 || state.pollingState.isNewState) {
         saveState({
             ...state,
             pollingState: {
                 ...state.pollingState,
-                alerts: fetchedAlerts
+                alerts: fetchedAlerts,
+                isNewState: false
             }
         })
     }

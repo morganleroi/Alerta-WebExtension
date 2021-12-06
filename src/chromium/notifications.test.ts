@@ -146,7 +146,7 @@ test('Should not launch notification if no new alert', () => {
     expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
 
-test('Should not launch notification if alerts has not been fetched for the first time', () => {
+test('Should not launch notification if alerts has not been fetched for the first time, or user preferences just saved', () => {
     // Given
     const state = {
         userPreferences: { ...defaultState.userPreferences },

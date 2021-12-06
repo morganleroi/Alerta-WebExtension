@@ -22,7 +22,8 @@ export const saveUserPreferences = (userPref: UserPreferences) => {
                 ...alertaExtStore,
                 pollingState: {
                     ...alertaExtStore.pollingState,
-                    alertaFetchQuery: alertaApi.createFetchQuery(userPref)
+                    alertaFetchQuery: alertaApi.createFetchQuery(userPref),
+                    isNewState: true
                 },
                 userPreferences: userPref
             };

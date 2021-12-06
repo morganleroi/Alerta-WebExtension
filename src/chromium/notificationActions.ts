@@ -1,13 +1,13 @@
 import { AlertaExtStore } from "../model/extensionState";
 
 export function triggerNotificationAction(state: AlertaExtStore, notificationId: string, index: number) {
-    if (notificationId == "GoToAlertaHome") {
+    if (notificationId === "GoToAlertaHome") {
         openAlerta(state, notificationId);
     }
-    else if (notificationId.startsWith("Alert_") && index == 0) {
+    else if (notificationId.startsWith("Alert_") && index === 0) {
         ackAlert(state, notificationId, notificationId.split('_').pop());
     }
-    else if (notificationId.startsWith("Alert_") && index == 1) {
+    else if (notificationId.startsWith("Alert_") && index === 1) {
         openAlert(state, notificationId, notificationId.split('_').pop());
     }
 }
@@ -31,14 +31,16 @@ export function openAlerta(state: AlertaExtStore, notificationId?: string) {
 }
 
 export function openAlert(state: AlertaExtStore, notificationId: string, alertId?: string) {
-    if (!alertId) {
+    if (!alertId || notificationId === "GoToAlertaHome") {
         openAlerta(state, notificationId);
+        return;
     }
 
     createNewTab(`${state.userPreferences.alertaUiUrl}alert/${alertId}`, notificationId)
 }
 
 function createNewTab(url: string, notificationId?: string) {
+    console.log(url);
     chrome.tabs.create({ active: true, url }, (tab) => {
         if (notificationId) {
             chrome.notifications.clear(notificationId);
