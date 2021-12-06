@@ -2,8 +2,9 @@ import { Alert } from "./alerta"
 import { UserPreferences } from "./userPreferences"
 
 type PollingState = {
-    alerts?: Alert[]
+    alerts: Alert[]
     alertaFetchQuery: string;
+    isNewState: boolean;
 }
 
 export type AlertaExtStore = {
@@ -14,8 +15,8 @@ export type AlertaExtStore = {
 export const defaultState: AlertaExtStore = {
     pollingState: {
         alertaFetchQuery: "",
-        alerts: undefined
-
+        alerts: [],
+        isNewState: true
     },
     userPreferences: {
         alertaApiServerUrl: "http://localhost:9999/api/",

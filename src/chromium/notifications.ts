@@ -4,13 +4,12 @@ import { UserPreferences } from "../model/userPreferences";
 import { PlaySound } from "../services/playSound";
 
 export function sendNotification(state: AlertaExtStore, newAlerts: Alert[]) {
-    console.log(state);
     if (state.userPreferences.showNotifications) {
         // We have new alerts !
         // We only trigger alert if :
-        // - The alert count if defined (Not the first time we poll Alerta)
+        // - The alert count if defined (Not the first time we poll Alerta or if new preferences has been saved)
         // - The alert count is lower than the alerta count result from the polling request
-        if (state.pollingState.alerts && newAlerts.length > 0) {
+        if (!state.pollingState.isNewState && newAlerts.length > 0) {
             let notification = (newAlerts.length == 1) ? createBasicNotification(newAlerts[0], state.userPreferences) : createListNotification(newAlerts);
 
             if (state.userPreferences.playAudio) {

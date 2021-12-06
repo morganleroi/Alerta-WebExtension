@@ -45,7 +45,8 @@ test('Should fetch Alerts when alarms is triggered', () => {
         },
         pollingState: {
             alertaFetchQuery: "service=test&group-test2",
-            alerts: []
+            alerts: [],
+            isNewState: true
         }
     } as AlertaExtStore;
 

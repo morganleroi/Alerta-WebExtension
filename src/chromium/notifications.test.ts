@@ -14,7 +14,7 @@ test('Should not launch notification if notification disabled in user preference
         pollingState: { ...defaultState.pollingState }
     };
 
-    state.pollingState.alerts = [];
+    state.pollingState.isNewState = false;
     state.userPreferences.showNotifications = false;
 
     // When
@@ -36,7 +36,7 @@ test('Should launch notification if new alerts', () => {
         pollingState: { ...defaultState.pollingState }
     };
 
-    state.pollingState.alerts = [];
+    state.pollingState.isNewState = false;
 
     // When
     sendNotification(state, [{
@@ -67,7 +67,7 @@ test('Should launch persistant notification if enabled in user preference', () =
         pollingState: { ...defaultState.pollingState }
     };
 
-    state.pollingState.alerts = [];
+    state.pollingState.isNewState = false;
     state.userPreferences.persistentNotifications = true;
 
     // When
@@ -99,7 +99,7 @@ test('Should launch a list notifications is more than one new alert', () => {
         pollingState: { ...defaultState.pollingState }
     };
 
-    state.pollingState.alerts = [];
+    state.pollingState.isNewState = false;
 
     sendNotification(state, [{
         id: "1",
@@ -137,7 +137,7 @@ test('Should not launch notification if no new alert', () => {
         pollingState: { ...defaultState.pollingState }
     };
 
-    state.pollingState.alerts = [];
+    state.pollingState.isNewState = false;
 
     // when
     sendNotification(state, []);
@@ -153,7 +153,7 @@ test('Should not launch notification if alerts has not been fetched for the firs
         pollingState: { ...defaultState.pollingState }
     };
 
-    state.pollingState.alerts = undefined;
+    state.pollingState.isNewState = true;
 
     // When
     sendNotification(state, [{
@@ -173,7 +173,7 @@ test('Should play a sound if selected in user preferences', () => {
         pollingState: { ...defaultState.pollingState }
     };
 
-    state.pollingState.alerts = [];
+    state.pollingState.isNewState = false;
     state.userPreferences.playAudio = true;
 
     // when
