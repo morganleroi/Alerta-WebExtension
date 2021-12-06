@@ -40,7 +40,6 @@ export function openAlert(state: AlertaExtStore, notificationId: string, alertId
 }
 
 function createNewTab(url: string, notificationId?: string) {
-    console.log(url);
     chrome.tabs.create({ active: true, url }, (tab) => {
         if (notificationId) {
             chrome.notifications.clear(notificationId);
