@@ -18,13 +18,41 @@ export const startPolling = () => {
 export const fetchAlerts = (state: AlertaExtStore) => {
     fetch(`${state.userPreferences.alertaApiServerUrl}alerts?${state.pollingState.alertaFetchQuery}`,
         { headers: { 'Authorization': `Key ${state.userPreferences.alertaApiSecret}` } })
-        .then(response => response.json())
-        .then(response => handleAlertaResponse(response, state));
+        .then(response => response.ok ? response.json() : Promise.reject(response))
+        .then(response => {
+            handleAlertaResponse(response, state);
+            saveState({
+                ...state,
+                pollingState: {
+                    ...state.pollingState,
+                    fetchAlertState: {
+                        status: "OK"
+                    }
+                }
+            })
+        })
+        .catch(error => {
+            console.log(error)
+            saveState({
+                ...state,
+                pollingState: {
+                    ...state.pollingState,
+                    fetchAlertState: {
+                        status: "KO",
+                        error: { status: error.status, statusText: error.statusText }
+                    }
+                }
+            })
+        });
 }
 
 function handleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
 
     var fetchedAlerts = alertaResponse.alerts as Alert[];
+    
+    if(!fetchedAlerts){
+        return;
+    }
 
     // We collect new alerts in the fetchAlerts.
     const newAlerts = fetchedAlerts.filter(alert => state.pollingState.alerts && !state.pollingState.alerts.map(x => x.id).includes(alert.id));

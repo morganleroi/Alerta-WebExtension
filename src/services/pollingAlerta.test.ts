@@ -49,7 +49,8 @@ test('Should fetch Alerts when alarms is triggered', () => {
         pollingState: {
             alertaFetchQuery: "service=test&group-test2",
             alerts: [],
-            isNewState: true
+            isNewState: true,
+            fetchAlertState: { status: "Not yet fetched" }
         }
     } as AlertaExtStore;
 

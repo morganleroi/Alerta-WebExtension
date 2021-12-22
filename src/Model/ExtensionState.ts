@@ -5,6 +5,12 @@ type PollingState = {
     alerts: Alert[]
     alertaFetchQuery: string;
     isNewState: boolean;
+    fetchAlertState: FetchAlertState;
+}
+
+export type FetchAlertState = {
+    status: "Not yet fetched" | "OK" | "KO";
+    error?:  { status: number, statusText: string }
 }
 
 export type AlertaExtStore = {
@@ -16,7 +22,8 @@ export const defaultState: AlertaExtStore = {
     pollingState: {
         alertaFetchQuery: "",
         alerts: [],
-        isNewState: true
+        isNewState: true,
+        fetchAlertState: { status: "Not yet fetched" }
     },
     userPreferences: {
         alertaApiServerUrl: "http://localhost:9999/api/",

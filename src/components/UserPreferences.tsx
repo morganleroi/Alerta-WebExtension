@@ -1,11 +1,12 @@
 import * as React from "react";
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
-import { AlertaExtStore } from "../model/extensionState";
+import { AlertaExtStore, FetchAlertState } from "../model/extensionState";
 import { UserPreferences } from '../model/userPreferences';
 import * as alertaApi from "../services/fetchAlertaApi";
 import * as chromium from "../services/chromiumWrapper";
 import Filter from "./Filter";
 import InfoTooltip from "./InfoTooltip";
+import ConnectionStatus from "./ConnectionStatus";
 
 type AlertaFilter = {
     label: string,
@@ -25,6 +26,7 @@ const UserPreferences = () => {
         filterServices: [],
         playAudio: false,
     });
+    const [fetchAlertStatus, setfetchAlertStatus] = React.useState<any>();
     const [userPrefSaved, setUserPrefSaved] = React.useState<{ userPrefSavedWithoutError: boolean, displayAlert: boolean, errorReason?: string }>();
     const [selectedOptionGroup, setSelectedOptionGroup] = React.useState<AlertaFilter[]>([]);
     const [selectedOptionEnvironment, setSelectedOptionEnvironment] = React.useState<AlertaFilter[]>([]);
@@ -35,10 +37,11 @@ const UserPreferences = () => {
         chrome.storage.local.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             setUserPref(alertaExtStore.userPreferences);
+            setfetchAlertStatus(alertaExtStore.pollingState.fetchAlertState);
             setIsUserPrefLoaded(true);
         }), []);
 
-    const cleanUrl = (url: string) => {
+    const cleanUrl = (url: string) => { 
         url = url.trim();
         if (!url.endsWith('/')) {
             url = url + "/";
@@ -74,6 +77,7 @@ const UserPreferences = () => {
                 <div className="card mt-2">
                     <div className="card-header">
                         <h4>Alerta Server configuration</h4>
+                        <ConnectionStatus fetchAlertStatus={fetchAlertStatus}/> 
                     </div>
                     <div className="card-body">
                         <div className="d-flex flex-wrap justify-content-left">
