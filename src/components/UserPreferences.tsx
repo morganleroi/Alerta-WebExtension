@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Form, FormGroup, Label, Input, UncontrolledTooltip } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { AlertaExtStore } from "../model/extensionState";
 import { UserPreferences } from '../model/userPreferences';
 import * as alertaApi from "../services/fetchAlertaApi";
@@ -78,7 +78,7 @@ const UserPreferences = () => {
                     <div className="card-body">
                         <div className="d-flex flex-wrap justify-content-left">
                             <div className="m-2 flex-fill">
-                                <label htmlFor="alertaUrl" className="form-label">Alerta API Url <span className="red" >*</span></label>
+                                <label htmlFor="alertaUrl" className="form-label">Alerta API Url <span className="text-danger" >*</span></label>
                                 <input type="text" className="form-control" id="alertaUrl"
                                     placeholder="http://hostname:port" value={userPref?.alertaApiServerUrl}
                                     onChange={(val) => setUserPref({ ...userPref, alertaApiServerUrl: val.target.value })} />
@@ -90,13 +90,13 @@ const UserPreferences = () => {
                                     onChange={(val) => setUserPref({ ...userPref, alertaApiSecret: val.target.value })} />
                             </div>
                             <div className="m-2 flex-fill">
-                                <label htmlFor="alertaUiUrl" className="form-label">Alerta UI Url </label> <InfoTooltip text="This URL is used when you click on a notification to redirect to alert page" />
+                                <label htmlFor="alertaUiUrl" className="form-label">Alerta UI Url </label> <InfoTooltip id="tooltip-alerta-ui" text="This URL is used when you click on a notification to redirect to alert page" />
                                 <input type="text" className="form-control" id="alertaUiUrl"
                                     placeholder="http://hostname:port" value={userPref?.alertaUiUrl}
                                     onChange={(val) => setUserPref({ ...userPref, alertaUiUrl: val.target.value })} />
                             </div>
                             <div className="m-2 flex-fill">
-                                <label htmlFor="username" className="form-label">Username</label> <InfoTooltip text="Username if used when you Ack the alert notification" />
+                                <label htmlFor="username" className="form-label">Username</label> <InfoTooltip id="tooltip-username" text="Username if used when you Ack the alert notification" />
                                 <input type="text" className="form-control" id="username"
                                     placeholder="Your mail, or you name." value={userPref?.username}
                                     onChange={(val) => setUserPref({ ...userPref, username: val.target.value })} />
@@ -121,7 +121,7 @@ const UserPreferences = () => {
                                 <Label check>
                                     <Input type="checkbox" checked={userPref?.persistentNotifications}
                                         onChange={(val) => setUserPref({ ...userPref, persistentNotifications: val.target.checked })} />
-                                    Persistent notifications <InfoTooltip text="Notifications will not disapears until you click on them (Or any action)" />
+                                    Persistent notifications <InfoTooltip id="tooltip-persistant-notif" text="Notifications will not disapears until you click on them (Or any action)" />
                                 </Label>
                             </FormGroup>
                             <FormGroup className="m-2" check>
