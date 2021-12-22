@@ -1,15 +1,15 @@
 import { UserPreferences } from "../model/userPreferences"
 
-export const getServices = (userPref: UserPreferences): Promise<any> => {
-    return fetch(`${userPref.alertaApiServerUrl}services`, { method: "GET", headers: getHeaders(userPref) }).then(response => response.json())
+export const getServices = (userPref: UserPreferences): Promise<string[]> => {
+    return fetch(`${userPref.alertaApiServerUrl}services`, { method: "GET", headers: getHeaders(userPref) }).then(response => response.json()).then(json => json.services).then(services => services.map((x: { service: any; }) => x.service));
 }
 
-export const getGroups = (userPref: UserPreferences): Promise<any> => {
-    return fetch(`${userPref.alertaApiServerUrl}alerts/groups`, { method: "GET", headers: getHeaders(userPref) }).then(response => response.json())
+export const getGroups = (userPref: UserPreferences): Promise<string[]> => {
+    return fetch(`${userPref.alertaApiServerUrl}alerts/groups`, { method: "GET", headers: getHeaders(userPref) }).then(response => response.json()).then(json => json.groups).then(groups => groups.map((x: { group: any; }) => x.group));
 }
 
-export const getEnvironments = (userPref: UserPreferences): Promise<any> => {
-    return fetch(`${userPref.alertaApiServerUrl}environments`, { method: "GET", headers: getHeaders(userPref) }).then(response => response.json())
+export const getEnvironments = (userPref: UserPreferences): Promise<string[]> => {
+    return fetch(`${userPref.alertaApiServerUrl}environments`, { method: "GET", headers: getHeaders(userPref) }).then(response => response.json()).then(json => json.environments).then(environments => environments.map((x: { environment: any; }) => x.environment));
 }
 
 const getHeaders = (userPref: UserPreferences): HeadersInit => {

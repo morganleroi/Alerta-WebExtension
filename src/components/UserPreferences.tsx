@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, UncontrolledTooltip } from 'reactstrap';
 import { AlertaExtStore } from "../model/extensionState";
 import { UserPreferences } from '../model/userPreferences';
-import CreatableSelect from 'react-select/creatable'
 import * as alertaApi from "../services/fetchAlertaApi";
 import * as chromium from "../services/chromiumWrapper";
+import Filter from "./Filter";
+import InfoTooltip from "./InfoTooltip";
 
 type AlertaFilter = {
     label: string,
@@ -24,54 +25,18 @@ const UserPreferences = () => {
         filterServices: [],
         playAudio: false,
     });
-    const [userPrefSaved, setUserPrefSaved] = React.useState(false);
-    const [alertaServices, setAlertaServices] = React.useState<{ value: string, label: string }[]>([]);
-    const [alertaGroups, setAlertaGroups] = React.useState<{ value: string, label: string }[]>([]);
-    const [alertaEnvironments, setAlertaEnvironments] = React.useState<{ value: string, label: string }[]>([]);
+    const [userPrefSaved, setUserPrefSaved] = React.useState<{ userPrefSavedWithoutError: boolean, displayAlert: boolean, errorReason?: string }>();
     const [selectedOptionGroup, setSelectedOptionGroup] = React.useState<AlertaFilter[]>([]);
     const [selectedOptionEnvironment, setSelectedOptionEnvironment] = React.useState<AlertaFilter[]>([]);
     const [selectedOptionService, setSelectedOptionService] = React.useState<AlertaFilter[]>([]);
-
-
-    const distinctAndPrepareForCombobox = (values: string[]) => {
-        return Array.from(new Set(values)).map((x:any) => {
-            return { label: x, value: x }
-        });
-    }
+    const [isUserPrefLoaded, setIsUserPrefLoaded] = React.useState<boolean>();
 
     React.useEffect(() =>
         chrome.storage.local.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             setUserPref(alertaExtStore.userPreferences);
-            
-            alertaApi.getServices(alertaExtStore.userPreferences).then(reponse => {
-                setAlertaServices(distinctAndPrepareForCombobox(reponse.services.map((x: any) => x.service)));
-            });
-
-            alertaApi.getGroups(alertaExtStore.userPreferences).then(response => {
-                setAlertaGroups(distinctAndPrepareForCombobox(response.groups.map((v: any) => v.group)));
-            });
-
-            alertaApi.getEnvironments(alertaExtStore.userPreferences).then(reponse => {
-                setAlertaEnvironments(distinctAndPrepareForCombobox(reponse.environments.map((x: any) => x.environment)));
-            });
+            setIsUserPrefLoaded(true);
         }), []);
-
-    React.useEffect(() => {
-        chrome.storage.local.get(null, function (items: any) {
-            const alertaExtStore: AlertaExtStore = items;
-            setUserPref(alertaExtStore.userPreferences);
-            setSelectedOptionService(alertaExtStore.userPreferences.filterServices.map(s => {
-                return { value: s, label: s }
-            }));
-            setSelectedOptionGroup(alertaExtStore.userPreferences.filterGroups.map(s => {
-                return { value: s, label: s }
-            }));
-            setSelectedOptionEnvironment(alertaExtStore.userPreferences.filterEnvironments.map(s => {
-                return { value: s, label: s }
-            }));
-        });
-    }, []);
 
     const cleanUrl = (url: string) => {
         url = url.trim();
@@ -92,71 +57,97 @@ const UserPreferences = () => {
         chromium.askForPermissionIfNeeded(userPref);
 
         chromium.saveUserPreferences(userPref).then(_ => {
-            setUserPrefSaved(true);
-            setTimeout(() => setUserPrefSaved(false), 5000);
+            setUserPrefSaved({ userPrefSavedWithoutError: true, displayAlert: true });
+            setTimeout(() => setUserPrefSaved({ userPrefSavedWithoutError: true, displayAlert: false }), 5000);
         }).catch(reason => {
+            setUserPrefSaved({ userPrefSavedWithoutError: false, displayAlert: true, errorReason: reason });
         });
     }
 
     return (
         <div className="container-fluid">
-            <h1>Alerta Extension Options</h1>
             <Form>
-                <div className="alert alert-success" id="saveSucess" role="alert" style={{ display: userPrefSaved ? 'block' : 'none' }} >
-                    Preferences saved !
+                <div className={userPrefSaved?.userPrefSavedWithoutError ? "alert alert-success m-3" : "alert alert-danger m-3"} role="alert" style={{ display: userPrefSaved?.displayAlert ? 'block' : 'none' }} >
+                    {userPrefSaved?.userPrefSavedWithoutError ? "Preferences saved !" : "Oups, an error happened while saving preferences. (Error: " + userPrefSaved?.errorReason + ")"}
                 </div>
-                <FormGroup className="mb-3">
-                    <label htmlFor="alertaUrl" className="form-label">Alerta API Url</label>
-                    <input type="text" className="form-control" id="alertaUrl"
-                        placeholder="http://hostname:port" value={userPref?.alertaApiServerUrl} onChange={(val) => setUserPref({ ...userPref, alertaApiServerUrl: val.target.value })} />
-                </FormGroup>
-                <FormGroup className="mb-3">
-                    <label htmlFor="alertaUiUrl" className="form-label">Alerta UI Url</label>
-                    <input type="text" className="form-control" id="alertaUiUrl"
-                        placeholder="http://hostname:port" value={userPref?.alertaUiUrl} onChange={(val) => setUserPref({ ...userPref, alertaUiUrl: val.target.value })} />
-                </FormGroup>
-                <FormGroup className="mb-3">
-                    <label htmlFor="alertaSecretKey" className="form-label">Alerta API Secret</label>
-                    <input type="text" className="form-control" id="alertaSecretKey"
-                        placeholder="" value={userPref?.alertaApiSecret} onChange={(val) => setUserPref({ ...userPref, alertaApiSecret: val.target.value })} />
-                </FormGroup>
-                <FormGroup className="mb-3">
-                    <label htmlFor="username" className="form-label">Username</label>
-                    <input type="text" className="form-control" id="username"
-                        placeholder="Your mail, or you name." value={userPref?.username} onChange={(val) => setUserPref({ ...userPref, username: val.target.value })} />
-                </FormGroup>
-                <FormGroup check>
-                    <Label check>
-                        <Input type="checkbox" checked={userPref?.showNotifications} onChange={(val) => setUserPref({ ...userPref, showNotifications: val.target.checked })} />
-                        Generates Chrome (or OS) notifications
-                    </Label>
-                </FormGroup>
-                <FormGroup check>
-                    <Label check>
-                        <Input type="checkbox" checked={userPref?.persistentNotifications} onChange={(val) => setUserPref({ ...userPref, persistentNotifications: val.target.checked })} />
-                        Persistant notifications
-                    </Label>
-                </FormGroup>
-                <FormGroup check>
-                    <Label check>
-                        <Input type="checkbox" checked={userPref?.playAudio} onChange={(val) => setUserPref({ ...userPref, playAudio: val.target.checked })} />
-                        Play a "Bip" with a new notification
-                    </Label>
-                </FormGroup>
-                <FormGroup className="mb-3">
-                    <label htmlFor="alertaEnvironments" className="form-label">Filter Environments</label>
-                    <CreatableSelect isMulti options={alertaEnvironments} onChange={setSelectedOptionEnvironment as any} value={selectedOptionEnvironment} defaultValue={selectedOptionEnvironment} />
-                </FormGroup>
-                <FormGroup className="mb-3">
-                    <label htmlFor="alertaServices" className="form-label">Filter Services</label>
-                    <CreatableSelect isMulti options={alertaServices} onChange={setSelectedOptionService as any} value={selectedOptionService} defaultValue={selectedOptionService} />
-                </FormGroup>
-                <FormGroup className="mb-3">
-                    <label htmlFor="alertaGroup" className="form-label">Filter Groups</label>
-                    <CreatableSelect isMulti options={alertaGroups} onChange={setSelectedOptionGroup as any} value={selectedOptionGroup} defaultValue={selectedOptionGroup} />
-                </FormGroup>
 
-                <Button color="primary" onClick={saveUserPreference}>Save preferences</Button>
+                <div className="card mt-2">
+                    <div className="card-header">
+                        <h4>Alerta Server configuration</h4>
+                    </div>
+                    <div className="card-body">
+                        <div className="d-flex flex-wrap justify-content-left">
+                            <div className="m-2 flex-fill">
+                                <label htmlFor="alertaUrl" className="form-label">Alerta API Url <span className="red" >*</span></label>
+                                <input type="text" className="form-control" id="alertaUrl"
+                                    placeholder="http://hostname:port" value={userPref?.alertaApiServerUrl}
+                                    onChange={(val) => setUserPref({ ...userPref, alertaApiServerUrl: val.target.value })} />
+                            </div>
+                            <div className="m-2 flex-fill">
+                                <label htmlFor="alertaSecretKey" className="form-label">Alerta API Secret</label>
+                                <input type="text" className="form-control" id="alertaSecretKey"
+                                    placeholder="" value={userPref?.alertaApiSecret}
+                                    onChange={(val) => setUserPref({ ...userPref, alertaApiSecret: val.target.value })} />
+                            </div>
+                            <div className="m-2 flex-fill">
+                                <label htmlFor="alertaUiUrl" className="form-label">Alerta UI Url </label> <InfoTooltip text="This URL is used when you click on a notification to redirect to alert page" />
+                                <input type="text" className="form-control" id="alertaUiUrl"
+                                    placeholder="http://hostname:port" value={userPref?.alertaUiUrl}
+                                    onChange={(val) => setUserPref({ ...userPref, alertaUiUrl: val.target.value })} />
+                            </div>
+                            <div className="m-2 flex-fill">
+                                <label htmlFor="username" className="form-label">Username</label> <InfoTooltip text="Username if used when you Ack the alert notification" />
+                                <input type="text" className="form-control" id="username"
+                                    placeholder="Your mail, or you name." value={userPref?.username}
+                                    onChange={(val) => setUserPref({ ...userPref, username: val.target.value })} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="d-flex flex-wrap">
+                    <div className="card mt-2 me-4">
+                        <div className="card-header">
+                            <h4>Extension user preferences</h4>
+                        </div>
+                        <div className="card-body">
+                            <FormGroup className="m-2" check>
+                                <Label check>
+                                    <Input type="checkbox" checked={userPref?.showNotifications}
+                                        onChange={(val) => setUserPref({ ...userPref, showNotifications: val.target.checked })} />
+                                    Display a notification when a new alert is received
+                                </Label>
+                            </FormGroup>
+                            <FormGroup className="m-2" check>
+                                <Label check>
+                                    <Input type="checkbox" checked={userPref?.persistentNotifications}
+                                        onChange={(val) => setUserPref({ ...userPref, persistentNotifications: val.target.checked })} />
+                                    Persistent notifications <InfoTooltip text="Notifications will not disapears until you click on them (Or any action)" />
+                                </Label>
+                            </FormGroup>
+                            <FormGroup className="m-2" check>
+                                <Label check>
+                                    <Input type="checkbox" checked={userPref?.playAudio}
+                                        onChange={(val) => setUserPref({ ...userPref, playAudio: val.target.checked })} />
+                                    Play a "Bip" when a new alert is received
+                                </Label>
+                            </FormGroup>
+                        </div>
+                    </div>
+
+                    <div className="card mt-2 flex-grow-1">
+                        <div className="card-header">
+                            <h4>Filters</h4>
+                        </div>
+                        <div className="card-body">
+                            <div className="d-flex flex-wrap justify-content-left">
+                                {isUserPrefLoaded && <Filter name="Environments" userPref={userPref} getFilterValues={alertaApi.getEnvironments} getUserPrefFilterValues={userPref.filterEnvironments} onSelectedFilter={setSelectedOptionEnvironment} selectedFilterValue={selectedOptionEnvironment} />}
+                                {isUserPrefLoaded && <Filter name="Services" userPref={userPref} getFilterValues={alertaApi.getServices} getUserPrefFilterValues={userPref.filterServices} onSelectedFilter={setSelectedOptionService} selectedFilterValue={selectedOptionService} />}
+                                {isUserPrefLoaded && <Filter name="Groups" userPref={userPref} getFilterValues={alertaApi.getGroups} getUserPrefFilterValues={userPref.filterGroups} onSelectedFilter={setSelectedOptionGroup} selectedFilterValue={selectedOptionGroup} />}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <Button className="mt-5" color="primary" onClick={saveUserPreference}>Save preferences</Button>
             </Form>
         </div>
     );
