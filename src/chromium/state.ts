@@ -1,6 +1,6 @@
 import { AlertaExtStore, defaultState } from "../model/extensionState";
 
-var state: AlertaExtStore;
+var state: AlertaExtStore = defaultState;
 
 const initializeState = (): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -26,8 +26,8 @@ const getState = () => {
 
 const synchronizeState = () => {
     loadState().then(items => {
-            const newState = items as AlertaExtStore;
-            Object.assign(state, newState);
+        const newState = items as AlertaExtStore;
+        Object.assign(state, newState);
     });
 }
 

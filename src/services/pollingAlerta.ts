@@ -32,7 +32,6 @@ export const fetchAlerts = (state: AlertaExtStore) => {
             })
         })
         .catch(error => {
-            console.log(error)
             saveState({
                 ...state,
                 pollingState: {

@@ -1,7 +1,6 @@
 import { fetchAlerts, startPolling } from "./pollingAlerta";
 import fetchMock from "jest-fetch-mock";
 import { AlertaExtStore, defaultState } from "../model/extensionState";
-import { getState, saveState } from "../chromium/state";
 
 fetchMock.enableMocks();
 
