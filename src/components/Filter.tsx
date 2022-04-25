@@ -2,6 +2,7 @@ import * as React from "react";
 import { FormGroup } from 'reactstrap';
 import CreatableSelect from 'react-select/creatable'
 import { UserPreferences } from "../model/userPreferences";
+import { FetchAlertState } from "../model/extensionState";
 
 type AlertaFilter = {
     label: string,
@@ -18,6 +19,7 @@ type FilterProps = {
         label: string;
     }[]>>
     selectedFilterValue: AlertaFilter[]
+    globalStatus: FetchAlertState;
 }
 
 const distinctAndPrepareForCombobox = (values: string[]) => {
@@ -42,11 +44,11 @@ const Filter = (props: FilterProps) => {
                 return;
             }
             setFilterValues(distinctAndPrepareForCombobox(reponse));
-            setIsFilterFetched(true);
+            setIsFilterFetched(true && props.globalStatus.status === "OK");
         }).catch(error => {
             setIsFilterFetched(false);
         });
-    }, [props.userPref.alertaApiSecret, props.userPref.alertaApiServerUrl])
+    }, [props.userPref.alertaApiSecret, props.userPref.alertaApiServerUrl, props.globalStatus.status])
 
     return (
         <FormGroup className="m-2 flex-fill">

@@ -1,5 +1,4 @@
 import { AlertaExtStore, defaultState, FetchAlertState } from "../model/extensionState";
-import { fetchAlerts } from "../services/pollingAlerta";
 
 var state: AlertaExtStore = defaultState;
 

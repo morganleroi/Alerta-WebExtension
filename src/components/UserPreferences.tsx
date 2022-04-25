@@ -77,8 +77,8 @@ const UserPreferences = (props: { state: () => AlertaExtStore, state2: AlertaExt
 
                 <div className="card mt-2">
                     <div className="card-header">
-                        <h4>Alerta Server configuration</h4>
-                       {fetchAlertStatus && <ConnectionStatus fetchAlertStatus={fetchAlertStatus}/> }
+                    <h4>Alerta Server configuration</h4>
+                       {fetchAlertStatus && isUserPrefLoaded && <ConnectionStatus fetchAlertStatus={fetchAlertStatus}/> }
                     </div>
                     <div className="card-body">
                         <div className="d-flex flex-wrap justify-content-left">
@@ -145,9 +145,9 @@ const UserPreferences = (props: { state: () => AlertaExtStore, state2: AlertaExt
                         </div>
                         <div className="card-body">
                             <div className="d-flex flex-wrap justify-content-left">
-                                {isUserPrefLoaded && <Filter name="Environments" userPref={userPref} getFilterValues={alertaApi.getEnvironments} getUserPrefFilterValues={userPref.filterEnvironments} onSelectedFilter={setSelectedOptionEnvironment} selectedFilterValue={selectedOptionEnvironment} />}
-                                {isUserPrefLoaded && <Filter name="Services" userPref={userPref} getFilterValues={alertaApi.getServices} getUserPrefFilterValues={userPref.filterServices} onSelectedFilter={setSelectedOptionService} selectedFilterValue={selectedOptionService} />}
-                                {isUserPrefLoaded && <Filter name="Groups" userPref={userPref} getFilterValues={alertaApi.getGroups} getUserPrefFilterValues={userPref.filterGroups} onSelectedFilter={setSelectedOptionGroup} selectedFilterValue={selectedOptionGroup} />}
+                                {isUserPrefLoaded && <Filter globalStatus={fetchAlertStatus!} name="Environments" userPref={userPref} getFilterValues={alertaApi.getEnvironments} getUserPrefFilterValues={userPref.filterEnvironments} onSelectedFilter={setSelectedOptionEnvironment} selectedFilterValue={selectedOptionEnvironment} />}
+                                {isUserPrefLoaded && <Filter globalStatus={fetchAlertStatus!} name="Services" userPref={userPref} getFilterValues={alertaApi.getServices} getUserPrefFilterValues={userPref.filterServices} onSelectedFilter={setSelectedOptionService} selectedFilterValue={selectedOptionService} />}
+                                {isUserPrefLoaded && <Filter globalStatus={fetchAlertStatus!} name="Groups" userPref={userPref} getFilterValues={alertaApi.getGroups} getUserPrefFilterValues={userPref.filterGroups} onSelectedFilter={setSelectedOptionGroup} selectedFilterValue={selectedOptionGroup} />}
                             </div>
                         </div>
                     </div>
