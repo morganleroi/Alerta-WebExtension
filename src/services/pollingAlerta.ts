@@ -1,7 +1,7 @@
 import { Alert } from "../model/alerta";
 import { AlertaExtStore } from "../model/extensionState";
 import { sendNotification } from "../chromium/notifications";
-import { getState, saveState } from "../chromium/state";
+import { getState, savePollingStateState, saveState } from "../chromium/state";
 
 export const startPolling = () => {
     chrome.alarms.onAlarm.addListener(() => {
@@ -21,35 +21,24 @@ export const fetchAlerts = (state: AlertaExtStore) => {
         .then(response => response.ok ? response.json() : Promise.reject(response))
         .then(response => {
             handleAlertaResponse(response, state);
-            saveState({
-                ...state,
-                pollingState: {
-                    ...state.pollingState,
-                    fetchAlertState: {
-                        status: "OK"
-                    }
-                }
-            })
+
+            savePollingStateState({
+                status: "OK"
+            });
         })
         .catch(error => {
-            saveState({
-                ...state,
-                pollingState: {
-                    ...state.pollingState,
-                    fetchAlertState: {
-                        status: "KO",
-                        error: { status: error.status, statusText: error.statusText }
-                    }
-                }
-            })
+            savePollingStateState({
+                status: "KO",
+                error: { status: error.status, statusText: error.statusText }
+            });
         });
 }
 
 function handleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
 
     var fetchedAlerts = alertaResponse.alerts as Alert[];
-    
-    if(!fetchedAlerts){
+
+    if (!fetchedAlerts) {
         return;
     }
 
@@ -60,7 +49,7 @@ function handleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
     chrome.browserAction.setBadgeBackgroundColor({ color: currentNbOfAlerts > 0 ? "red" : "green" });
 
     sendNotification(state, newAlerts);
-    
+
     // Update the storage with the new value. Only if needed or if if's the first time we have a state (or user preferences saved)
     if (newAlerts.length > 0 || state.pollingState.isNewState) {
         saveState({

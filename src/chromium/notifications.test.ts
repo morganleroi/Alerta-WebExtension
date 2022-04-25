@@ -10,6 +10,7 @@ beforeEach(() => {
 test('Should not launch notification if notification disabled in user preference', () => {
     // Given
     const state = {
+        fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
         userPreferences: { ...defaultState.userPreferences },
         pollingState: { ...defaultState.pollingState }
     };
@@ -32,6 +33,7 @@ test('Should not launch notification if notification disabled in user preference
 test('Should launch notification if new alerts', () => {
     // Given
     const state = {
+        fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
         userPreferences: { ...defaultState.userPreferences },
         pollingState: { ...defaultState.pollingState }
     };
@@ -63,6 +65,7 @@ test('Should launch notification if new alerts', () => {
 test('Should launch persistant notification if enabled in user preference', () => {
     // Given
     const state = {
+        fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
         userPreferences: { ...defaultState.userPreferences },
         pollingState: { ...defaultState.pollingState }
     };
@@ -95,6 +98,7 @@ test('Should launch persistant notification if enabled in user preference', () =
 test('Should launch a list notifications is more than one new alert', () => {
     // Given
     const state = {
+        fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
         userPreferences: { ...defaultState.userPreferences },
         pollingState: { ...defaultState.pollingState }
     };
@@ -133,6 +137,7 @@ test('Should launch a list notifications is more than one new alert', () => {
 test('Should not launch notification if no new alert', () => {
     // Given
     const state = {
+        fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
         userPreferences: { ...defaultState.userPreferences },
         pollingState: { ...defaultState.pollingState }
     };
@@ -149,6 +154,7 @@ test('Should not launch notification if no new alert', () => {
 test('Should not launch notification if alerts has not been fetched for the first time, or user preferences just saved', () => {
     // Given
     const state = {
+        fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
         userPreferences: { ...defaultState.userPreferences },
         pollingState: { ...defaultState.pollingState }
     };
@@ -169,6 +175,7 @@ test('Should not launch notification if alerts has not been fetched for the firs
 test('Should play a sound if selected in user preferences', () => {
     // Given
     const state = {
+        fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
         userPreferences: { ...defaultState.userPreferences },
         pollingState: { ...defaultState.pollingState }
     };

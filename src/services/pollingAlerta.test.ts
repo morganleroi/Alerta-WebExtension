@@ -40,6 +40,9 @@ test('Should fetch Alerts when alarms is triggered', () => {
     }));
 
     const state = {
+        fetchAlertPollingState: {
+            status: 'Not yet fetched'
+        },
         userPreferences: {
             ...defaultState.userPreferences,
             alertaApiServerUrl: "https://myAlertaServer/",

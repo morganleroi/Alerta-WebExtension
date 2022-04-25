@@ -16,9 +16,13 @@ export type FetchAlertState = {
 export type AlertaExtStore = {
     userPreferences: UserPreferences;
     pollingState: PollingState;
+    fetchAlertPollingState: FetchAlertState;
 }
 
 export const defaultState: AlertaExtStore = {
+    fetchAlertPollingState: {
+        status: "Not yet fetched"
+    },
     pollingState: {
         alertaFetchQuery: "",
         alerts: [],

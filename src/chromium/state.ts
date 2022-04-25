@@ -1,4 +1,5 @@
-import { AlertaExtStore, defaultState } from "../model/extensionState";
+import { AlertaExtStore, defaultState, FetchAlertState } from "../model/extensionState";
+import { fetchAlerts } from "../services/pollingAlerta";
 
 var state: AlertaExtStore = defaultState;
 
@@ -18,6 +19,10 @@ const saveState = (newState: AlertaExtStore) => {
     chrome.storage.local.set(newState, () => {
         Object.assign(state, newState);
     });
+}
+
+const savePollingStateState = (fetchAlertaState: FetchAlertState) => {
+    chrome.storage.local.set({fetchAlertPollingState: fetchAlertaState});
 }
 
 const getState = () => {
@@ -42,4 +47,4 @@ function loadState(): Promise<AlertaExtStore> {
     });
 }
 
-export { initializeState, saveState, getState, loadState, synchronizeState }
+export { initializeState, saveState, savePollingStateState, getState, loadState, synchronizeState }

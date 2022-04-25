@@ -7,7 +7,6 @@ import * as chromium from "../services/chromiumWrapper";
 import Filter from "./Filter";
 import InfoTooltip from "./InfoTooltip";
 import ConnectionStatus from "./ConnectionStatus";
-import { getState, loadState } from '../chromium/state'
 
 type AlertaFilter = {
     label: string,
@@ -28,7 +27,7 @@ const UserPreferences = (props: { state: () => AlertaExtStore, state2: AlertaExt
         playAudio: false,
     });
 
-    const [fetchAlertStatus, setfetchAlertStatus] = React.useState<any>();
+    const [fetchAlertStatus, setfetchAlertStatus] = React.useState<FetchAlertState>();
     const [userPrefSaved, setUserPrefSaved] = React.useState<{ userPrefSavedWithoutError: boolean, displayAlert: boolean, errorReason?: string }>();
     const [selectedOptionGroup, setSelectedOptionGroup] = React.useState<AlertaFilter[]>([]);
     const [selectedOptionEnvironment, setSelectedOptionEnvironment] = React.useState<AlertaFilter[]>([]);
@@ -39,7 +38,7 @@ const UserPreferences = (props: { state: () => AlertaExtStore, state2: AlertaExt
         chrome.storage.local.get(null, function (items: any) {
             const alertaExtStore: AlertaExtStore = items;
             setUserPref(alertaExtStore.userPreferences);
-            setfetchAlertStatus(alertaExtStore.pollingState.fetchAlertState);
+            setfetchAlertStatus(alertaExtStore.fetchAlertPollingState);
             setIsUserPrefLoaded(true);
         }), []);
 
@@ -79,7 +78,7 @@ const UserPreferences = (props: { state: () => AlertaExtStore, state2: AlertaExt
                 <div className="card mt-2">
                     <div className="card-header">
                         <h4>Alerta Server configuration</h4>
-                        {/* <ConnectionStatus fetchAlertStatus={fetchAlertStatus}/>  */}
+                       {fetchAlertStatus && <ConnectionStatus fetchAlertStatus={fetchAlertStatus}/> }
                     </div>
                     <div className="card-body">
                         <div className="d-flex flex-wrap justify-content-left">
