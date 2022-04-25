@@ -30,8 +30,8 @@ export const defaultState: AlertaExtStore = {
         fetchAlertState: { status: "Not yet fetched" }
     },
     userPreferences: {
-        alertaApiServerUrl: "http://localhost:9999/api/",
-        alertaUiUrl: "http://localhost:9999/",
+        alertaApiServerUrl: "http://localhost:8080/api/",
+        alertaUiUrl: "http://localhost:8080/",
         persistentNotifications: false,
         showNotifications: true,
         alertaApiSecret: "XXX",
