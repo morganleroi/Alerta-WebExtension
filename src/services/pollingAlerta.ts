@@ -27,6 +27,8 @@ export const fetchAlerts = (state: AlertaExtStore) => {
             });
         })
         .catch(error => {
+            chrome.browserAction.setBadgeText({ text: "ERR" });
+            chrome.browserAction.setBadgeBackgroundColor({ color: "red" });
             savePollingStateState({
                 status: "KO",
                 error: { status: error.status, statusText: error.statusText }
