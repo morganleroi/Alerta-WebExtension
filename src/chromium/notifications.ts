@@ -1,7 +1,7 @@
-import { Alert } from "../model/alerta";
-import { AlertaExtStore } from "../model/extensionState";
-import { UserPreferences } from "../model/userPreferences";
-import { playSound } from "../services/playSound";
+import { Alert } from '../model/alerta';
+import { AlertaExtStore } from '../model/extensionState';
+import { UserPreferences } from '../model/userPreferences';
+import { playSound } from '../services/playSound';
 
 export function sendNotification(state: AlertaExtStore, newAlerts: Alert[]) {
   if (state.userPreferences.showNotifications) {
@@ -25,16 +25,16 @@ export function sendNotification(state: AlertaExtStore, newAlerts: Alert[]) {
 
 function createBasicNotification(
   alert: Alert,
-  userPreferences: UserPreferences
+  userPreferences: UserPreferences,
 ): { id: string; payload: chrome.notifications.NotificationOptions } {
   return {
     id: `Alert_${alert.id}`,
     payload: {
-      type: "basic",
-      iconUrl: "alert.png",
+      type: 'basic',
+      iconUrl: 'alert.png',
       requireInteraction: userPreferences.persistentNotifications,
       isClickable: true,
-      buttons: [{ title: "Ack" }, { title: "View alert details" }],
+      buttons: [{ title: 'Ack' }, { title: 'View alert details' }],
       ...createAlertForNotification(alert),
     },
   };
@@ -45,24 +45,22 @@ function createListNotification(alerts: Alert[]): {
   payload: chrome.notifications.NotificationOptions;
 } {
   return {
-    id: "GoToAlertaHome",
+    id: 'GoToAlertaHome',
     payload: {
-      type: "list",
+      type: 'list',
       title: `${alerts.length} new alerts detected !`,
-      message: "Click to open Alerta",
+      message: 'Click to open Alerta',
       items: alerts.map(createAlertForNotification),
-      iconUrl: "alert.png",
+      iconUrl: 'alert.png',
       isClickable: true,
-      buttons: [{ title: "Go to alerta" }],
+      buttons: [{ title: 'Go to alerta' }],
     },
   };
 }
 
-function createAlertForNotification(
-  Alert: Alert
-): chrome.notifications.ItemOptions {
+function createAlertForNotification(Alert: Alert): chrome.notifications.ItemOptions {
   return {
     title: `${Alert.service[0]} - ${Alert.event}`,
-    message: Alert.text ?? " ",
+    message: Alert.text ?? ' ',
   };
 }

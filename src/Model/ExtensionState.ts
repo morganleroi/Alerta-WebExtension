@@ -8,8 +8,14 @@ type PollingState = {
   fetchAlertState: FetchAlertState;
 };
 
+export enum FetchAlertStatus {
+  'NotYetFetched',
+  'OK',
+  'KO',
+}
+
 export type FetchAlertState = {
-  status: 'Not yet fetched' | 'OK' | 'KO';
+  status: FetchAlertStatus;
   error?: { status: number; statusText: string };
 };
 
@@ -21,13 +27,13 @@ export type AlertaExtStore = {
 
 export const defaultState: AlertaExtStore = {
   fetchAlertPollingState: {
-    status: 'Not yet fetched',
+    status: FetchAlertStatus.NotYetFetched,
   },
   pollingState: {
     alertaFetchQuery: '',
     alerts: [],
     isNewState: true,
-    fetchAlertState: { status: 'Not yet fetched' },
+    fetchAlertState: { status: FetchAlertStatus.NotYetFetched },
   },
   userPreferences: {
     alertaApiServerUrl: 'http://localhost:8080/api/',

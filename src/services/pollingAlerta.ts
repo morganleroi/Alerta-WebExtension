@@ -1,5 +1,5 @@
 import { Alert } from '../model/alerta';
-import { AlertaExtStore } from '../model/extensionState';
+import { AlertaExtStore, FetchAlertStatus } from '../model/extensionState';
 import { sendNotification } from '../chromium/notifications';
 import { getState, savePollingStateState, saveState } from '../chromium/state';
 
@@ -28,14 +28,14 @@ export const fetchAlerts = (state: AlertaExtStore) => {
       handleAlertaResponse(response, state);
 
       savePollingStateState({
-        status: 'OK',
+        status: FetchAlertStatus.OK,
       });
     })
     .catch(error => {
       chrome.browserAction.setBadgeText({ text: 'ERR' });
       chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
       savePollingStateState({
-        status: 'KO',
+        status: FetchAlertStatus.KO,
         error: { status: error.status, statusText: error.statusText },
       });
     });

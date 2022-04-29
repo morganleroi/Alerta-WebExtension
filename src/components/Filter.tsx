@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { FormGroup } from 'reactstrap';
 import CreatableSelect from 'react-select/creatable';
 import { UserPreferences } from '../model/userPreferences';
-import { FetchAlertState } from '../model/extensionState';
+import { FetchAlertState, FetchAlertStatus } from '../model/extensionState';
+import { AlertIco } from './AlertIco';
 
 type AlertaFilter = {
   label: string;
@@ -14,8 +15,8 @@ type FilterProps = {
   userPref: UserPreferences;
   getFilterValues: (userPref: UserPreferences) => Promise<any>;
   getUserPrefFilterValues: string[];
-  onSelectedFilter: React.Dispatch<
-    React.SetStateAction<
+  onSelectedFilter: Dispatch<
+    SetStateAction<
       {
         value: string;
         label: string;
@@ -33,7 +34,7 @@ const distinctAndPrepareForCombobox = (values: string[]) => {
 };
 
 const Filter = (props: FilterProps) => {
-  const [isFilterFetched, setIsFilterFetched] = useState<boolean>();
+  const [isFilterFetched, setIsFilterFetched] = useState<boolean>(false);
   const [filterValues, setFilterValues] = useState<AlertaFilter[]>([]);
 
   useEffect(() => {
@@ -51,7 +52,7 @@ const Filter = (props: FilterProps) => {
           return;
         }
         setFilterValues(distinctAndPrepareForCombobox(response));
-        setIsFilterFetched(props.globalStatus.status === 'OK');
+        setIsFilterFetched(props.globalStatus.status === FetchAlertStatus.OK);
       })
       .catch(() => {
         setIsFilterFetched(false);
@@ -65,30 +66,7 @@ const Filter = (props: FilterProps) => {
   return (
     <FormGroup className="m-2 flex-fill">
       <label htmlFor="alertaServices" className="form-label">
-        {props.name}{' '}
-        {isFilterFetched ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-check-circle-fill text-success"
-            viewBox="0 0 16 16"
-          >
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-exclamation-circle-fill text-danger"
-            viewBox="0 0 16 16"
-          >
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-          </svg>
-        )}
+        {props.name} <AlertIco success={isFilterFetched} />
       </label>
       <CreatableSelect
         isMulti
