@@ -1,8 +1,6 @@
-import * as React from "react"
-import * as ReactDOM from "react-dom"
-import { getState } from '../chromium/state'
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import UserPreferences from './UserPreferences';
 
-import UserPreferences from "./UserPreferences"
-
-var mountNode = document.getElementById("userpreferences");
-ReactDOM.render(<UserPreferences state={getState} state2={getState()} />, mountNode);
+const mountNode = document.getElementById('userpreferences');
+ReactDOM.render(<UserPreferences />, mountNode);

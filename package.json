@@ -29,6 +29,7 @@
     "jest-fetch-mock": "^3.0.3",
     "jest-webextension-mock": "^3.7.14",
     "node-fetch": "^2.6.1",
+    "prettier": "^2.6.2",
     "style-loader": "^2.0.0",
     "ts-jest": "^27.0.3",
     "ts-loader": "^8.2.0",
