@@ -1,25 +1,32 @@
-version: '2.1'
+version: '3'
 services:
-  web:
+  api:
     image: alerta/alerta-web
     ports:
-      - "8080:8080"
+      - 8080:8080
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=postgres://alerta:8l3rt8@db:5432/alerta
+      - AUTH_REQUIRED=True
+      - ADMIN_USERS=alice,bob,charlotte,dave
+      - ADMIN_PASSWORD=Pa55w0rd
+      - ADMIN_KEY=docker-api-key
+      - PLUGINS=heartbeat,blackout,normalise
+    networks:
+      - net
     depends_on:
       - db
-    environment:
-      - DEBUG=1  # remove this line to turn DEBUG off
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/monitoring
-      - AUTH_REQUIRED=False
-      - ADMIN_USERS=admin@alerta.io,devops@alerta.io
-      - ADMIN_KEY=demo-key
-      - PLUGINS=blackout,normalise,enhance
     restart: always
   db:
     image: postgres
     volumes:
-      - ./pg-data:/var/lib/postgresql/data
+      - ./pg-data:/var/lib/postgresql/data/
     environment:
-      POSTGRES_DB: monitoring
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: alerta
+      POSTGRES_USER: alerta
+      POSTGRES_PASSWORD: 8l3rt8
+    networks:
+      - net
     restart: always
+networks:
+  net: {}
