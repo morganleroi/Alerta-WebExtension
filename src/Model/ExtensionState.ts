@@ -5,7 +5,6 @@ type PollingState = {
   alerts: Alert[];
   alertaFetchQuery: string;
   isNewState: boolean;
-  fetchAlertState: FetchAlertState;
 };
 
 export enum FetchAlertStatus {
@@ -33,7 +32,6 @@ export const defaultState: AlertaExtStore = {
     alertaFetchQuery: '',
     alerts: [],
     isNewState: true,
-    fetchAlertState: { status: FetchAlertStatus.NotYetFetched },
   },
   userPreferences: {
     alertaApiServerUrl: 'http://localhost:8080/api/',
