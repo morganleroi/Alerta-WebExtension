@@ -10,7 +10,7 @@ const ConnectionStatus = (props: { fetchAlertStatus: FetchAlertState }) => {
     setError(props.fetchAlertStatus?.error);
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'local' && changes.fetchAlertPollingState?.newValue) {
-        setIsSuccess(changes.fetchAlertPollingState?.newValue.status === 'OK');
+        setIsSuccess(changes.fetchAlertPollingState?.newValue.status === FetchAlertStatus.OK);
         setError(changes.fetchAlertPollingState?.newValue.error);
       }
     });
