@@ -1,28 +1,25 @@
 import { AlertaExtStore } from '../model/extensionState';
 import { UserPreferences } from '../model/userPreferences';
 import * as alertaApi from '../services/fetchAlertaApi';
+import browser from 'webextension-polyfill';
 
 export const askForPermissionIfNeeded = (userPref: UserPreferences) => {
-  chrome.permissions.contains(
-    {
+  browser.permissions
+    .contains({
       origins: [userPref.alertaApiServerUrl],
-    },
-    isAlertaAllowed => {
+    })
+    .then(isAlertaAllowed => {
       if (!isAlertaAllowed) {
-        chrome.permissions.request(
-          {
-            origins: [userPref.alertaApiServerUrl],
-          },
-          function () {},
-        );
+        browser.permissions.request({
+          origins: [userPref.alertaApiServerUrl],
+        });
       }
-    },
-  );
+    });
 };
 
 export const saveUserPreferences = (userPref: UserPreferences) => {
   return new Promise<void>((resolve, reject) => {
-    chrome.storage.local.get(null, (items: any) => {
+    browser.storage.local.get(null).then((items: any) => {
       const alertaExtStore: AlertaExtStore = items;
       const newState: AlertaExtStore = {
         ...alertaExtStore,
@@ -34,12 +31,12 @@ export const saveUserPreferences = (userPref: UserPreferences) => {
         userPreferences: userPref,
       };
 
-      if (chrome.runtime.lastError) {
+      if (browser.runtime.lastError) {
         return reject(' Fail to save user preferences. (');
       }
 
-      chrome.storage.local.set(newState, () => {
-        if (chrome.runtime.lastError) {
+      browser.storage.local.set(newState).then(() => {
+        if (browser.runtime.lastError) {
           return reject(' Fail to save user preferences.');
         }
         resolve();

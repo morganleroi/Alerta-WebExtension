@@ -1,12 +1,13 @@
 import { AlertaExtStore, defaultState, FetchAlertState } from '../model/extensionState';
+import browser from 'webextension-polyfill';
 
 let state: AlertaExtStore = defaultState;
 
 const initializeState = (): Promise<void> => {
   return new Promise((resolve, reject) => {
-    chrome.storage.local.set(defaultState, () => {
-      if (chrome.runtime.lastError) {
-        return reject(chrome.runtime.lastError);
+    browser.storage.local.set(defaultState).then(() => {
+      if (browser.runtime.lastError) {
+        return reject(browser.runtime.lastError);
       }
       state = defaultState;
       resolve();
@@ -15,13 +16,13 @@ const initializeState = (): Promise<void> => {
 };
 
 const saveState = (newState: AlertaExtStore) => {
-  chrome.storage.local.set(newState, () => {
+  browser.storage.local.set(newState).then(() => {
     Object.assign(state, newState);
   });
 };
 
 const savePollingStateState = (fetchAlertaState: FetchAlertState) => {
-  chrome.storage.local.set({ fetchAlertPollingState: fetchAlertaState });
+  browser.storage.local.set({ fetchAlertPollingState: fetchAlertaState });
 };
 
 const getState = () => {
@@ -37,9 +38,9 @@ const synchronizeState = () => {
 
 function loadState(): Promise<AlertaExtStore> {
   return new Promise((resolve, reject) => {
-    chrome.storage.local.get(null, items => {
-      if (chrome.runtime.lastError) {
-        return reject(chrome.runtime.lastError);
+    browser.storage.local.get(null).then(items => {
+      if (browser.runtime.lastError) {
+        return reject(browser.runtime.lastError);
       }
       resolve(items as AlertaExtStore);
     });

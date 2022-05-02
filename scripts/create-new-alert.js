@@ -20,7 +20,6 @@ if (!fs.existsSync(secretFilePath)) {
 
 var secretFile = fs.readFileSync(secretFilePath, 'utf-8');
 var secrets = JSON.parse(secretFile);
-console.log(secrets);
 const patch = process.argv.slice(2)?.length > 0 ? JSON.parse(process.argv.slice(2)[0]) : {};
 
 const body = {

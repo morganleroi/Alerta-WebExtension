@@ -5,35 +5,34 @@ import { AlertaExtStore, defaultState, FetchAlertStatus } from '../model/extensi
 fetchMock.enableMocks();
 
 beforeEach(() => {
-  jest.mock('../chromium/state');
   fetchMock.resetMocks();
-
-  chrome.alarms = {
-    create: jest.fn(),
-    onAlarm: {
-      addListener: jest.fn(),
-    },
-  } as any;
 
   jest.clearAllMocks();
 });
 
-test('Should start the alarm when start polling', () => {
+test('Should setup the alarm when start polling', () => {
+  mockBrowser.alarms.onAlarm.addListener.expect;
+
+  // @ts-ignore
+  mockBrowser.alarms.create.expect('PollingAlerta', expect.anything());
+
   // When
   startPolling();
-
-  // Then
-  expect(chrome.alarms.onAlarm.addListener).toHaveBeenCalled();
-  expect(chrome.alarms.create).toHaveBeenCalled();
 });
 
 test('Should fetch Alerts when alarms is triggered', () => {
+  mockBrowser.browserAction.setBadgeText.expect;
+  mockBrowser.browserAction.setBadgeBackgroundColor.expect;
+  // @ts-ignore
+  mockBrowser.notifications.create.expect('Alert_12345', expect.anything());
+  mockBrowser.storage.local.set.expect.andResolve().times(2);
+
   // Given
   const fetchMockAlerta = fetchMock.mockResponseOnce(
     JSON.stringify({
       alerts: [
         {
-          id: '1',
+          id: '12345',
           service: ['MyService'],
           event: 'MyEvent',
           value: 'This is a test',
@@ -54,7 +53,7 @@ test('Should fetch Alerts when alarms is triggered', () => {
     pollingState: {
       alertaFetchQuery: 'service=test&group-test2',
       alerts: [],
-      isNewState: true,
+      isNewState: false,
       fetchAlertState: { status: FetchAlertStatus.NotYetFetched },
     },
   } as AlertaExtStore;
@@ -75,7 +74,4 @@ test('Should fetch Alerts when alarms is triggered', () => {
   };
 
   expect(fetchMockAlerta.mock.calls[0][1]).toEqual(expectedPayload);
-
-  // TODO : Don't know why it's not working.
-  //expect(chrome.notifications.create).toHaveBeenCalled();
 });

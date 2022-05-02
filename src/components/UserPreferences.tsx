@@ -7,6 +7,7 @@ import * as chromium from '../services/chromiumWrapper';
 import Filter from './Filter';
 import InfoTooltip from './InfoTooltip';
 import ConnectionStatus from './ConnectionStatus';
+import browser from 'webextension-polyfill';
 
 type AlertaFilter = {
   label: string;
@@ -38,16 +39,14 @@ const UserPreferences = () => {
   const [selectedOptionService, setSelectedOptionService] = useState<AlertaFilter[]>([]);
   const [isUserPrefLoaded, setIsUserPrefLoaded] = useState<boolean>();
 
-  useEffect(
-    () =>
-      chrome.storage.local.get(null, function (items: any) {
-        const alertaExtStore: AlertaExtStore = items;
-        setUserPref(alertaExtStore.userPreferences);
-        setFetchAlertStatus(alertaExtStore.fetchAlertPollingState);
-        setIsUserPrefLoaded(true);
-      }),
-    [],
-  );
+  useEffect(() => {
+    browser.storage.local.get(null).then((items: any) => {
+      const alertaExtStore: AlertaExtStore = items;
+      setUserPref(alertaExtStore.userPreferences);
+      setFetchAlertStatus(alertaExtStore.fetchAlertPollingState);
+      setIsUserPrefLoaded(true);
+    });
+  }, []);
 
   const cleanUrl = (url: string) => {
     url = url.trim();

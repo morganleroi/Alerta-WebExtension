@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FetchAlertState, FetchAlertStatus } from '../model/extensionState';
 import { ConnectionStatusInfo } from './ConnectionStatusInfo';
+import browser from 'webextension-polyfill';
 
 const ConnectionStatus = (props: { fetchAlertStatus: FetchAlertState }) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -8,7 +9,7 @@ const ConnectionStatus = (props: { fetchAlertStatus: FetchAlertState }) => {
   useEffect(() => {
     setIsSuccess(props.fetchAlertStatus.status === FetchAlertStatus.OK);
     setError(props.fetchAlertStatus?.error);
-    chrome.storage.onChanged.addListener((changes, area) => {
+    browser.storage.onChanged.addListener((changes, area) => {
       if (area === 'local' && changes.fetchAlertPollingState?.newValue) {
         setIsSuccess(changes.fetchAlertPollingState?.newValue.status === FetchAlertStatus.OK);
         setError(changes.fetchAlertPollingState?.newValue.error);

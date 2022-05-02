@@ -2,13 +2,14 @@ import { Alert } from '../model/alerta';
 import { AlertaExtStore, FetchAlertStatus } from '../model/extensionState';
 import { sendNotification } from '../chromium/notifications';
 import { getState, savePollingStateState, saveState } from '../chromium/state';
+import browser from 'webextension-polyfill';
 
 export const startPolling = () => {
-  chrome.alarms.onAlarm.addListener(() => {
+  browser.alarms.onAlarm.addListener(() => {
     fetchAlerts(getState());
   });
 
-  chrome.alarms.create('PollingAlerta', {
+  browser.alarms.create('PollingAlerta', {
     delayInMinutes: 0.1,
     periodInMinutes: 0.2,
   });
@@ -32,8 +33,9 @@ export const fetchAlerts = (state: AlertaExtStore) => {
       });
     })
     .catch(error => {
-      chrome.browserAction.setBadgeText({ text: 'ERR' });
-      chrome.browserAction.setBadgeBackgroundColor({ color: 'red' });
+      console.log(error);
+      browser.browserAction.setBadgeText({ text: 'ERR' });
+      browser.browserAction.setBadgeBackgroundColor({ color: 'red' });
       savePollingStateState({
         status: FetchAlertStatus.KO,
         error: { status: error.status, statusText: error.statusText },
@@ -54,8 +56,8 @@ function handleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
       state.pollingState.alerts && !state.pollingState.alerts.map(x => x.id).includes(alert.id),
   );
   const currentNbOfAlerts: number = alertaResponse.alerts.length;
-  chrome.browserAction.setBadgeText({ text: currentNbOfAlerts.toString() });
-  chrome.browserAction.setBadgeBackgroundColor({
+  browser.browserAction.setBadgeText({ text: currentNbOfAlerts.toString() });
+  browser.browserAction.setBadgeBackgroundColor({
     color: currentNbOfAlerts > 0 ? 'red' : 'green',
   });
 

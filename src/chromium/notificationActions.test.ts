@@ -7,31 +7,38 @@ fetchMock.enableMocks();
 beforeEach(() => {
   fetchMock.resetMocks();
 
-  global.chrome.windows = {
-    update: jest.fn(),
-  } as any;
-
   jest.clearAllMocks();
 });
 
-test('Should open Alerta in a new tab', () => {
-  openAlerta({
+test('Should open Alerta in a new tab', async () => {
+  const tabs: any = { id: 1, windowId: 2 };
+
+  mockBrowser.tabs.create
+    .expect({ active: true, url: 'https://myAlertaServer/ui/' })
+    .andResolve(tabs)
+    .times(1);
+
+  mockBrowser.windows.update.expect(2, { focused: true }).times(1);
+
+  await openAlerta({
     userPreferences: {
       alertaUiUrl: 'https://myAlertaServer/ui/',
     },
   } as AlertaExtStore);
-
-  expect(chrome.tabs.create).toHaveBeenCalledWith(
-    {
-      active: true,
-      url: 'https://myAlertaServer/ui/',
-    },
-    expect.anything(),
-  );
-  expect(chrome.windows.update).toHaveBeenCalled();
 });
 
-test('Should open a specific alert in a new tab', () => {
+test('Should open a specific alert in a new tab and clear the notification', () => {
+  const tabs: any = { id: 1, windowId: 2 };
+
+  mockBrowser.tabs.create
+    .expect({ active: true, url: 'https://myAlertaServer/ui/alert/1324657' })
+    .andResolve(tabs)
+    .times(1);
+
+  mockBrowser.notifications.clear.expect('myNodifId');
+
+  mockBrowser.windows.update.expect(2, { focused: true });
+
   openAlert(
     {
       userPreferences: {
@@ -41,18 +48,9 @@ test('Should open a specific alert in a new tab', () => {
     'myNodifId',
     '1324657',
   );
-
-  expect(chrome.tabs.create).toHaveBeenCalledWith(
-    {
-      active: true,
-      url: 'https://myAlertaServer/ui/alert/1324657',
-    },
-    expect.anything(),
-  );
-  expect(chrome.windows.update).toHaveBeenCalled();
 });
 
-test('Should ack the alert in Alerta when clicking on Ack button', () => {
+test('Should ack the alert in Alerta and close the notification when clicking on Ack button', () => {
   // Given
   const state = {
     userPreferences: {
@@ -63,6 +61,8 @@ test('Should ack the alert in Alerta when clicking on Ack button', () => {
   } as AlertaExtStore;
 
   const fetchMockAlerta = fetchMock.mockOnce('');
+
+  mockBrowser.notifications.clear.expect('MyNotifId');
 
   // When
   ackAlert(state, 'MyNotifId', '1324');
@@ -84,17 +84,4 @@ test('Should ack the alert in Alerta when clicking on Ack button', () => {
   };
 
   expect(fetchMockAlerta.mock.calls[0][1]).toEqual(expectedPayload);
-});
-
-test('Should clear notification when opening new tab', () => {
-  openAlerta(
-    {
-      userPreferences: {
-        alertaUiUrl: 'https://myAlertaServer/ui/',
-      },
-    } as AlertaExtStore,
-    '1234',
-  );
-
-  expect(chrome.notifications.clear).toHaveBeenCalledWith('1234');
 });

@@ -1,4 +1,5 @@
 import { AlertaExtStore } from '../model/extensionState';
+import browser from 'webextension-polyfill';
 
 export function triggerNotificationAction(
   state: AlertaExtStore,
@@ -33,7 +34,7 @@ export function ackAlert(state: AlertaExtStore, notificationId: string, alertId?
       'Content-type': 'application/json',
       Authorization: `Key ${state.userPreferences.alertaApiSecret}`,
     },
-  }).then(_ => chrome.notifications.clear(notificationId));
+  }).then(_ => browser.notifications.clear(notificationId));
 }
 
 export function openAlerta(state: AlertaExtStore, notificationId?: string) {
@@ -50,10 +51,10 @@ export function openAlert(state: AlertaExtStore, notificationId: string, alertId
 }
 
 function createNewTab(url: string, notificationId?: string) {
-  chrome.tabs.create({ active: true, url }, tab => {
+  browser.tabs.create({ active: true, url }).then(tab => {
     if (notificationId) {
-      chrome.notifications.clear(notificationId);
+      browser.notifications.clear(notificationId);
     }
-    chrome.windows.update(tab.windowId!, { focused: true });
+    browser.windows.update(tab.windowId!, { focused: true });
   });
 }

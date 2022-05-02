@@ -2,6 +2,7 @@ import { Alert } from '../model/alerta';
 import { AlertaExtStore } from '../model/extensionState';
 import { UserPreferences } from '../model/userPreferences';
 import { playSound } from '../services/playSound';
+import browser from 'webextension-polyfill';
 
 export function sendNotification(state: AlertaExtStore, newAlerts: Alert[]) {
   if (state.userPreferences.showNotifications) {
@@ -18,7 +19,7 @@ export function sendNotification(state: AlertaExtStore, newAlerts: Alert[]) {
       if (state.userPreferences.playAudio) {
         playSound();
       }
-      chrome.notifications.create(notification.id, notification.payload);
+      browser.notifications.create(notification.id, notification.payload);
     }
   }
 }
@@ -26,7 +27,8 @@ export function sendNotification(state: AlertaExtStore, newAlerts: Alert[]) {
 function createBasicNotification(
   alert: Alert,
   userPreferences: UserPreferences,
-): { id: string; payload: chrome.notifications.NotificationOptions } {
+  // todo fix it
+): { id: string; payload: any } {
   return {
     id: `Alert_${alert.id}`,
     payload: {
@@ -42,7 +44,8 @@ function createBasicNotification(
 
 function createListNotification(alerts: Alert[]): {
   id: string;
-  payload: chrome.notifications.NotificationOptions;
+  // todo: fix it
+  payload: any;
 } {
   return {
     id: 'GoToAlertaHome',
@@ -58,7 +61,8 @@ function createListNotification(alerts: Alert[]): {
   };
 }
 
-function createAlertForNotification(Alert: Alert): chrome.notifications.ItemOptions {
+// todo fix it
+function createAlertForNotification(Alert: Alert): any {
   return {
     title: `${Alert.service[0]} - ${Alert.event}`,
     message: Alert.text ?? ' ',

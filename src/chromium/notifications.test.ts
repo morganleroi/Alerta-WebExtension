@@ -1,14 +1,17 @@
-import { defaultState } from "../model/extensionState";
-import { sendNotification } from "./notifications";
-import { playSound } from "../services/playSound";
-jest.mock("../services/playSound");
+import { defaultState } from '../model/extensionState';
+import { sendNotification } from './notifications';
+import { playSound } from '../services/playSound';
+
+jest.mock('../services/playSound');
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test("Should not launch notification if notification disabled in user preference", () => {
+test('Should not launch notification if notification disabled in user preference', () => {
   // Given
+  // Here, we do not setup any mock on Notification. Meaning that is a call is made, then the test will fail.
+
   const state = {
     fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
     userPreferences: { ...defaultState.userPreferences },
@@ -21,18 +24,15 @@ test("Should not launch notification if notification disabled in user preference
   // When
   sendNotification(state, [
     {
-      id: "1",
-      service: ["MyService"],
-      event: "MyEvent",
-      text: "This is a test",
+      id: '1',
+      service: ['MyService'],
+      event: 'MyEvent',
+      text: 'This is a test',
     },
   ]);
-
-  // Then
-  expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
 
-test("Should launch notification if new alerts", () => {
+test('Should launch notification if new alerts', () => {
   // Given
   const state = {
     fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
@@ -42,34 +42,31 @@ test("Should launch notification if new alerts", () => {
 
   state.pollingState.isNewState = false;
 
+  const expectedAlert = {
+    type: 'basic',
+    title: `MyService - MyEvent`,
+    message: 'This is a test',
+    iconUrl: 'alert.png',
+    isClickable: true,
+    requireInteraction: false,
+    buttons: [{ title: 'Ack' }, { title: 'View alert details' }],
+  };
+
+  // @ts-ignore
+  mockBrowser.notifications.create.expect('Alert_12345', expectedAlert);
+
   // When
   sendNotification(state, [
     {
-      id: "1",
-      service: ["MyService"],
-      event: "MyEvent",
-      text: "This is a test",
+      id: '12345',
+      service: ['MyService'],
+      event: 'MyEvent',
+      text: 'This is a test',
     },
   ]);
-
-  // Then
-  const expectedAlert = {
-    type: "basic",
-    title: `MyService - MyEvent`,
-    message: "This is a test",
-    iconUrl: "alert.png",
-    isClickable: true,
-    requireInteraction: false,
-    buttons: [{ title: "Ack" }, { title: "View alert details" }],
-  };
-
-  expect(chrome.notifications.create).toHaveBeenCalledWith(
-    "Alert_1",
-    expectedAlert
-  );
 });
 
-test("Should launch persistant notification if enabled in user preference", () => {
+test('Should launch persistant notification if enabled in user preference', () => {
   // Given
   const state = {
     fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
@@ -80,34 +77,31 @@ test("Should launch persistant notification if enabled in user preference", () =
   state.pollingState.isNewState = false;
   state.userPreferences.persistentNotifications = true;
 
+  const expectedAlert = {
+    type: 'basic',
+    title: `MyService - MyEvent`,
+    message: 'This is a test',
+    requireInteraction: true,
+    iconUrl: 'alert.png',
+    isClickable: true,
+    buttons: [{ title: 'Ack' }, { title: 'View alert details' }],
+  };
+
+  // @ts-ignore
+  mockBrowser.notifications.create.expect('Alert_1', expectedAlert);
+
   // When
   sendNotification(state, [
     {
-      id: "1",
-      service: ["MyService"],
-      event: "MyEvent",
-      text: "This is a test",
+      id: '1',
+      service: ['MyService'],
+      event: 'MyEvent',
+      text: 'This is a test',
     },
   ]);
-
-  // Then
-  const expectedAlert = {
-    type: "basic",
-    title: `MyService - MyEvent`,
-    message: "This is a test",
-    requireInteraction: true,
-    iconUrl: "alert.png",
-    isClickable: true,
-    buttons: [{ title: "Ack" }, { title: "View alert details" }],
-  };
-
-  expect(chrome.notifications.create).toHaveBeenCalledWith(
-    "Alert_1",
-    expectedAlert
-  );
 });
 
-test("Should launch a list notifications is more than one new alert", () => {
+test('Should launch a list notifications is more than one new alert', () => {
   // Given
   const state = {
     fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
@@ -117,46 +111,46 @@ test("Should launch a list notifications is more than one new alert", () => {
 
   state.pollingState.isNewState = false;
 
-  sendNotification(state, [
-    {
-      id: "1",
-      service: ["MyService2"],
-      event: "MyEvent2",
-    },
-    {
-      id: "2",
-      service: ["MyService3"],
-      event: "MyEvent3",
-    },
-  ]);
-
   const expectedListAlert = {
-    type: "list",
+    type: 'list',
     title: `2 new alerts detected !`,
-    message: "Click to open Alerta",
+    message: 'Click to open Alerta',
     items: [
       {
-        message: " ",
-        title: "MyService2 - MyEvent2",
+        message: ' ',
+        title: 'MyService2 - MyEvent2',
       },
       {
-        message: " ",
-        title: "MyService3 - MyEvent3",
+        message: ' ',
+        title: 'MyService3 - MyEvent3',
       },
     ],
-    iconUrl: "alert.png",
+    iconUrl: 'alert.png',
     isClickable: true,
-    buttons: [{ title: "Go to alerta" }],
+    buttons: [{ title: 'Go to alerta' }],
   };
 
-  expect(chrome.notifications.create).toHaveBeenCalledWith(
-    "GoToAlertaHome",
-    expectedListAlert
-  );
+  // @ts-ignore
+  mockBrowser.notifications.create.expect('GoToAlertaHome', expectedListAlert);
+
+  sendNotification(state, [
+    {
+      id: '1',
+      service: ['MyService2'],
+      event: 'MyEvent2',
+    },
+    {
+      id: '2',
+      service: ['MyService3'],
+      event: 'MyEvent3',
+    },
+  ]);
 });
 
-test("Should not launch notification if no new alert", () => {
+test('Should not launch notification if no new alert', () => {
   // Given
+  // Here, we do not setup any mock on Notification. Meaning that is a call is made, then the test will fail.
+
   const state = {
     fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
     userPreferences: { ...defaultState.userPreferences },
@@ -167,13 +161,12 @@ test("Should not launch notification if no new alert", () => {
 
   // when
   sendNotification(state, []);
-
-  // then
-  expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
 
-test("Should not launch notification if alerts has not been fetched for the first time, or user preferences just saved", () => {
+test('Should not launch notification if alerts has not been fetched for the first time, or user preferences just saved', () => {
   // Given
+  // Here, we do not setup any mock on Notification. Meaning that is a call is made, then the test will fail.
+
   const state = {
     fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
     userPreferences: { ...defaultState.userPreferences },
@@ -185,17 +178,14 @@ test("Should not launch notification if alerts has not been fetched for the firs
   // When
   sendNotification(state, [
     {
-      id: "1",
-      service: ["MyService2"],
-      event: "MyEvent2",
+      id: '1',
+      service: ['MyService2'],
+      event: 'MyEvent2',
     },
   ]);
-
-  // Then
-  expect(chrome.notifications.create).not.toHaveBeenCalled();
 });
 
-test("Should play a sound if selected in user preferences", () => {
+test('Should play a sound if selected in user preferences', () => {
   // Given
   const state = {
     fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
@@ -206,12 +196,14 @@ test("Should play a sound if selected in user preferences", () => {
   state.pollingState.isNewState = false;
   state.userPreferences.playAudio = true;
 
+  mockBrowser.notifications.create.expect;
+
   // when
   sendNotification(state, [
     {
-      id: "1",
-      service: ["MyService2"],
-      event: "MyEvent2",
+      id: '1',
+      service: ['MyService2'],
+      event: 'MyEvent2',
     },
   ]);
 
