@@ -27,13 +27,11 @@ export const fetchAlerts = (state: AlertaExtStore) => {
     .then(response => (response.ok ? response.json() : Promise.reject(response)))
     .then(response => {
       handleAlertaResponse(response, state);
-
       savePollingStateState({
         status: FetchAlertStatus.OK,
       });
     })
     .catch(error => {
-      console.log(error);
       browser.browserAction.setBadgeText({ text: 'ERR' });
       browser.browserAction.setBadgeBackgroundColor({ color: 'red' });
       savePollingStateState({
