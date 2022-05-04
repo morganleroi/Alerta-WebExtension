@@ -4,13 +4,13 @@ import browser from 'webextension-polyfill';
 export function triggerNotificationAction(
   state: AlertaExtStore,
   notificationId: string,
-  index: number,
+  index?: number,
 ) {
   if (notificationId === 'GoToAlertaHome') {
     openAlerta(state, notificationId);
   } else if (notificationId.startsWith('Alert_') && index === 0) {
     ackAlert(state, notificationId, notificationId.split('_').pop());
-  } else if (notificationId.startsWith('Alert_') && index === 1) {
+  } else if (notificationId.startsWith('Alert_') && (index === 1 || index === undefined)) {
     openAlert(state, notificationId, notificationId.split('_').pop());
   }
 }

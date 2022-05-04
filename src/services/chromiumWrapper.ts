@@ -3,19 +3,11 @@ import { UserPreferences } from '../model/userPreferences';
 import * as alertaApi from '../services/fetchAlertaApi';
 import browser from 'webextension-polyfill';
 
-export const askForPermissionIfNeeded = (userPref: UserPreferences) => {
-  browser.permissions
-    .contains({
-      origins: [userPref.alertaApiServerUrl],
-    })
-    .then(isAlertaAllowed => {
-      if (!isAlertaAllowed) {
-        browser.permissions.request({
-          origins: [userPref.alertaApiServerUrl],
-        });
-      }
-    });
-};
+export function acceptPermission() {
+  return browser.permissions.request({
+    origins: ['*://*/*'],
+  });
+}
 
 export const saveUserPreferences = (userPref: UserPreferences) => {
   return new Promise<void>((resolve, reject) => {

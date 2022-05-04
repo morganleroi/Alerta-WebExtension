@@ -1,11 +1,13 @@
 import { defaultState } from '../model/extensionState';
 import { sendNotification } from './notifications';
 import { playSound } from '../services/playSound';
+import { mockEvent } from 'mockzilla-webextension';
 
 jest.mock('../services/playSound');
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockEvent(mockBrowser.notifications.onButtonClicked);
 });
 
 test('Should not launch notification if notification disabled in user preference', () => {
@@ -128,6 +130,7 @@ test('Should launch a list notifications is more than one new alert', () => {
     iconUrl: 'alert.png',
     isClickable: true,
     buttons: [{ title: 'Go to alerta' }],
+    requireInteraction: false,
   };
 
   // @ts-ignore

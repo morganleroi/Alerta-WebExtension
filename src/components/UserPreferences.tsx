@@ -7,7 +7,8 @@ import * as chromium from '../services/chromiumWrapper';
 import Filter from './Filter';
 import InfoTooltip from './InfoTooltip';
 import ConnectionStatus from './ConnectionStatus';
-import browser from 'webextension-polyfill';
+import browser, { permissions } from 'webextension-polyfill';
+import { PermissionBanner } from './PermissionBanner';
 
 type AlertaFilter = {
   label: string;
@@ -15,6 +16,10 @@ type AlertaFilter = {
 };
 
 const UserPreferences = () => {
+  permissions.onAdded.addListener(added => {
+    console.log('Permission added ', added);
+  });
+
   const [userPref, setUserPref] = useState<UserPreferences>({
     alertaApiServerUrl: '',
     alertaUiUrl: '',
@@ -64,8 +69,6 @@ const UserPreferences = () => {
     userPref.filterGroups = selectedOptionGroup.map(option => option.value);
     userPref.filterEnvironments = selectedOptionEnvironment.map(option => option.value);
 
-    chromium.askForPermissionIfNeeded(userPref);
-
     chromium
       .saveUserPreferences(userPref)
       .then(_ => {
@@ -93,6 +96,7 @@ const UserPreferences = () => {
 
   return (
     <div className="container-fluid">
+      {isUserPrefLoaded && <PermissionBanner userPref={userPref} />}
       <Form>
         <div
           className={
@@ -254,9 +258,9 @@ const UserPreferences = () => {
             <div className="card-header">
               <h4>Filters</h4>
             </div>
-            <div className="card-body">
-              <div className="d-flex flex-wrap justify-content-left">
-                {isUserPrefLoaded && (
+            {isUserPrefLoaded && (
+              <div className="card-body">
+                <div className="d-flex flex-wrap justify-content-left">
                   <Filter
                     globalStatus={fetchAlertStatus!}
                     name="Environments"
@@ -266,8 +270,6 @@ const UserPreferences = () => {
                     onSelectedFilter={setSelectedOptionEnvironment}
                     selectedFilterValue={selectedOptionEnvironment}
                   />
-                )}
-                {isUserPrefLoaded && (
                   <Filter
                     globalStatus={fetchAlertStatus!}
                     name="Services"
@@ -277,8 +279,6 @@ const UserPreferences = () => {
                     onSelectedFilter={setSelectedOptionService}
                     selectedFilterValue={selectedOptionService}
                   />
-                )}
-                {isUserPrefLoaded && (
                   <Filter
                     globalStatus={fetchAlertStatus!}
                     name="Groups"
@@ -288,9 +288,9 @@ const UserPreferences = () => {
                     onSelectedFilter={setSelectedOptionGroup}
                     selectedFilterValue={selectedOptionGroup}
                   />
-                )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
         <Button className="mt-5" color="primary" onClick={saveUserPreference}>

@@ -2,6 +2,7 @@ import { openAlert, openAlerta, triggerNotificationAction } from './notification
 import { startPolling } from '../services/pollingAlerta';
 import { getState, initializeState, loadState, synchronizeState } from './state';
 import browser from 'webextension-polyfill';
+import { isFirefox } from '../services/crossBrowserUtils';
 // When the Extension is first installed or when updated.
 browser.runtime.onInstalled.addListener(() => initializeState().then(startPolling));
 
@@ -24,6 +25,12 @@ browser.notifications.onClicked.addListener(notificationId =>
 );
 
 // User clicks on notification button
-browser.notifications.onButtonClicked.addListener((notificationId, index) =>
-  triggerNotificationAction(getState(), notificationId, index),
-);
+if (!isFirefox()) {
+  browser.notifications.onButtonClicked.addListener((notificationId, index) =>
+    triggerNotificationAction(getState(), notificationId, index),
+  );
+} else {
+  browser.notifications.onClicked.addListener(notificationId => {
+    triggerNotificationAction(getState(), notificationId);
+  });
+}
