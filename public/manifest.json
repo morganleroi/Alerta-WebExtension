@@ -1,8 +1,8 @@
 {
   "name": "Alerta Notifier",
-  "description": "A simple chrome extension that notifies when new alerts are in Alerta",
+  "description": "A simple web extension that notifies when new alerts are in Alerta",
   "manifest_version": 2,
-  "version": "1.1.0",
+  "version": "2.0.0",
   "icons": {
     "16": "alert.png",
     "48": "alert.png",
