@@ -1,16 +1,16 @@
 import { AlertaExtStore } from '../model/extensionState';
 import { ackAlert, openAlert, openAlerta } from './notificationActions';
 import fetchMock from 'jest-fetch-mock';
+import mock = jest.mock;
 
 fetchMock.enableMocks();
 
 beforeEach(() => {
   fetchMock.resetMocks();
-
   jest.clearAllMocks();
 });
 
-test('Should open Alerta in a new tab', async () => {
+test('Should open Alerta in a new tab when I click on an alert', async () => {
   const tabs: any = { id: 1, windowId: 2 };
 
   mockBrowser.tabs.create

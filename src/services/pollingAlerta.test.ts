@@ -1,13 +1,13 @@
 import { fetchAlerts, startPolling } from './pollingAlerta';
 import fetchMock from 'jest-fetch-mock';
 import { AlertaExtStore, defaultState, FetchAlertStatus } from '../model/extensionState';
-import { mockEvent } from 'mockzilla-webextension';
+import { setupMockAsChromium } from './setupMock';
 
 fetchMock.enableMocks();
 
 beforeEach(() => {
   fetchMock.resetMocks();
-  mockEvent(mockBrowser.notifications.onButtonClicked);
+  setupMockAsChromium();
   jest.clearAllMocks();
 });
 

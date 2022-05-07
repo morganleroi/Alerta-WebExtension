@@ -1,19 +1,18 @@
 import { defaultState } from '../model/extensionState';
 import { sendNotification } from './notifications';
 import { playSound } from '../services/playSound';
-import { mockEvent } from 'mockzilla-webextension';
+import { setupMockAsChromium } from '../services/setupMock';
 
 jest.mock('../services/playSound');
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockEvent(mockBrowser.notifications.onButtonClicked);
+  setupMockAsChromium();
 });
 
 test('Should not launch notification if notification disabled in user preference', () => {
   // Given
   // Here, we do not setup any mock on Notification. Meaning that is a call is made, then the test will fail.
-
   const state = {
     fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
     userPreferences: { ...defaultState.userPreferences },
@@ -56,7 +55,8 @@ test('Should launch notification if new alerts', () => {
 
   // @ts-ignore
   mockBrowser.notifications.create.expect('Alert_12345', expectedAlert);
-
+  // @ts-ignore
+  //mockBrowser.notifications.update.mock();
   // When
   sendNotification(state, [
     {
@@ -68,7 +68,7 @@ test('Should launch notification if new alerts', () => {
   ]);
 });
 
-test('Should launch persistant notification if enabled in user preference', () => {
+test('Should launch persistent notification if enabled in user preference', () => {
   // Given
   const state = {
     fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },

@@ -38,23 +38,23 @@ export function ackAlert(state: AlertaExtStore, notificationId: string, alertId?
 }
 
 export function openAlerta(state: AlertaExtStore, notificationId?: string) {
-  createNewTab(`${state.userPreferences.alertaUiUrl}`, notificationId);
+  return createNewTab(`${state.userPreferences.alertaUiUrl}`, notificationId);
 }
 
 export function openAlert(state: AlertaExtStore, notificationId: string, alertId?: string) {
   if (!alertId || notificationId === 'GoToAlertaHome') {
-    openAlerta(state, notificationId);
-    return;
+    return openAlerta(state, notificationId);
   }
 
-  createNewTab(`${state.userPreferences.alertaUiUrl}alert/${alertId}`, notificationId);
+  return createNewTab(`${state.userPreferences.alertaUiUrl}alert/${alertId}`, notificationId);
 }
 
-function createNewTab(url: string, notificationId?: string) {
-  browser.tabs.create({ active: true, url }).then(tab => {
-    if (notificationId) {
-      browser.notifications.clear(notificationId);
-    }
-    browser.windows.update(tab.windowId!, { focused: true });
-  });
+async function createNewTab(url: string, notificationId?: string) {
+  const tab = await browser.tabs.create({ active: true, url });
+  if (notificationId) {
+    browser.notifications.clear(notificationId);
+  }
+  browser.windows.update(tab.windowId!, { focused: true });
+
+  return tab;
 }

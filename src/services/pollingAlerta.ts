@@ -32,8 +32,6 @@ export const fetchAlerts = (state: AlertaExtStore) => {
       });
     })
     .catch(error => {
-      console.log('oupsi');
-      console.log(error);
       browser.browserAction.setBadgeText({ text: 'ERR' });
       browser.browserAction.setBadgeBackgroundColor({ color: 'red' });
       savePollingStateState({
