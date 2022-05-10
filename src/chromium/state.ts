@@ -1,4 +1,4 @@
-import { AlertaExtStore, defaultState, FetchAlertState } from '../model/extensionState';
+import { AlertaExtStore, defaultState } from '../model/extensionState';
 import browser from 'webextension-polyfill';
 
 let state: AlertaExtStore = defaultState;
@@ -20,11 +20,6 @@ const saveState = (newState: AlertaExtStore) => {
     Object.assign(state, newState);
   });
 };
-
-const savePollingStateState = (fetchAlertaState: FetchAlertState) => {
-  browser.storage.local.set({ fetchAlertPollingState: fetchAlertaState });
-};
-
 const getState = () => {
   return state;
 };
@@ -47,4 +42,4 @@ function loadState(): Promise<AlertaExtStore> {
   });
 }
 
-export { initializeState, saveState, savePollingStateState, getState, loadState, synchronizeState };
+export { initializeState, saveState, getState, loadState, synchronizeState };

@@ -11,7 +11,7 @@ browser.runtime.onInstalled.addListener(() => initializeState().then(startPollin
 browser.runtime.onStartup.addListener(() => loadState().then(startPolling));
 
 // Every time we change user preferences, we reload the state
-browser.storage.onChanged.addListener((_, area) => {
+browser.storage.onChanged.addListener((c, area) => {
   if (area === 'local') {
     synchronizeState();
   }

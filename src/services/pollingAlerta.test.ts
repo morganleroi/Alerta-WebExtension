@@ -26,7 +26,7 @@ test('Should fetch Alerts when alarms is triggered', () => {
   mockBrowser.browserAction.setBadgeBackgroundColor.expect;
   // @ts-ignore
   mockBrowser.notifications.create.expect('Alert_12345', expect.anything());
-  mockBrowser.storage.local.set.expect.andResolve().times(2);
+  mockBrowser.storage.local.set.expect.andResolve().times(1);
 
   // Given
   const fetchMockAlerta = fetchMock.mockResponseOnce(

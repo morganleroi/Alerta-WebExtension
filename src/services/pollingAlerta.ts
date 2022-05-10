@@ -1,8 +1,9 @@
 import { Alert } from '../model/alerta';
-import { AlertaExtStore, FetchAlertStatus } from '../model/extensionState';
+import { AlertaExtStore } from '../model/extensionState';
 import { sendNotification } from '../chromium/notifications';
-import { getState, savePollingStateState, saveState } from '../chromium/state';
+import { getState } from '../chromium/state';
 import browser from 'webextension-polyfill';
+import { AlertaEvent, dispatchAndSave } from './stateReducers';
 
 export const startPolling = () => {
   browser.alarms.onAlarm.addListener(() => {
@@ -27,16 +28,17 @@ export const fetchAlerts = (state: AlertaExtStore) => {
     .then(response => (response.ok ? response.json() : Promise.reject(response)))
     .then(response => {
       handleAlertaResponse(response, state);
-      savePollingStateState({
-        status: FetchAlertStatus.OK,
-      });
     })
     .catch(error => {
       browser.browserAction.setBadgeText({ text: 'ERR' });
       browser.browserAction.setBadgeBackgroundColor({ color: 'red' });
-      savePollingStateState({
-        status: FetchAlertStatus.KO,
-        error: { status: error.status, statusText: error.statusText },
+
+      dispatchAndSave({
+        event: AlertaEvent.POLLING_IN_ERROR,
+        payload: {
+          status: error.status,
+          statusText: error.statusText,
+        },
       });
     });
 };
@@ -61,20 +63,11 @@ function handleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
 
   sendNotification(state, newAlerts);
 
-  // Update the storage with the new value. Only if needed or if it's the first time we have a state (or user preferences saved)
-  // Todo: Add tests on this part
-  if (
-    newAlerts.length > 0 ||
-    fetchedAlerts.length !== state.pollingState.alerts.length ||
-    state.pollingState.isNewState
-  ) {
-    saveState({
-      ...state,
-      pollingState: {
-        ...state.pollingState,
-        alerts: fetchedAlerts,
-        isNewState: false,
-      },
-    });
-  }
+  dispatchAndSave({
+    event: AlertaEvent.POLLING_RESULT_RECEIVED,
+    payload: {
+      newAlerts,
+      fetchedAlerts,
+    },
+  });
 }
