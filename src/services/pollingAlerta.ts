@@ -62,7 +62,12 @@ function handleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
   sendNotification(state, newAlerts);
 
   // Update the storage with the new value. Only if needed or if it's the first time we have a state (or user preferences saved)
-  if (newAlerts.length > 0 || state.pollingState.isNewState) {
+  // Todo: Add tests on this part
+  if (
+    newAlerts.length > 0 ||
+    fetchedAlerts.length !== state.pollingState.alerts.length ||
+    state.pollingState.isNewState
+  ) {
     saveState({
       ...state,
       pollingState: {

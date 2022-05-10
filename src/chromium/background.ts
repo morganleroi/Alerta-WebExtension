@@ -3,10 +3,11 @@ import { startPolling } from '../services/pollingAlerta';
 import { getState, initializeState, loadState, synchronizeState } from './state';
 import browser from 'webextension-polyfill';
 import { isFirefox } from '../services/crossBrowserUtils';
+
 // When the Extension is first installed or when updated.
 browser.runtime.onInstalled.addListener(() => initializeState().then(startPolling));
 
-// When the Extensions starts (Chrome starts, ...)
+// When the Extensions starts (Browser starts, ...)
 browser.runtime.onStartup.addListener(() => loadState().then(startPolling));
 
 // Every time we change user preferences, we reload the state
@@ -16,7 +17,7 @@ browser.storage.onChanged.addListener((_, area) => {
   }
 });
 
-// User clicks on extension Icon
+// When user clicks on extension Icon
 browser.browserAction.onClicked.addListener(() => openAlerta(getState()));
 
 // User click on notification
@@ -24,13 +25,9 @@ browser.notifications.onClicked.addListener(notificationId =>
   openAlert(getState(), notificationId, notificationId.split('_').pop()),
 );
 
-// User clicks on notification button
+// User clicks on notification button, applies for all browser except Firefox.
 if (!isFirefox()) {
   browser.notifications.onButtonClicked.addListener((notificationId, index) =>
     triggerNotificationAction(getState(), notificationId, index),
   );
-} else {
-  browser.notifications.onClicked.addListener(notificationId => {
-    triggerNotificationAction(getState(), notificationId);
-  });
 }
