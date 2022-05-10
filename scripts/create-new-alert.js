@@ -2,9 +2,11 @@
 // node scripts/create-new-alert.js '{ "resource":"API", "event":"Slowness detected" }'
 // node scripts/create-new-alert.js '{ "resource":"WebAPI", "event":"Release in progress ...", "severity":"warning" }'
 // node scripts/create-new-alert.js '{ "environment":"Development" }'
+// node scripts/create-new-alert.js '{ "environment":"Development" }' 3
 
 const fetch = require('node-fetch');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const secretFilePath = 'scripts/secrets.json';
 
@@ -18,9 +20,10 @@ if (!fs.existsSync(secretFilePath)) {
   );
 }
 
-var secretFile = fs.readFileSync(secretFilePath, 'utf-8');
-var secrets = JSON.parse(secretFile);
+const secretFile = fs.readFileSync(secretFilePath, 'utf-8');
+const secrets = JSON.parse(secretFile);
 const patch = process.argv.slice(2)?.length > 0 ? JSON.parse(process.argv.slice(2)[0]) : {};
+const alertCount = process.argv.slice(3)?.length > 0 ? JSON.parse(process.argv.slice(3)[0]) : 1;
 
 const body = {
   resource: 'webapi',
@@ -34,12 +37,22 @@ const body = {
   ...patch,
 };
 
-console.log(body);
+Promise.all(
+  [...Array(alertCount).keys()].map(i => {
+    let newAlert = { ...body };
+    if (alertCount > 1) {
+      newAlert.event = `${newAlert.event}-${crypto.randomUUID()}`;
+    }
+    console.log('-------------------');
+    console.log(`Create alert N°${i + 1}`);
+    console.log(newAlert);
 
-fetch(`${secrets.alertaUrl}/alert`, {
-  method: 'post',
-  body: JSON.stringify(body),
-  headers: { 'Content-Type': 'application/json', Authorization: `Key ${secrets.alertaToken}` },
-})
-  .then(res => res.json())
-  .then(json => console.log(json));
+    return fetch(`${secrets.alertaUrl}/alert`, {
+      method: 'post',
+      body: JSON.stringify(newAlert),
+      headers: { 'Content-Type': 'application/json', Authorization: `Key ${secrets.alertaToken}` },
+    });
+  }),
+)
+  .then(console.log)
+  .catch(err => console.log('Something went wrong when calling Alerta API', err));
