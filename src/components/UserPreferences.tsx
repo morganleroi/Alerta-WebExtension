@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, FormGroup, Input, Label } from 'reactstrap';
-import { AlertaExtStore, FetchAlertState } from '../model/extensionState';
+import { defaultState, FetchAlertState } from '../model/extensionState';
 import { UserPreferences } from '../model/userPreferences';
 import * as alertaApi from '../services/fetchAlertaApi';
-import * as chromium from '../services/chromiumWrapper';
 import Filter from './Filter';
 import InfoTooltip from './InfoTooltip';
 import ConnectionStatus from './ConnectionStatus';
-import browser, { permissions } from 'webextension-polyfill';
 import { PermissionBanner } from './PermissionBanner';
+import { cleanUrl } from '../services/Utils';
+import { AlertaEvent, dispatchAndSave } from '../services/stateReducers';
+import { loadState } from '../browser/storage';
 
 type AlertaFilter = {
   label: string;
@@ -16,24 +17,8 @@ type AlertaFilter = {
 };
 
 const UserPreferences = () => {
-  permissions.onAdded.addListener(added => {
-    console.log('Permission added ', added);
-  });
-
-  const [userPref, setUserPref] = useState<UserPreferences>({
-    alertaApiServerUrl: '',
-    alertaUiUrl: '',
-    persistentNotifications: false,
-    showNotifications: true,
-    alertaApiSecret: '',
-    username: '',
-    filterGroups: [],
-    filterEnvironments: ['Production'],
-    filterServices: [],
-    playAudio: false,
-  });
-
-  const [fetchAlertStatus, setFetchAlertStatus] = useState<FetchAlertState>();
+  const [userPref, setUserPref] = useState<UserPreferences>(defaultState.userPreferences);
+  const [fetchAlertStatus, setFetchAlertStatus] = useState<FetchAlertState>(defaultState.fetchAlertPollingState);
   const [userPrefSaved, setUserPrefSaved] = useState<{
     userPrefSavedWithoutError: boolean;
     displayAlert: boolean;
@@ -45,21 +30,15 @@ const UserPreferences = () => {
   const [isUserPrefLoaded, setIsUserPrefLoaded] = useState<boolean>();
 
   useEffect(() => {
-    browser.storage.local.get(null).then((items: any) => {
-      const alertaExtStore: AlertaExtStore = items;
+    const loadState2 = async () => {
+      const alertaExtStore = await loadState();
       setUserPref(alertaExtStore.userPreferences);
       setFetchAlertStatus(alertaExtStore.fetchAlertPollingState);
       setIsUserPrefLoaded(true);
-    });
-  }, []);
+    };
 
-  const cleanUrl = (url: string) => {
-    url = url.trim();
-    if (!url.endsWith('/')) {
-      url = url + '/';
-    }
-    return url;
-  };
+    loadState2();
+  }, []);
 
   const saveUserPreference = () => {
     userPref.alertaApiServerUrl = cleanUrl(userPref.alertaApiServerUrl);
@@ -69,8 +48,7 @@ const UserPreferences = () => {
     userPref.filterGroups = selectedOptionGroup.map(option => option.value);
     userPref.filterEnvironments = selectedOptionEnvironment.map(option => option.value);
 
-    chromium
-      .saveUserPreferences(userPref)
+    dispatchAndSave({ event: AlertaEvent.SAVE_USER_PREFERENCES, payload: userPref })
       .then(_ => {
         setUserPrefSaved({
           userPrefSavedWithoutError: true,
@@ -99,27 +77,17 @@ const UserPreferences = () => {
       {isUserPrefLoaded && <PermissionBanner userPref={userPref} />}
       <Form>
         <div
-          className={
-            userPrefSaved?.userPrefSavedWithoutError
-              ? 'alert alert-success m-3'
-              : 'alert alert-danger m-3'
-          }
+          className={userPrefSaved?.userPrefSavedWithoutError ? 'alert alert-success m-3' : 'alert alert-danger m-3'}
           role="alert"
           style={{ display: userPrefSaved?.displayAlert ? 'block' : 'none' }}
         >
-          {userPrefSaved?.userPrefSavedWithoutError
-            ? 'Preferences saved !'
-            : 'Oups, an error happened while saving preferences. (Error: ' +
-              userPrefSaved?.errorReason +
-              ')'}
+          {userPrefSaved?.userPrefSavedWithoutError ? 'Preferences saved !' : 'Oups, an error happened while saving preferences. (Error: ' + userPrefSaved?.errorReason + ')'}
         </div>
 
         <div className="card mt-2">
           <div className="card-header">
             <h4>Alerta Server configuration</h4>
-            {fetchAlertStatus && isUserPrefLoaded && (
-              <ConnectionStatus fetchAlertStatus={fetchAlertStatus} />
-            )}
+            {fetchAlertStatus && isUserPrefLoaded && <ConnectionStatus fetchAlertStatus={fetchAlertStatus} />}
           </div>
           <div className="card-body">
             <div className="d-flex flex-wrap justify-content-left">
@@ -163,10 +131,7 @@ const UserPreferences = () => {
                 <label htmlFor="alertaUiUrl" className="form-label">
                   Alerta UI Url{' '}
                 </label>{' '}
-                <InfoTooltip
-                  id="tooltip-alerta-ui"
-                  text="This URL is used when you click on a notification to redirect to alert page"
-                />
+                <InfoTooltip id="tooltip-alerta-ui" text="This URL is used when you click on a notification to redirect to alert page" />
                 <input
                   type="text"
                   className="form-control"
@@ -180,10 +145,7 @@ const UserPreferences = () => {
                 <label htmlFor="username" className="form-label">
                   Username
                 </label>{' '}
-                <InfoTooltip
-                  id="tooltip-username"
-                  text="Username if used when you Ack the alert notification"
-                />
+                <InfoTooltip id="tooltip-username" text="Username if used when you Ack the alert notification" />
                 <input
                   type="text"
                   className="form-control"
@@ -229,11 +191,7 @@ const UserPreferences = () => {
                       })
                     }
                   />
-                  Persistent notifications{' '}
-                  <InfoTooltip
-                    id="tooltip-persistant-notif"
-                    text="Notifications will not disapears until you click on them (Or any action)"
-                  />
+                  Persistent notifications <InfoTooltip id="tooltip-persistant-notif" text="Notifications will not disapears until you click on them (Or any action)" />
                 </Label>
               </FormGroup>
               <FormGroup className="m-2" check>

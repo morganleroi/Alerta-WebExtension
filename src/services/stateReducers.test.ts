@@ -1,6 +1,7 @@
 import { reduce, AlertaEvent } from './stateReducers';
 import { Alert } from '../model/Alerta';
-import { defaultState, FetchAlertStatus } from '../model/ExtensionState';
+import { AlertaExtStore, defaultState, FetchAlertStatus } from '../model/ExtensionState';
+import { UserPreferences } from '../model/UserPreferences';
 
 function createNewAlert(id: number): Alert {
   return {
@@ -72,4 +73,41 @@ test('When receiving polling error, state should be notified', () => {
     status: 401,
     statusText: 'Unauthorized',
   });
+});
+
+test('When receiving save user preferences, state should be updated', () => {
+  const userPref: UserPreferences = {
+    ...defaultState.userPreferences,
+    persistentNotifications: true,
+    alertaApiSecret: 'AZERTY :-)',
+  };
+
+  const newState = reduce(defaultState, {
+    event: AlertaEvent.SAVE_USER_PREFERENCES,
+    payload: userPref,
+  });
+
+  expect(newState.userPreferences.persistentNotifications).toBeTruthy();
+  expect(newState.userPreferences.alertaApiSecret).toEqual('AZERTY :-)');
+});
+
+test('When receiving save user preferences, polling state should be recomputed', () => {
+  const initialState: AlertaExtStore = {
+    ...defaultState,
+    pollingState: {
+      alerts: [],
+      isNewState: false,
+      alertaFetchQuery: '',
+    },
+  };
+
+  const newState = reduce(initialState, {
+    event: AlertaEvent.SAVE_USER_PREFERENCES,
+    payload: defaultState.userPreferences,
+  });
+
+  expect(newState.pollingState.isNewState).toBeTruthy();
+  expect(newState.pollingState.alertaFetchQuery).toEqual(
+    'status=open&status=ack&sort-by=lastReceiveTime&environment=Production',
+  );
 });

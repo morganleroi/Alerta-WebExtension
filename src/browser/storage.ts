@@ -3,43 +3,23 @@ import browser from 'webextension-polyfill';
 
 let state: AlertaExtStore = defaultState;
 
-const initializeState = (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    browser.storage.local.set(defaultState).then(() => {
-      if (browser.runtime.lastError) {
-        return reject(browser.runtime.lastError);
-      }
-      state = defaultState;
-      resolve();
-    });
-  });
+const initializeState = async () => {
+  await saveState(defaultState);
 };
 
-const saveState = (newState: AlertaExtStore) => {
-  browser.storage.local.set(newState).then(() => {
-    Object.assign(state, newState);
-  });
+const saveState = async (newState: AlertaExtStore) => {
+  await browser.storage.local.set(newState);
+  Object.assign(state, newState);
 };
+
 const getState = () => {
   return state;
 };
 
-const synchronizeState = () => {
-  loadState().then(items => {
-    const newState = items as AlertaExtStore;
-    Object.assign(state, newState);
-  });
-};
-
-function loadState(): Promise<AlertaExtStore> {
-  return new Promise((resolve, reject) => {
-    browser.storage.local.get(null).then(items => {
-      if (browser.runtime.lastError) {
-        return reject(browser.runtime.lastError);
-      }
-      resolve(items as AlertaExtStore);
-    });
-  });
+async function loadState() {
+  let newState = (await browser.storage.local.get(null)) as AlertaExtStore;
+  Object.assign(state, newState);
+  return newState;
 }
 
-export { initializeState, saveState, getState, loadState, synchronizeState };
+export { initializeState, saveState, getState, loadState };

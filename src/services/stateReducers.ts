@@ -1,11 +1,14 @@
 import { Alert } from '../model/Alerta';
 import { AlertaExtStore, FetchAlertStatus } from '../model/ExtensionState';
 import { getState, saveState } from '../browser/storage';
+import { UserPreferences } from '../model/UserPreferences';
+import * as alertaApi from './fetchAlertaApi';
 
 export enum AlertaEvent {
   POLLING_RESULT_RECEIVED,
   USER_PREF_UPDATED,
   POLLING_IN_ERROR,
+  SAVE_USER_PREFERENCES,
 }
 
 interface PollingResultReceivedAction {
@@ -26,7 +29,28 @@ interface PollingInError {
   };
 }
 
-type ActionTypes = PollingResultReceivedAction | UserPrefUpdated | PollingInError;
+interface SaveUserPreferences {
+  event: typeof AlertaEvent.SAVE_USER_PREFERENCES;
+  payload: UserPreferences;
+}
+
+type ActionTypes =
+  | PollingResultReceivedAction
+  | UserPrefUpdated
+  | PollingInError
+  | SaveUserPreferences;
+
+function saveUserPreferences(state: AlertaExtStore, payload: UserPreferences): AlertaExtStore {
+  return {
+    ...state,
+    pollingState: {
+      ...state.pollingState,
+      alertaFetchQuery: alertaApi.createFetchQuery(payload),
+      isNewState: true,
+    },
+    userPreferences: payload,
+  };
+}
 
 export function reduce(state: AlertaExtStore, action: ActionTypes): AlertaExtStore {
   switch (action.event) {
@@ -34,14 +58,16 @@ export function reduce(state: AlertaExtStore, action: ActionTypes): AlertaExtSto
       return pollingResultReceived(state, action.payload);
     case AlertaEvent.POLLING_IN_ERROR:
       return pollingInError(state, action.payload);
+    case AlertaEvent.SAVE_USER_PREFERENCES:
+      return saveUserPreferences(state, action.payload);
     default:
       return state;
   }
 }
 
-export function dispatchAndSave(action: ActionTypes) {
+export async function dispatchAndSave(action: ActionTypes) {
   const newState = reduce(getState(), action);
-  saveState(newState);
+  await saveState(newState);
 }
 
 function pollingInError(

@@ -1,6 +1,6 @@
 import { openAlert, openAlerta, triggerNotificationAction } from './notificationActions';
 import { startPolling } from '../services/pollingAlerta';
-import { getState, initializeState, loadState, synchronizeState } from './storage';
+import { getState, initializeState, loadState } from './storage';
 import browser from 'webextension-polyfill';
 import { isFirefox } from './crossBrowserUtils';
 
@@ -13,7 +13,7 @@ browser.runtime.onStartup.addListener(() => loadState().then(startPolling));
 // Every time we change user preferences, we reload the state
 browser.storage.onChanged.addListener((c, area) => {
   if (area === 'local') {
-    synchronizeState();
+    loadState();
   }
 });
 
