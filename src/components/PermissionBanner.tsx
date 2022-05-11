@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import browser from 'webextension-polyfill';
 import { UserPreferences } from '../model/userPreferences';
-import { acceptPermission } from '../services/chromiumWrapper';
 import { cleanUrl } from '../services/Utils';
+import { acceptPermission } from '../browser/permission';
 
 export const PermissionBanner = (props: { userPref: UserPreferences }) => {
   const [permissionIsOk, setPermissionIsOk] = useState<boolean>(false);

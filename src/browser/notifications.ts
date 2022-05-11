@@ -3,7 +3,7 @@ import { AlertaExtStore } from '../model/extensionState';
 import { UserPreferences } from '../model/userPreferences';
 import { playSound } from '../services/playSound';
 import browser, { Notifications } from 'webextension-polyfill';
-import { isFirefox } from '../services/crossBrowserUtils';
+import { isFirefox } from './crossBrowserUtils';
 import CreateNotificationOptions = Notifications.CreateNotificationOptions;
 
 export type CreateNotificationOptionsComplete = CreateNotificationOptions &

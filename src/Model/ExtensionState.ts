@@ -1,7 +1,7 @@
 import { Alert } from './alerta';
 import { UserPreferences } from './userPreferences';
 
-type PollingState = {
+export type PollingState = {
   alerts: Alert[];
   alertaFetchQuery: string;
   isNewState: boolean;

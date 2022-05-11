@@ -1,7 +1,7 @@
 import { Alert } from '../model/alerta';
 import { AlertaExtStore } from '../model/extensionState';
-import { sendNotification } from '../chromium/notifications';
-import { getState } from '../chromium/state';
+import { sendNotification } from '../browser/notifications';
+import { getState } from '../browser/storage';
 import browser from 'webextension-polyfill';
 import { AlertaEvent, dispatchAndSave } from './stateReducers';
 

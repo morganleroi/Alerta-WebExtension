@@ -3,12 +3,6 @@ import { UserPreferences } from '../model/userPreferences';
 import * as alertaApi from '../services/fetchAlertaApi';
 import browser from 'webextension-polyfill';
 
-export function acceptPermission() {
-  return browser.permissions.request({
-    origins: ['*://*/*'],
-  });
-}
-
 export const saveUserPreferences = (userPref: UserPreferences) => {
   return new Promise<void>((resolve, reject) => {
     browser.storage.local.get(null).then((items: any) => {

@@ -1,6 +1,6 @@
 import { Alert } from '../model/Alerta';
 import { AlertaExtStore, FetchAlertStatus } from '../model/ExtensionState';
-import { getState, saveState } from '../chromium/state';
+import { getState, saveState } from '../browser/storage';
 
 export enum AlertaEvent {
   POLLING_RESULT_RECEIVED,

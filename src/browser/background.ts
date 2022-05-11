@@ -1,8 +1,8 @@
 import { openAlert, openAlerta, triggerNotificationAction } from './notificationActions';
 import { startPolling } from '../services/pollingAlerta';
-import { getState, initializeState, loadState, synchronizeState } from './state';
+import { getState, initializeState, loadState, synchronizeState } from './storage';
 import browser from 'webextension-polyfill';
-import { isFirefox } from '../services/crossBrowserUtils';
+import { isFirefox } from './crossBrowserUtils';
 
 // When the Extension is first installed or when updated.
 browser.runtime.onInstalled.addListener(() => initializeState().then(startPolling));
