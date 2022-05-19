@@ -14,7 +14,6 @@ test('Should not launch notification if notification disabled in user preference
   // Given
   // Here, we do not setup any mock on Notification. Meaning that is a call is made, then the test will fail.
   const state = {
-    fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
     userPreferences: { ...defaultState.userPreferences },
     pollingState: { ...defaultState.pollingState },
   };
@@ -36,7 +35,6 @@ test('Should not launch notification if notification disabled in user preference
 test('Should launch notification if new alerts', () => {
   // Given
   const state = {
-    fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
     userPreferences: { ...defaultState.userPreferences },
     pollingState: { ...defaultState.pollingState },
   };
@@ -71,7 +69,6 @@ test('Should launch notification if new alerts', () => {
 test('Should launch persistent notification if enabled in user preference', () => {
   // Given
   const state = {
-    fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
     userPreferences: { ...defaultState.userPreferences },
     pollingState: { ...defaultState.pollingState },
   };
@@ -106,7 +103,6 @@ test('Should launch persistent notification if enabled in user preference', () =
 test('Should launch a list notifications is more than one new alert', () => {
   // Given
   const state = {
-    fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
     userPreferences: { ...defaultState.userPreferences },
     pollingState: { ...defaultState.pollingState },
   };
@@ -155,7 +151,6 @@ test('Should not launch notification if no new alert', () => {
   // Here, we do not setup any mock on Notification. Meaning that is a call is made, then the test will fail.
 
   const state = {
-    fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
     userPreferences: { ...defaultState.userPreferences },
     pollingState: { ...defaultState.pollingState },
   };
@@ -171,7 +166,6 @@ test('Should not launch notification if alerts has not been fetched for the firs
   // Here, we do not setup any mock on Notification. Meaning that is a call is made, then the test will fail.
 
   const state = {
-    fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
     userPreferences: { ...defaultState.userPreferences },
     pollingState: { ...defaultState.pollingState },
   };
@@ -191,7 +185,6 @@ test('Should not launch notification if alerts has not been fetched for the firs
 test('Should play a sound if selected in user preferences', () => {
   // Given
   const state = {
-    fetchAlertPollingState: { ...defaultState.fetchAlertPollingState },
     userPreferences: { ...defaultState.userPreferences },
     pollingState: { ...defaultState.pollingState },
   };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, FormGroup, Input, Label } from 'reactstrap';
-import { defaultState, FetchAlertState } from '../model/extensionState';
+import { defaultState, FetchAlertStatus } from '../model/extensionState';
 import { UserPreferences } from '../model/userPreferences';
 import * as alertaApi from '../services/fetchAlertaApi';
 import Filter from './Filter';
@@ -18,7 +18,7 @@ type AlertaFilter = {
 
 const UserPreferences = () => {
   const [userPref, setUserPref] = useState<UserPreferences>(defaultState.userPreferences);
-  const [fetchAlertStatus, setFetchAlertStatus] = useState<FetchAlertState>(defaultState.fetchAlertPollingState);
+  const [fetchAlertStatus, setFetchAlertStatus] = useState<FetchAlertStatus>(defaultState.pollingState.status);
   const [userPrefSaved, setUserPrefSaved] = useState<{
     userPrefSavedWithoutError: boolean;
     displayAlert: boolean;
@@ -30,14 +30,14 @@ const UserPreferences = () => {
   const [isUserPrefLoaded, setIsUserPrefLoaded] = useState<boolean>();
 
   useEffect(() => {
-    const loadState2 = async () => {
+    const reloadState = async () => {
       const alertaExtStore = await loadState();
       setUserPref(alertaExtStore.userPreferences);
-      setFetchAlertStatus(alertaExtStore.fetchAlertPollingState);
+      setFetchAlertStatus(alertaExtStore.pollingState.status);
       setIsUserPrefLoaded(true);
     };
 
-    loadState2();
+    reloadState();
   }, []);
 
   const saveUserPreference = () => {
@@ -99,7 +99,7 @@ const UserPreferences = () => {
                   type="text"
                   className="form-control"
                   id="alertaUrl"
-                  placeholder="http://hostname:port"
+                  placeholder="https://hostname:port"
                   value={userPref?.alertaApiServerUrl}
                   onChange={val =>
                     setUserPref({
@@ -136,7 +136,7 @@ const UserPreferences = () => {
                   type="text"
                   className="form-control"
                   id="alertaUiUrl"
-                  placeholder="http://hostname:port"
+                  placeholder="https://hostname:port"
                   value={userPref?.alertaUiUrl}
                   onChange={val => setUserPref({ ...userPref, alertaUiUrl: val.target.value })}
                 />

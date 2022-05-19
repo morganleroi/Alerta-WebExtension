@@ -1,6 +1,6 @@
 import { AlertaEvent, reduce } from './stateReducers';
 import { Alert } from '../model/Alerta';
-import { AlertaExtStore, defaultState, FetchAlertStatus } from '../model/ExtensionState';
+import { AlertaExtStore, defaultState, FetchAlertStatusResult } from '../model/ExtensionState';
 import { UserPreferences } from '../model/UserPreferences';
 
 function createNewAlert(id: number): Alert {
@@ -24,8 +24,8 @@ test('When receiving new alert, state should be updated', () => {
   });
 
   expect(newState.pollingState.alerts).toEqual(fetchedAlerts);
-  expect(newState.fetchAlertPollingState.error).toBeUndefined();
-  expect(newState.fetchAlertPollingState.status).toEqual(FetchAlertStatus.OK);
+  expect(newState.pollingState.status.error).toBeUndefined();
+  expect(newState.pollingState.status.result).toEqual(FetchAlertStatusResult.OK);
 });
 
 test('When receiving no new Alert, state no should be updated', () => {
@@ -69,8 +69,8 @@ test('When receiving polling error, state should be notified', () => {
     },
   });
 
-  expect(newState.fetchAlertPollingState.status).toEqual(FetchAlertStatus.KO);
-  expect(newState.fetchAlertPollingState.error).toEqual({
+  expect(newState.pollingState.status.result).toEqual(FetchAlertStatusResult.KO);
+  expect(newState.pollingState.status.error).toEqual({
     status: 401,
     statusText: 'Unauthorized',
   });
@@ -99,6 +99,9 @@ test('When receiving save user preferences, polling state should be recomputed',
       alerts: [],
       isNewState: false,
       alertaFetchQuery: '',
+      status: {
+        result: FetchAlertStatusResult.NotYetFetched,
+      },
     },
   };
 

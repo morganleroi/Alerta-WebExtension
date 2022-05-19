@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { FormGroup } from 'reactstrap';
 import CreatableSelect from 'react-select/creatable';
 import { UserPreferences } from '../model/userPreferences';
-import { FetchAlertState, FetchAlertStatus } from '../model/extensionState';
+import { FetchAlertStatus, FetchAlertStatusResult } from '../model/extensionState';
 import { AlertIco } from './AlertIco';
 
 type AlertaFilter = {
@@ -24,7 +24,7 @@ type FilterProps = {
     >
   >;
   selectedFilterValue: AlertaFilter[];
-  globalStatus: FetchAlertState;
+  globalStatus: FetchAlertStatus;
 };
 
 const distinctAndPrepareForCombobox = (values: string[]) => {
@@ -52,12 +52,12 @@ const Filter = (props: FilterProps) => {
           return;
         }
         setFilterValues(distinctAndPrepareForCombobox(response));
-        setIsFilterFetched(props.globalStatus.status === FetchAlertStatus.OK);
+        setIsFilterFetched(props.globalStatus.result === FetchAlertStatusResult.OK);
       })
       .catch(() => {
         setIsFilterFetched(false);
       });
-  }, [props.userPref.alertaApiSecret, props.userPref.alertaApiServerUrl, props.globalStatus.status]);
+  }, [props.userPref.alertaApiSecret, props.userPref.alertaApiServerUrl, props.globalStatus.result]);
 
   return (
     <FormGroup className="m-2 flex-fill">

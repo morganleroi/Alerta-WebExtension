@@ -1,5 +1,5 @@
 import { Alert } from '../model/Alerta';
-import { AlertaExtStore, FetchAlertStatus } from '../model/ExtensionState';
+import { AlertaExtStore, FetchAlertStatusResult } from '../model/ExtensionState';
 import { getState, saveState } from '../browser/storage';
 import { UserPreferences } from '../model/UserPreferences';
 import * as alertaApi from './fetchAlertaApi';
@@ -69,9 +69,12 @@ export async function dispatchAndSave(action: ActionTypes) {
 function pollingInError(state: AlertaExtStore, payload: { status: number; statusText: string }): AlertaExtStore {
   return {
     ...state,
-    fetchAlertPollingState: {
-      status: FetchAlertStatus.KO,
-      error: { ...payload },
+    pollingState: {
+      ...state.pollingState,
+      status: {
+        result: FetchAlertStatusResult.KO,
+        error: { ...payload },
+      },
     },
   };
 }
@@ -79,13 +82,13 @@ function pollingInError(state: AlertaExtStore, payload: { status: number; status
 function pollingResultReceived(state: AlertaExtStore, payload: { fetchedAlerts: Alert[] }): AlertaExtStore {
   return {
     ...state,
-    fetchAlertPollingState: {
-      status: FetchAlertStatus.OK,
-    },
     pollingState: {
       ...state.pollingState,
       alerts: payload.fetchedAlerts,
       isNewState: false,
+      status: {
+        result: FetchAlertStatusResult.OK,
+      },
     },
   };
 }

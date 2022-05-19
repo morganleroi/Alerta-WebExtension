@@ -1,6 +1,6 @@
 import { fetchAlerts, startPolling } from './pollingAlerta';
 import fetchMock from 'jest-fetch-mock';
-import { AlertaExtStore, defaultState, FetchAlertStatus } from '../model/extensionState';
+import { AlertaExtStore, defaultState, FetchAlertStatusResult } from '../model/extensionState';
 import { setupMockAsChromium } from './setupMock';
 
 fetchMock.enableMocks();
@@ -43,19 +43,19 @@ test('Should fetch Alerts when alarms is triggered', () => {
   );
 
   const state = {
-    fetchAlertPollingState: {
-      status: FetchAlertStatus.NotYetFetched,
-    },
     userPreferences: {
       ...defaultState.userPreferences,
       alertaApiServerUrl: 'https://myAlertaServer/',
       alertaApiSecret: 'MySecretKey',
     },
     pollingState: {
+      status: {
+        result: FetchAlertStatusResult.NotYetFetched,
+      },
       alertaFetchQuery: 'service=test&group-test2',
       alerts: [],
       isNewState: false,
-      fetchAlertState: { status: FetchAlertStatus.NotYetFetched },
+      fetchAlertState: { status: FetchAlertStatusResult.NotYetFetched },
     },
   } as AlertaExtStore;
 
