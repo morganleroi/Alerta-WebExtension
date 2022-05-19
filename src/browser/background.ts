@@ -21,13 +21,9 @@ browser.storage.onChanged.addListener((c, area) => {
 browser.browserAction.onClicked.addListener(() => openAlerta(getState()));
 
 // User click on notification
-browser.notifications.onClicked.addListener(notificationId =>
-  openAlert(getState(), notificationId, notificationId.split('_').pop()),
-);
+browser.notifications.onClicked.addListener(notificationId => openAlert(getState(), notificationId, notificationId.split('_').pop()));
 
 // User clicks on notification button, applies for all browser except Firefox.
 if (!isFirefox()) {
-  browser.notifications.onButtonClicked.addListener((notificationId, index) =>
-    triggerNotificationAction(getState(), notificationId, index),
-  );
+  browser.notifications.onButtonClicked.addListener((notificationId, index) => triggerNotificationAction(getState(), notificationId, index));
 }

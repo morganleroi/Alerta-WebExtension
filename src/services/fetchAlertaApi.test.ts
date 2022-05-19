@@ -47,9 +47,7 @@ test('Should query alerta with multiple groups filtering', () => {
   const query = fetchAlerta.createFetchQuery(userPreferences);
 
   // Then
-  expect(query).toEqual(
-    'status=open&status=ack&sort-by=lastReceiveTime&group=groupeOne&group=groupTwo',
-  );
+  expect(query).toEqual('status=open&status=ack&sort-by=lastReceiveTime&group=groupeOne&group=groupTwo');
 });
 
 test('Should query alerta with one service filtering', () => {
@@ -81,9 +79,7 @@ test('Should query alerta with multiple services filtering', () => {
   const query = fetchAlerta.createFetchQuery(userPreferences);
 
   // Then
-  expect(query).toEqual(
-    'status=open&status=ack&sort-by=lastReceiveTime&service=serviceOne&service=serviceTwo',
-  );
+  expect(query).toEqual('status=open&status=ack&sort-by=lastReceiveTime&service=serviceOne&service=serviceTwo');
 });
 
 test('Should query alerta with one environment filtering', () => {
@@ -115,7 +111,5 @@ test('Should query alerta with multiple environments filtering', () => {
   const query = fetchAlerta.createFetchQuery(userPreferences);
 
   // Then
-  expect(query).toEqual(
-    'status=open&status=ack&sort-by=lastReceiveTime&environment=Production&environment=Development',
-  );
+  expect(query).toEqual('status=open&status=ack&sort-by=lastReceiveTime&environment=Production&environment=Development');
 });

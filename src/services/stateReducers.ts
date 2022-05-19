@@ -34,11 +34,7 @@ interface SaveUserPreferences {
   payload: UserPreferences;
 }
 
-type ActionTypes =
-  | PollingResultReceivedAction
-  | UserPrefUpdated
-  | PollingInError
-  | SaveUserPreferences;
+type ActionTypes = PollingResultReceivedAction | UserPrefUpdated | PollingInError | SaveUserPreferences;
 
 function saveUserPreferences(state: AlertaExtStore, payload: UserPreferences): AlertaExtStore {
   return {
@@ -70,10 +66,7 @@ export async function dispatchAndSave(action: ActionTypes) {
   await saveState(newState);
 }
 
-function pollingInError(
-  state: AlertaExtStore,
-  payload: { status: number; statusText: string },
-): AlertaExtStore {
+function pollingInError(state: AlertaExtStore, payload: { status: number; statusText: string }): AlertaExtStore {
   return {
     ...state,
     fetchAlertPollingState: {
@@ -82,10 +75,8 @@ function pollingInError(
     },
   };
 }
-function pollingResultReceived(
-  state: AlertaExtStore,
-  payload: { fetchedAlerts: Alert[] },
-): AlertaExtStore {
+
+function pollingResultReceived(state: AlertaExtStore, payload: { fetchedAlerts: Alert[] }): AlertaExtStore {
   return {
     ...state,
     fetchAlertPollingState: {

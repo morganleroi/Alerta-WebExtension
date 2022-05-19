@@ -47,8 +47,7 @@ export function createFetchQuery(userPreferences: UserPreferences) {
 
 const buildQueryParameters = (paramName: string, parameters: string[]): string => {
   if (parameters.length > 0) {
-    const reducer = (accumulator: string, currentValue: string) =>
-      accumulator + `&${paramName}=${currentValue}`;
+    const reducer = (accumulator: string, currentValue: string) => accumulator + `&${paramName}=${currentValue}`;
     return parameters.reduce(reducer, '');
   }
   return '';

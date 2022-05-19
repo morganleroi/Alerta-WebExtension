@@ -1,4 +1,4 @@
-import { reduce, AlertaEvent } from './stateReducers';
+import { AlertaEvent, reduce } from './stateReducers';
 import { Alert } from '../model/Alerta';
 import { AlertaExtStore, defaultState, FetchAlertStatus } from '../model/ExtensionState';
 import { UserPreferences } from '../model/UserPreferences';
@@ -11,6 +11,7 @@ function createNewAlert(id: number): Alert {
     text: 'WebApp seems unresponsive',
   };
 }
+
 test('When receiving new alert, state should be updated', () => {
   const newAlerts = [createNewAlert(3)];
   const fetchedAlerts = [createNewAlert(3), createNewAlert(2), createNewAlert(1)];
@@ -107,7 +108,5 @@ test('When receiving save user preferences, polling state should be recomputed',
   });
 
   expect(newState.pollingState.isNewState).toBeTruthy();
-  expect(newState.pollingState.alertaFetchQuery).toEqual(
-    'status=open&status=ack&sort-by=lastReceiveTime&environment=Production',
-  );
+  expect(newState.pollingState.alertaFetchQuery).toEqual('status=open&status=ack&sort-by=lastReceiveTime&environment=Production');
 });

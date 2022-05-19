@@ -1,11 +1,7 @@
 import { AlertaExtStore } from '../model/extensionState';
 import browser from 'webextension-polyfill';
 
-export function triggerNotificationAction(
-  state: AlertaExtStore,
-  notificationId: string,
-  index?: number,
-) {
+export function triggerNotificationAction(state: AlertaExtStore, notificationId: string, index?: number) {
   if (notificationId === 'GoToAlertaHome') {
     openAlerta(state, notificationId);
   } else if (notificationId.startsWith('Alert_') && index === 0) {
@@ -22,9 +18,7 @@ export function ackAlert(state: AlertaExtStore, notificationId: string, alertId?
 
   const body = {
     status: 'ack',
-    text: state.userPreferences.username
-      ? `${state.userPreferences.username}: I'll take a look ...`
-      : '',
+    text: state.userPreferences.username ? `${state.userPreferences.username}: I'll take a look ...` : '',
   };
 
   fetch(`${state.userPreferences.alertaApiServerUrl}alert/${alertId}/status`, {

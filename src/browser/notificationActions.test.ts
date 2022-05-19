@@ -12,10 +12,7 @@ beforeEach(() => {
 test('Should open Alerta in a new tab when I click on an alert', async () => {
   const tabs: any = { id: 1, windowId: 2 };
 
-  mockBrowser.tabs.create
-    .expect({ active: true, url: 'https://myAlertaServer/ui/' })
-    .andResolve(tabs)
-    .times(1);
+  mockBrowser.tabs.create.expect({ active: true, url: 'https://myAlertaServer/ui/' }).andResolve(tabs).times(1);
 
   mockBrowser.windows.update.expect(2, { focused: true }).times(1);
 
@@ -29,10 +26,7 @@ test('Should open Alerta in a new tab when I click on an alert', async () => {
 test('Should open a specific alert in a new tab and clear the notification', () => {
   const tabs: any = { id: 1, windowId: 2 };
 
-  mockBrowser.tabs.create
-    .expect({ active: true, url: 'https://myAlertaServer/ui/alert/1324657' })
-    .andResolve(tabs)
-    .times(1);
+  mockBrowser.tabs.create.expect({ active: true, url: 'https://myAlertaServer/ui/alert/1324657' }).andResolve(tabs).times(1);
 
   mockBrowser.notifications.clear.expect('myNodifId');
 

@@ -1,10 +1,7 @@
 import React from 'react';
 import { AlertIco } from './AlertIco';
 
-export function ConnectionStatusInfo(props: {
-  isSuccess: boolean;
-  error?: { status: number; statusText: string };
-}) {
+export function ConnectionStatusInfo(props: { isSuccess: boolean; error?: { status: number; statusText: string } }) {
   return (
     <p>
       <AlertIco success={props.isSuccess} />

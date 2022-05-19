@@ -64,9 +64,7 @@ test('Should fetch Alerts when alarms is triggered', () => {
 
   // Then
   expect(fetchMockAlerta.mock.calls.length).toEqual(1);
-  expect(fetchMockAlerta.mock.calls[0][0]).toEqual(
-    'https://myAlertaServer/alerts?service=test&group-test2',
-  );
+  expect(fetchMockAlerta.mock.calls[0][0]).toEqual('https://myAlertaServer/alerts?service=test&group-test2');
 
   const expectedPayload = {
     headers: {

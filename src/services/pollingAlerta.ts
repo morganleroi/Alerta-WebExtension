@@ -17,14 +17,11 @@ export const startPolling = () => {
 };
 
 export const fetchAlerts = (state: AlertaExtStore) => {
-  fetch(
-    `${state.userPreferences.alertaApiServerUrl}alerts?${state.pollingState.alertaFetchQuery}`,
-    {
-      headers: {
-        Authorization: `Key ${state.userPreferences.alertaApiSecret}`,
-      },
+  fetch(`${state.userPreferences.alertaApiServerUrl}alerts?${state.pollingState.alertaFetchQuery}`, {
+    headers: {
+      Authorization: `Key ${state.userPreferences.alertaApiSecret}`,
     },
-  )
+  })
     .then(response => (response.ok ? response.json() : Promise.reject(response)))
     .then(response => {
       handleAlertaResponse(response, state);
@@ -51,10 +48,7 @@ function handleAlertaResponse(alertaResponse: any, state: AlertaExtStore) {
   }
 
   // We collect new alerts in the fetchAlerts.
-  const newAlerts = fetchedAlerts.filter(
-    alert =>
-      state.pollingState.alerts && !state.pollingState.alerts.map(x => x.id).includes(alert.id),
-  );
+  const newAlerts = fetchedAlerts.filter(alert => state.pollingState.alerts && !state.pollingState.alerts.map(x => x.id).includes(alert.id));
   const currentNbOfAlerts: number = alertaResponse.alerts.length;
   browser.browserAction.setBadgeText({ text: currentNbOfAlerts.toString() });
   browser.browserAction.setBadgeBackgroundColor({

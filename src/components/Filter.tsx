@@ -57,24 +57,14 @@ const Filter = (props: FilterProps) => {
       .catch(() => {
         setIsFilterFetched(false);
       });
-  }, [
-    props.userPref.alertaApiSecret,
-    props.userPref.alertaApiServerUrl,
-    props.globalStatus.status,
-  ]);
+  }, [props.userPref.alertaApiSecret, props.userPref.alertaApiServerUrl, props.globalStatus.status]);
 
   return (
     <FormGroup className="m-2 flex-fill">
       <label htmlFor="alertaServices" className="form-label">
         {props.name} <AlertIco success={isFilterFetched} />
       </label>
-      <CreatableSelect
-        isMulti
-        options={filterValues}
-        onChange={props.onSelectedFilter as any}
-        value={props.selectedFilterValue}
-        defaultValue={props.selectedFilterValue}
-      />
+      <CreatableSelect isMulti options={filterValues} onChange={props.onSelectedFilter as any} value={props.selectedFilterValue} defaultValue={props.selectedFilterValue} />
     </FormGroup>
   );
 };

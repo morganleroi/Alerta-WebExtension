@@ -19,10 +19,7 @@ export function sendNotification(state: AlertaExtStore, newAlerts: Alert[]) {
     // - The alert count if defined (Not the first time we poll Alerta or if new preferences has been saved)
     // - The alert count is lower than the alerta count result from the polling request
     if (!state.pollingState.isNewState && newAlerts.length > 0) {
-      let notification =
-        newAlerts.length == 1
-          ? createBasicNotification(newAlerts[0], state.userPreferences)
-          : createListNotification(newAlerts, state.userPreferences);
+      let notification = newAlerts.length == 1 ? createBasicNotification(newAlerts[0], state.userPreferences) : createListNotification(newAlerts, state.userPreferences);
 
       if (state.userPreferences.playAudio) {
         playSound();
