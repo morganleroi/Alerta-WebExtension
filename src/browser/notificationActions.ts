@@ -21,18 +21,18 @@ export function ackAlert(state: AlertaExtStore, notificationId: string, alertId?
     text: state.userPreferences.username ? `${state.userPreferences.username}: I'll take a look ...` : '',
   };
 
-  fetch(`${state.userPreferences.alertaApiServerUrl}alert/${alertId}/status`, {
+  fetch(`${state.userPreferences.alerta.apiUrl}alert/${alertId}/status`, {
     method: 'PUT',
     body: JSON.stringify(body),
     headers: {
       'Content-type': 'application/json',
-      Authorization: `Key ${state.userPreferences.alertaApiSecret}`,
+      Authorization: `Key ${state.userPreferences.alerta.apiSecret}`,
     },
   }).then(_ => browser.notifications.clear(notificationId));
 }
 
 export function openAlerta(state: AlertaExtStore, notificationId?: string) {
-  return createNewTab(`${state.userPreferences.alertaUiUrl}`, notificationId);
+  return createNewTab(`${state.userPreferences.alerta.uiUrl}`, notificationId);
 }
 
 export function openAlert(state: AlertaExtStore, notificationId: string, alertId?: string) {
@@ -40,7 +40,7 @@ export function openAlert(state: AlertaExtStore, notificationId: string, alertId
     return openAlerta(state, notificationId);
   }
 
-  return createNewTab(`${state.userPreferences.alertaUiUrl}alert/${alertId}`, notificationId);
+  return createNewTab(`${state.userPreferences.alerta.uiUrl}alert/${alertId}`, notificationId);
 }
 
 async function createNewTab(url: string, notificationId?: string) {

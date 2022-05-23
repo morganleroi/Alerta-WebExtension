@@ -1,7 +1,7 @@
 import { UserPreferences } from '../model/userPreferences';
 
 export const getServices = (userPref: UserPreferences): Promise<string[]> => {
-  return fetch(`${userPref.alertaApiServerUrl}services`, {
+  return fetch(`${userPref.alerta.apiUrl}services`, {
     method: 'GET',
     headers: getHeaders(userPref),
   })
@@ -11,7 +11,7 @@ export const getServices = (userPref: UserPreferences): Promise<string[]> => {
 };
 
 export const getGroups = (userPref: UserPreferences): Promise<string[]> => {
-  return fetch(`${userPref.alertaApiServerUrl}alerts/groups`, {
+  return fetch(`${userPref.alerta.apiUrl}alerts/groups`, {
     method: 'GET',
     headers: getHeaders(userPref),
   })
@@ -21,7 +21,7 @@ export const getGroups = (userPref: UserPreferences): Promise<string[]> => {
 };
 
 export const getEnvironments = (userPref: UserPreferences): Promise<string[]> => {
-  return fetch(`${userPref.alertaApiServerUrl}environments`, {
+  return fetch(`${userPref.alerta.apiUrl}environments`, {
     method: 'GET',
     headers: getHeaders(userPref),
   })
@@ -33,15 +33,15 @@ export const getEnvironments = (userPref: UserPreferences): Promise<string[]> =>
 const getHeaders = (userPref: UserPreferences): HeadersInit => {
   return {
     'Content-type': 'application/json',
-    Authorization: `Key ${userPref.alertaApiSecret}`,
+    Authorization: `Key ${userPref.alerta.apiSecret}`,
   };
 };
 
 export function createFetchQuery(userPreferences: UserPreferences) {
   const builtQuery =
-    buildQueryParameters('group', userPreferences.filterGroups) +
-    buildQueryParameters('service', userPreferences.filterServices) +
-    buildQueryParameters('environment', userPreferences.filterEnvironments);
+    buildQueryParameters('group', userPreferences.filters.groups) +
+    buildQueryParameters('service', userPreferences.filters.services) +
+    buildQueryParameters('environment', userPreferences.filters.environments);
   return 'status=open&status=ack&sort-by=lastReceiveTime' + (builtQuery === '' ? '' : builtQuery);
 }
 

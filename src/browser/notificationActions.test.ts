@@ -18,7 +18,9 @@ test('Should open Alerta in a new tab when I click on an alert', async () => {
 
   await openAlerta({
     userPreferences: {
-      alertaUiUrl: 'https://myAlertaServer/ui/',
+      alerta: {
+        uiUrl: 'https://myAlertaServer/ui/',
+      },
     },
   } as AlertaExtStore);
 });
@@ -26,7 +28,13 @@ test('Should open Alerta in a new tab when I click on an alert', async () => {
 test('Should open a specific alert in a new tab and clear the notification', () => {
   const tabs: any = { id: 1, windowId: 2 };
 
-  mockBrowser.tabs.create.expect({ active: true, url: 'https://myAlertaServer/ui/alert/1324657' }).andResolve(tabs).times(1);
+  mockBrowser.tabs.create
+    .expect({
+      active: true,
+      url: 'https://myAlertaServer/ui/alert/1324657',
+    })
+    .andResolve(tabs)
+    .times(1);
 
   mockBrowser.notifications.clear.expect('myNodifId');
 
@@ -35,7 +43,9 @@ test('Should open a specific alert in a new tab and clear the notification', () 
   openAlert(
     {
       userPreferences: {
-        alertaUiUrl: 'https://myAlertaServer/ui/',
+        alerta: {
+          uiUrl: 'https://myAlertaServer/ui/',
+        },
       },
     } as AlertaExtStore,
     'myNodifId',
@@ -47,9 +57,11 @@ test('Should ack the alert in Alerta and close the notification when clicking on
   // Given
   const state = {
     userPreferences: {
-      alertaApiServerUrl: 'https://myAlertaServer/api/',
-      alertaApiSecret: 'SecretKey',
       username: 'Morgan',
+      alerta: {
+        apiUrl: 'https://myAlertaServer/api/',
+        apiSecret: 'SecretKey',
+      },
     },
   } as AlertaExtStore;
 

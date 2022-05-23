@@ -13,7 +13,7 @@ export type CreateNotificationOptionsComplete = CreateNotificationOptions &
   }>;
 
 export function sendNotification(state: AlertaExtStore, newAlerts: Alert[]) {
-  if (state.userPreferences.showNotifications) {
+  if (state.userPreferences.notification.showNotifications) {
     // We have new alerts !
     // We only trigger alert if :
     // - The alert count if defined (Not the first time we poll Alerta or if new preferences has been saved)
@@ -21,7 +21,7 @@ export function sendNotification(state: AlertaExtStore, newAlerts: Alert[]) {
     if (!state.pollingState.isNewState && newAlerts.length > 0) {
       let notification = newAlerts.length == 1 ? createBasicNotification(newAlerts[0], state.userPreferences) : createListNotification(newAlerts, state.userPreferences);
 
-      if (state.userPreferences.playAudio) {
+      if (state.userPreferences.notification.playAudio) {
         playSound();
       }
       browser.notifications.create(notification.notificationId, notification.options);
@@ -45,7 +45,7 @@ function createBasicNotification(
   // If we cannot use buttons, then the browser is firefox and do not handle button and require interaction
   if (!isFirefox()) {
     payload.buttons = [{ title: 'Ack' }, { title: 'View alert details' }];
-    payload.requireInteraction = userPreferences.persistentNotifications;
+    payload.requireInteraction = userPreferences.notification.persistentNotifications;
     payload.isClickable = true;
   }
 
@@ -68,12 +68,11 @@ function createListNotification(
     message: 'Click to open Alerta',
     iconUrl: 'alert.png',
   };
-
   // If we cannot use buttons, then the browser is firefox and do not handle button and require interaction
   if (!isFirefox()) {
     payload.items = alerts.map(createAlertForNotification);
     payload.buttons = [{ title: 'Go to alerta' }];
-    payload.requireInteraction = userPreferences.persistentNotifications;
+    payload.requireInteraction = userPreferences.notification.persistentNotifications;
     payload.isClickable = true;
   }
 

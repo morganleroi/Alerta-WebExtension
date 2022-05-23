@@ -1,7 +1,7 @@
 import { defaultState } from '../model/extensionState';
 import { sendNotification } from './notifications';
-import { playSound } from '../services/playSound';
 import { setupMockAsChromium } from '../services/setupMock';
+import { playSound } from '../services/playSound';
 
 jest.mock('../services/playSound');
 
@@ -10,16 +10,14 @@ beforeEach(() => {
   setupMockAsChromium();
 });
 
+const deepCopy = <T>(obj: T) => JSON.parse(JSON.stringify(obj)) as T;
+
 test('Should not launch notification if notification disabled in user preference', () => {
   // Given
   // Here, we do not setup any mock on Notification. Meaning that is a call is made, then the test will fail.
-  const state = {
-    userPreferences: { ...defaultState.userPreferences },
-    pollingState: { ...defaultState.pollingState },
-  };
-
+  const state = deepCopy(defaultState);
   state.pollingState.isNewState = false;
-  state.userPreferences.showNotifications = false;
+  state.userPreferences.notification.showNotifications = false;
 
   // When
   sendNotification(state, [
@@ -34,11 +32,7 @@ test('Should not launch notification if notification disabled in user preference
 
 test('Should launch notification if new alerts', () => {
   // Given
-  const state = {
-    userPreferences: { ...defaultState.userPreferences },
-    pollingState: { ...defaultState.pollingState },
-  };
-
+  const state = deepCopy(defaultState);
   state.pollingState.isNewState = false;
 
   const expectedAlert = {
@@ -53,8 +47,7 @@ test('Should launch notification if new alerts', () => {
 
   // @ts-ignore
   mockBrowser.notifications.create.expect('Alert_12345', expectedAlert);
-  // @ts-ignore
-  //mockBrowser.notifications.update.mock();
+
   // When
   sendNotification(state, [
     {
@@ -68,13 +61,9 @@ test('Should launch notification if new alerts', () => {
 
 test('Should launch persistent notification if enabled in user preference', () => {
   // Given
-  const state = {
-    userPreferences: { ...defaultState.userPreferences },
-    pollingState: { ...defaultState.pollingState },
-  };
-
+  const state = deepCopy(defaultState);
   state.pollingState.isNewState = false;
-  state.userPreferences.persistentNotifications = true;
+  state.userPreferences.notification.persistentNotifications = true;
 
   const expectedAlert = {
     type: 'basic',
@@ -102,11 +91,7 @@ test('Should launch persistent notification if enabled in user preference', () =
 
 test('Should launch a list notifications is more than one new alert', () => {
   // Given
-  const state = {
-    userPreferences: { ...defaultState.userPreferences },
-    pollingState: { ...defaultState.pollingState },
-  };
-
+  const state = deepCopy(defaultState);
   state.pollingState.isNewState = false;
 
   const expectedListAlert = {
@@ -150,11 +135,7 @@ test('Should not launch notification if no new alert', () => {
   // Given
   // Here, we do not setup any mock on Notification. Meaning that is a call is made, then the test will fail.
 
-  const state = {
-    userPreferences: { ...defaultState.userPreferences },
-    pollingState: { ...defaultState.pollingState },
-  };
-
+  const state = deepCopy(defaultState);
   state.pollingState.isNewState = false;
 
   // when
@@ -165,11 +146,7 @@ test('Should not launch notification if alerts has not been fetched for the firs
   // Given
   // Here, we do not setup any mock on Notification. Meaning that is a call is made, then the test will fail.
 
-  const state = {
-    userPreferences: { ...defaultState.userPreferences },
-    pollingState: { ...defaultState.pollingState },
-  };
-
+  const state = deepCopy(defaultState);
   state.pollingState.isNewState = true;
 
   // When
@@ -184,13 +161,9 @@ test('Should not launch notification if alerts has not been fetched for the firs
 
 test('Should play a sound if selected in user preferences', () => {
   // Given
-  const state = {
-    userPreferences: { ...defaultState.userPreferences },
-    pollingState: { ...defaultState.pollingState },
-  };
-
+  const state = deepCopy(defaultState);
   state.pollingState.isNewState = false;
-  state.userPreferences.playAudio = true;
+  state.userPreferences.notification.playAudio = true;
 
   mockBrowser.notifications.create.expect;
 

@@ -17,9 +17,9 @@ export const startPolling = () => {
 };
 
 export const fetchAlerts = (state: AlertaExtStore) => {
-  fetch(`${state.userPreferences.alertaApiServerUrl}alerts?${state.pollingState.alertaFetchQuery}`, {
+  fetch(`${state.userPreferences.alerta.apiUrl}alerts?${state.pollingState.alertaFetchQuery}`, {
     headers: {
-      Authorization: `Key ${state.userPreferences.alertaApiSecret}`,
+      Authorization: `Key ${state.userPreferences.alerta.apiSecret}`,
     },
   })
     .then(response => (response.ok ? response.json() : Promise.reject(response)))

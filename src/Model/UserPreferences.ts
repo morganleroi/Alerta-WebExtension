@@ -1,12 +1,24 @@
-export type UserPreferences = {
-  alertaApiServerUrl: string;
-  alertaUiUrl: string;
-  alertaApiSecret: string;
+export interface UserPreferences {
+  alerta: AlertaUserPreferences;
+  notification: NotificationPreferences;
+  filters: FiltersPreferences;
+  username: string;
+}
+
+interface FiltersPreferences {
+  services: string[];
+  groups: string[];
+  environments: string[];
+}
+
+interface NotificationPreferences {
   showNotifications: boolean;
   persistentNotifications: boolean;
-  username: string;
-  filterServices: string[];
-  filterGroups: string[];
-  filterEnvironments: string[];
   playAudio: boolean;
-};
+}
+
+interface AlertaUserPreferences {
+  apiUrl: string;
+  apiSecret: string;
+  uiUrl: string;
+}

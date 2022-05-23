@@ -5,44 +5,50 @@ export type PollingState = {
   alerts: Alert[];
   alertaFetchQuery: string;
   isNewState: boolean;
+  status: FetchAlertStatus;
 };
 
-export enum FetchAlertStatus {
+export enum FetchAlertStatusResult {
   'NotYetFetched',
   'OK',
   'KO',
 }
 
-export type FetchAlertState = {
-  status: FetchAlertStatus;
+export type FetchAlertStatus = {
+  result: FetchAlertStatusResult;
   error?: { status: number; statusText: string };
 };
 
 export type AlertaExtStore = {
   userPreferences: UserPreferences;
   pollingState: PollingState;
-  fetchAlertPollingState: FetchAlertState;
 };
 
 export const defaultState: AlertaExtStore = {
-  fetchAlertPollingState: {
-    status: FetchAlertStatus.NotYetFetched,
-  },
   pollingState: {
     alertaFetchQuery: '',
     alerts: [],
     isNewState: true,
+    status: {
+      result: FetchAlertStatusResult.NotYetFetched,
+    },
   },
   userPreferences: {
-    alertaApiServerUrl: 'http://localhost:8080/api/',
-    alertaUiUrl: 'http://localhost:8080/',
-    persistentNotifications: false,
-    showNotifications: true,
-    alertaApiSecret: 'XXX',
+    alerta: {
+      apiUrl: 'http://localhost:8080/api/',
+      uiUrl: 'http://localhost:8080/',
+      apiSecret: 'XXX',
+    },
+    notification: {
+      persistentNotifications: false,
+      showNotifications: true,
+      playAudio: false,
+    },
+    filters: {
+      groups: [],
+      environments: ['Production'],
+      services: [],
+    },
     username: 'John Doe',
-    filterGroups: [],
-    filterEnvironments: ['Production'],
-    filterServices: [],
-    playAudio: false,
   },
 };

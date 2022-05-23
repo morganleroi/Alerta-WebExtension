@@ -6,9 +6,11 @@ test('Should query alerta with defaults user preferences', () => {
   // Given
   const userPreferences: UserPreferences = {
     ...defaultState.userPreferences,
-    filterGroups: [],
-    filterServices: [],
-    filterEnvironments: [],
+    filters: {
+      groups: [],
+      services: [],
+      environments: [],
+    },
   };
 
   // When
@@ -22,9 +24,11 @@ test('Should query alerta with one group filtering', () => {
   // Given
   const userPreferences: UserPreferences = {
     ...defaultState.userPreferences,
-    filterGroups: ['groupeOne'],
-    filterServices: [],
-    filterEnvironments: [],
+    filters: {
+      groups: ['groupeOne'],
+      services: [],
+      environments: [],
+    },
   };
 
   // When
@@ -38,9 +42,11 @@ test('Should query alerta with multiple groups filtering', () => {
   // Given
   const userPreferences: UserPreferences = {
     ...defaultState.userPreferences,
-    filterGroups: ['groupeOne', 'groupTwo'],
-    filterServices: [],
-    filterEnvironments: [],
+    filters: {
+      groups: ['groupeOne', 'groupTwo'],
+      services: [],
+      environments: [],
+    },
   };
 
   // When
@@ -54,9 +60,11 @@ test('Should query alerta with one service filtering', () => {
   // Given
   const userPreferences: UserPreferences = {
     ...defaultState.userPreferences,
-    filterGroups: [],
-    filterServices: ['serviceOne'],
-    filterEnvironments: [],
+    filters: {
+      groups: [],
+      services: ['serviceOne'],
+      environments: [],
+    },
   };
 
   // When
@@ -70,9 +78,11 @@ test('Should query alerta with multiple services filtering', () => {
   // Given
   const userPreferences: UserPreferences = {
     ...defaultState.userPreferences,
-    filterGroups: [],
-    filterServices: ['serviceOne', 'serviceTwo'],
-    filterEnvironments: [],
+    filters: {
+      groups: [],
+      services: ['serviceOne', 'serviceTwo'],
+      environments: [],
+    },
   };
 
   // When
@@ -86,9 +96,11 @@ test('Should query alerta with one environment filtering', () => {
   // Given
   const userPreferences: UserPreferences = {
     ...defaultState.userPreferences,
-    filterGroups: [],
-    filterServices: [],
-    filterEnvironments: ['Production'],
+    filters: {
+      groups: [],
+      services: [],
+      environments: ['Production'],
+    },
   };
 
   // When
@@ -102,9 +114,11 @@ test('Should query alerta with multiple environments filtering', () => {
   // Given
   const userPreferences: UserPreferences = {
     ...defaultState.userPreferences,
-    filterGroups: [],
-    filterServices: [],
-    filterEnvironments: ['Production', 'Development'],
+    filters: {
+      groups: [],
+      services: [],
+      environments: ['Production', 'Development'],
+    },
   };
 
   // When

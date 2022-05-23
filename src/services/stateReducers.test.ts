@@ -79,8 +79,14 @@ test('When receiving polling error, state should be notified', () => {
 test('When receiving save user preferences, state should be updated', () => {
   const userPref: UserPreferences = {
     ...defaultState.userPreferences,
-    persistentNotifications: true,
-    alertaApiSecret: 'AZERTY :-)',
+    notification: {
+      ...defaultState.userPreferences.notification,
+      persistentNotifications: true,
+    },
+    alerta: {
+      ...defaultState.userPreferences.alerta,
+      apiSecret: 'AZERTY :-)',
+    },
   };
 
   const newState = reduce(defaultState, {
@@ -88,8 +94,8 @@ test('When receiving save user preferences, state should be updated', () => {
     payload: userPref,
   });
 
-  expect(newState.userPreferences.persistentNotifications).toBeTruthy();
-  expect(newState.userPreferences.alertaApiSecret).toEqual('AZERTY :-)');
+  expect(newState.userPreferences.notification.persistentNotifications).toBeTruthy();
+  expect(newState.userPreferences.alerta.apiSecret).toEqual('AZERTY :-)');
 });
 
 test('When receiving save user preferences, polling state should be recomputed', () => {

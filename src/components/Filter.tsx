@@ -57,7 +57,7 @@ const Filter = (props: FilterProps) => {
       .catch(() => {
         setIsFilterFetched(false);
       });
-  }, [props.userPref.alertaApiSecret, props.userPref.alertaApiServerUrl, props.globalStatus.result]);
+  }, [props.userPref.alerta.apiSecret, props.userPref.alerta.apiUrl, props.globalStatus.result]);
 
   return (
     <FormGroup className="m-2 flex-fill">

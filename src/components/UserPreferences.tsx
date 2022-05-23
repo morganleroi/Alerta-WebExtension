@@ -41,12 +41,12 @@ const UserPreferences = () => {
   }, []);
 
   const saveUserPreference = () => {
-    userPref.alertaApiServerUrl = cleanUrl(userPref.alertaApiServerUrl);
-    userPref.alertaUiUrl = cleanUrl(userPref.alertaUiUrl);
+    userPref.alerta.apiUrl = cleanUrl(userPref.alerta.apiUrl);
+    userPref.alerta.uiUrl = cleanUrl(userPref.alerta.uiUrl);
 
-    userPref.filterServices = selectedOptionService.map(option => option.value);
-    userPref.filterGroups = selectedOptionGroup.map(option => option.value);
-    userPref.filterEnvironments = selectedOptionEnvironment.map(option => option.value);
+    userPref.filters.services = selectedOptionService.map(option => option.value);
+    userPref.filters.groups = selectedOptionGroup.map(option => option.value);
+    userPref.filters.environments = selectedOptionEnvironment.map(option => option.value);
 
     dispatchAndSave({ event: AlertaEvent.SAVE_USER_PREFERENCES, payload: userPref })
       .then(_ => {
@@ -100,11 +100,14 @@ const UserPreferences = () => {
                   className="form-control"
                   id="alertaUrl"
                   placeholder="https://hostname:port"
-                  value={userPref?.alertaApiServerUrl}
+                  value={userPref?.alerta.apiUrl}
                   onChange={val =>
                     setUserPref({
                       ...userPref,
-                      alertaApiServerUrl: val.target.value,
+                      alerta: {
+                        ...userPref.alerta,
+                        apiUrl: val.target.value,
+                      },
                     })
                   }
                 />
@@ -118,11 +121,14 @@ const UserPreferences = () => {
                   className="form-control"
                   id="alertaSecretKey"
                   placeholder=""
-                  value={userPref?.alertaApiSecret}
+                  value={userPref?.alerta.apiSecret}
                   onChange={val =>
                     setUserPref({
                       ...userPref,
-                      alertaApiSecret: val.target.value,
+                      alerta: {
+                        ...userPref.alerta,
+                        apiSecret: val.target.value,
+                      },
                     })
                   }
                 />
@@ -137,8 +143,16 @@ const UserPreferences = () => {
                   className="form-control"
                   id="alertaUiUrl"
                   placeholder="https://hostname:port"
-                  value={userPref?.alertaUiUrl}
-                  onChange={val => setUserPref({ ...userPref, alertaUiUrl: val.target.value })}
+                  value={userPref?.alerta.uiUrl}
+                  onChange={val =>
+                    setUserPref({
+                      ...userPref,
+                      alerta: {
+                        ...userPref.alerta,
+                        uiUrl: val.target.value,
+                      },
+                    })
+                  }
                 />
               </div>
               <div className="m-2 flex-fill">
@@ -168,11 +182,14 @@ const UserPreferences = () => {
                 <Label check>
                   <Input
                     type="checkbox"
-                    checked={userPref?.showNotifications}
+                    checked={userPref?.notification.showNotifications}
                     onChange={val =>
                       setUserPref({
                         ...userPref,
-                        showNotifications: val.target.checked,
+                        notification: {
+                          ...userPref.notification,
+                          showNotifications: val.target.checked,
+                        },
                       })
                     }
                   />
@@ -183,11 +200,14 @@ const UserPreferences = () => {
                 <Label check>
                   <Input
                     type="checkbox"
-                    checked={userPref?.persistentNotifications}
+                    checked={userPref?.notification.persistentNotifications}
                     onChange={val =>
                       setUserPref({
                         ...userPref,
-                        persistentNotifications: val.target.checked,
+                        notification: {
+                          ...userPref.notification,
+                          persistentNotifications: val.target.checked,
+                        },
                       })
                     }
                   />
@@ -198,11 +218,14 @@ const UserPreferences = () => {
                 <Label check>
                   <Input
                     type="checkbox"
-                    checked={userPref?.playAudio}
+                    checked={userPref?.notification.playAudio}
                     onChange={val =>
                       setUserPref({
                         ...userPref,
-                        playAudio: val.target.checked,
+                        notification: {
+                          ...userPref.notification,
+                          playAudio: val.target.checked,
+                        },
                       })
                     }
                   />
@@ -224,7 +247,7 @@ const UserPreferences = () => {
                     name="Environments"
                     userPref={userPref}
                     getFilterValues={alertaApi.getEnvironments}
-                    getUserPrefFilterValues={userPref.filterEnvironments}
+                    getUserPrefFilterValues={userPref.filters.environments}
                     onSelectedFilter={setSelectedOptionEnvironment}
                     selectedFilterValue={selectedOptionEnvironment}
                   />
@@ -233,7 +256,7 @@ const UserPreferences = () => {
                     name="Services"
                     userPref={userPref}
                     getFilterValues={alertaApi.getServices}
-                    getUserPrefFilterValues={userPref.filterServices}
+                    getUserPrefFilterValues={userPref.filters.services}
                     onSelectedFilter={setSelectedOptionService}
                     selectedFilterValue={selectedOptionService}
                   />
@@ -242,7 +265,7 @@ const UserPreferences = () => {
                     name="Groups"
                     userPref={userPref}
                     getFilterValues={alertaApi.getGroups}
-                    getUserPrefFilterValues={userPref.filterGroups}
+                    getUserPrefFilterValues={userPref.filters.groups}
                     onSelectedFilter={setSelectedOptionGroup}
                     selectedFilterValue={selectedOptionGroup}
                   />
