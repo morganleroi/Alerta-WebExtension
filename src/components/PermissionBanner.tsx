@@ -10,7 +10,7 @@ export const PermissionBanner = (props: { userPref: UserPreferences }) => {
   useEffect(() => {
     const fetchPermissions = async () => {
       const permissionsAlreadyOk = await browser.permissions.contains({
-        origins: ['http://localhost:8080/*'],
+        origins: ['*://*/*'],
       });
       setPermissionIsOk(permissionsAlreadyOk);
     };
@@ -36,5 +36,3 @@ export const PermissionBanner = (props: { userPref: UserPreferences }) => {
     <div />
   );
 };
-
-export default PermissionBanner;

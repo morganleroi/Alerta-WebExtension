@@ -25,6 +25,7 @@ chrome-user-data
 *.swp
 *.swo
 
+dist/
 scripts/secrets.json
 
 packages/react-devtools-core/dist

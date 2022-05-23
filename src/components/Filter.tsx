@@ -2,8 +2,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { FormGroup } from 'reactstrap';
 import CreatableSelect from 'react-select/creatable';
 import { UserPreferences } from '../model/userPreferences';
-import { FetchAlertStatus, FetchAlertStatusResult } from '../model/extensionState';
-import { AlertIco } from './AlertIco';
+import { FetchAlertStatus } from '../model/extensionState';
 
 type AlertaFilter = {
   label: string;
@@ -34,7 +33,6 @@ const distinctAndPrepareForCombobox = (values: string[]) => {
 };
 
 const Filter = (props: FilterProps) => {
-  const [isFilterFetched, setIsFilterFetched] = useState<boolean>(false);
   const [filterValues, setFilterValues] = useState<AlertaFilter[]>([]);
 
   useEffect(() => {
@@ -48,21 +46,17 @@ const Filter = (props: FilterProps) => {
       .getFilterValues(props.userPref)
       .then(response => {
         if (!response) {
-          setIsFilterFetched(false);
           return;
         }
         setFilterValues(distinctAndPrepareForCombobox(response));
-        setIsFilterFetched(props.globalStatus.result === FetchAlertStatusResult.OK);
       })
-      .catch(() => {
-        setIsFilterFetched(false);
-      });
+      .catch(() => {});
   }, [props.userPref.alerta.apiSecret, props.userPref.alerta.apiUrl, props.globalStatus.result]);
 
   return (
     <FormGroup className="m-2 flex-fill">
       <label htmlFor="alertaServices" className="form-label">
-        {props.name} <AlertIco success={isFilterFetched} />
+        {props.name}
       </label>
       <CreatableSelect isMulti options={filterValues} onChange={props.onSelectedFilter as any} value={props.selectedFilterValue} defaultValue={props.selectedFilterValue} />
     </FormGroup>

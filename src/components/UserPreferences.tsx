@@ -43,7 +43,6 @@ const UserPreferences = () => {
   const saveUserPreference = () => {
     userPref.alerta.apiUrl = cleanUrl(userPref.alerta.apiUrl);
     userPref.alerta.uiUrl = cleanUrl(userPref.alerta.uiUrl);
-
     userPref.filters.services = selectedOptionService.map(option => option.value);
     userPref.filters.groups = selectedOptionGroup.map(option => option.value);
     userPref.filters.environments = selectedOptionEnvironment.map(option => option.value);

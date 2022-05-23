@@ -10,9 +10,9 @@ const ConnectionStatus = (props: { fetchAlertStatus: FetchAlertStatus }) => {
     setIsSuccess(props.fetchAlertStatus.result === FetchAlertStatusResult.OK);
     setError(props.fetchAlertStatus?.error);
     browser.storage.onChanged.addListener((changes, area) => {
-      if (area === 'local' && changes.fetchAlertPollingState?.newValue) {
-        setIsSuccess(changes.fetchAlertPollingState?.newValue.status === FetchAlertStatusResult.OK);
-        setError(changes.fetchAlertPollingState?.newValue.error);
+      if (area === 'local' && changes.pollingState?.newValue.status.result) {
+        setIsSuccess(changes.pollingState?.newValue.status.result === FetchAlertStatusResult.OK);
+        setError(changes.pollingState?.newValue.status.result.error);
       }
     });
   }, []);
