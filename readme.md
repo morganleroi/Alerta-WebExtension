@@ -1,18 +1,27 @@
-# Chromium Extension for Alerta tool
+# WebExtension for Alerta
 
 #  End-User documentation
 
 ## Why an extension ?
 
-Alerta is an awesome API and UI tool to receive Alerts from all your monitoring systems (ie: your alerts producers). For support teams, the Alerta UI is perfect because they always have a browser opened on it or they are using the "Notification Sound" of Alerta UI.
+[Alerta](https://alerta.io/) is an awesome API and UI tool to receive Alerts from all your monitoring systems (ie: your alerts producers). For support teams, the Alerta UI is perfect because they always have a browser opened on it or they are using the "Notification Sound" of Alerta UI.
 
-But when a Developper team want to handle production support, they will need, in my opinion, an additionnal tools to "notify" them when something new happens in Alerta. That's why I created this Chromium Extension.
+But when a Developper want to handle production support (or keep an eye on it), they will need, in my opinion, an additionnal tools to "notify" them when something new happens in Alerta. That's why I created this WebExtension.
 
 ## Extension feature
 This extension adds the following feature:
 - Have a quick icon on your browser to see how many Alerts you have.
-- Receive notifications when something new happens. Chromium needs to be open (Google Chrome, Brave, Microsoft Edge, ...) but can be minimized.
-- Ack or Open Alert directly from the notification.
+
+![image](https://user-images.githubusercontent.com/2246570/169973147-8bb613a3-4c11-4877-81f8-fe677f25d60b.png)
+
+
+- Receive notifications when something new happens. Browser needs to be open but can be minimized.
+
+![image](https://user-images.githubusercontent.com/2246570/169975358-491dbdf4-c5ef-4a2f-9745-60b895fa0dd7.png)
+
+- Ack or Open Alert directly from the notification. (Beware, on each system, notification can look like different - Here, it's MacOS)
+
+![image](https://user-images.githubusercontent.com/2246570/169975733-474941d9-29da-4006-88fb-d81990b15b0c.png)
 
 ## Installation
 After installing the extension, you'll have to setup some fields.
