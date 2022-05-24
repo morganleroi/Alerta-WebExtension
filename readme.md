@@ -14,25 +14,33 @@ But when a Developper want to handle production support (or keep an eye on it), 
 
 ![image](https://user-images.githubusercontent.com/2246570/169973147-8bb613a3-4c11-4877-81f8-fe677f25d60b.png)
 
-
 - Stay focus on your work while keeping an eye on the production. You will receive notifications when something new happens in Alerta. Browser needs to be open but can be minimized.
 
-<img src="https://user-images.githubusercontent.com/2246570/169975358-491dbdf4-c5ef-4a2f-9745-60b895fa0dd7.png" width="500" alt="New alert detected!">
+<img src="https://user-images.githubusercontent.com/2246570/169975358-491dbdf4-c5ef-4a2f-9745-60b895fa0dd7.png" width="500" >
 
 - Ack or Open Alert directly from the notification. (Beware, on each system, notification can look like different - Here, it's MacOS)
 
-<img src="https://user-images.githubusercontent.com/2246570/169975733-474941d9-29da-4006-88fb-d81990b15b0c.png" width="500" alt="New alert detected!">
+<img src="https://user-images.githubusercontent.com/2246570/169975733-474941d9-29da-4006-88fb-d81990b15b0c.png" width="500" >
 
 - Only triggers notifications when something happens according to your filters
 
-<img src="https://user-images.githubusercontent.com/2246570/169991077-05178517-d0c1-4bb2-9efa-93e0d58da3b3.png" width="900" alt="New alert detected!">
+<img src="https://user-images.githubusercontent.com/2246570/169991077-05178517-d0c1-4bb2-9efa-93e0d58da3b3.png" width="900" >
 
 
 ## Installation
+
+### Chromium (Chrome, Brave, Opera, Edge)
+- Extension is available [in the Chrome Store](https://chrome.google.com/webstore/detail/alerta-notifier/kekdcgmihkkkemaanieognhnjgaeelml)
+- Extension will be available in few days in Firefox Store.
+
+
 After installing the extension, you'll have to setup some fields.
 - Go to the extension option page
 - Enter your Alerta host URL
+- Click on Allow to allow the extension to fetch alerts in Alerta API.
 - Enter your Alerta Auth Key.
+- Select one on more filters
+- Save and wait 1 min
 
 ## Configuration
 Several options are available to customize the extension and to meet your needs :
